@@ -48,7 +48,8 @@ if (BRLCAD_ENABLE_TK)
     # dependencies - just point it to our local source copy
     set(ITK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/itk3")
 
-    set(IWIDGETS_INSTDIR "${CMAKE_BINARY_INSTALL_ROOT}/iwidgets")
+    #set(IWIDGETS_INSTDIR "${CMAKE_BINARY_INSTALL_ROOT}/iwidgets")
+    set(IWIDGETS_INSTDIR "${CMAKE_BINARY_INSTALL_ROOT}")
 
     ExternalProject_Add(IWIDGETS_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/iwidgets"

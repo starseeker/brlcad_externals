@@ -68,7 +68,8 @@ if (BRLCAD_ENABLE_TK)
       list(APPEND ITK_DEPS wish_exe_stage)
     endif (TARGET tk_stage)
 
-    set(ITK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/itk3)
+    #set(ITK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/itk3)
+    set(ITK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
 
     ExternalProject_Add(ITK_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/itk3"

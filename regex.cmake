@@ -15,7 +15,8 @@ if (BRLCAD_REGEX_BUILD)
 
   set_lib_vars(REGEX regex_brl "1" "0" "4")
 
-  set(REGEX_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/regex)
+  #set(REGEX_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/regex)
+  set(REGEX_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
 
   # Platform differences in default linker behavior make it difficult to
   # guarantee that our libregex symbols will override libc. We'll avoid the

@@ -94,7 +94,8 @@ if (BRLCAD_ENABLE_TCL)
       list(APPEND ITCL_DEPS tkstub_stage)
     endif (TARGET tk_stage)
 
-    set(ITCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/itcl3.4)
+    #set(ITCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/itcl3.4)
+    set(ITCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
 
     ExternalProject_Add(ITCL_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/itcl3"

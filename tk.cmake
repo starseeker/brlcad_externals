@@ -34,7 +34,8 @@ if (BRLCAD_ENABLE_TCL AND BRLCAD_ENABLE_TK AND TK_DO_BUILD)
     set_target_properties(tcl_replace PROPERTIES FOLDER "Compilation Utilities")
   endif (NOT TARGET tcl_replace)
 
-  set(TK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/tk)
+  #set(TK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/tk)
+  set(TK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
 
   if (NOT MSVC)
 
