@@ -39,6 +39,19 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 # cmakefiles and distclean
 include(TrackFiles)
 
+# By default, unless we've been told otherwise, build everything
+if (NOT DEFINED BRLCAD_BUNDLED_LIBS)
+  set(BRLCAD_BUNDLED_LIBS BUNDLED)
+endif (NOT DEFINED BRLCAD_BUNDLED_LIBS)
+
+# Build the Tcl/Tk packages
+if (NOT DEFINED BRLCAD_ENABLE_TCL)
+  set(BRLCAD_ENABLE_TCL ON)
+endif (NOT DEFINED BRLCAD_ENABLE_TCL)
+if (NOT DEFINED BRLCAD_ENABLE_TK)
+  set(BRLCAD_ENABLE_TK ON)
+endif (NOT DEFINED BRLCAD_ENABLE_TK)
+
 # Find the executable extension, if there is one
 get_filename_component(EXE_EXT "${CMAKE_COMMAND}" EXT)
 
