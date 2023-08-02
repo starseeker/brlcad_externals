@@ -33,6 +33,12 @@ project(BDEPS)
 
 cmake_minimum_required(VERSION 3.18)
 
+# Location of CMake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+
+# cmakefiles and distclean
+include(TrackFiles)
+
 # Find the executable extension, if there is one
 get_filename_component(EXE_EXT "${CMAKE_COMMAND}" EXT)
 
