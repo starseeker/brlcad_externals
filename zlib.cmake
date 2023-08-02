@@ -49,47 +49,10 @@ if (BRLCAD_ZLIB_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/ZLIB_BLD-prefix")
-
-  # Tell the parent build about files and libraries
-  ExternalProject_Target(SHARED zlib ZLIB_BLD ${ZLIB_INSTDIR}
-    ${ZLIB_BASENAME}${ZLIB_SUFFIX}
-    SYMLINKS "${ZLIB_SYMLINK_1};${ZLIB_SYMLINK_2}"
-    LINK_TARGET "${ZLIB_SYMLINK_1}"
-    RPATH
-    )
-  if (BUILD_STATIC_LIBS)
-    ExternalProject_Target(STATIC zlib-static ZLIB_BLD ${ZLIB_INSTDIR}
-      ${ZLIB_STATICNAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-      )
-  endif (BUILD_STATIC_LIBS)
-
-  ExternalProject_ByProducts(zlib ZLIB_BLD ${ZLIB_INSTDIR} ${INCLUDE_DIR}
-    zconf.h
-    zlib.h
-    )
-
-  set(ZLIB_LIBRARY_DEBUG zlib CACHE STRING "Building bundled zlib" FORCE)
-  set(ZLIB_LIBRARY_RELEASE zlib CACHE STRING "Building bundled zlib" FORCE)
-  set(ZLIB_LIBRARIES zlib CACHE STRING "Building bundled zlib" FORCE)
-  set(ZLIB_INCLUDE_DIR "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}" CACHE STRING "Directory containing zlib headers." FORCE)
-  set(ZLIB_INCLUDE_DIRS "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}" CACHE STRING "Directory containing zlib headers." FORCE)
-
   SetTargetFolder(ZLIB_BLD "Third Party Libraries")
   SetTargetFolder(zlib "Third Party Libraries")
 
-else (BRLCAD_ZLIB_BUILD)
-
-  set(Z_PREFIX_STR "" CACHE STRING "clear prefix for zlib functions" FORCE)
-  set(Z_PREFIX_STR)
-  if (NOT DEFINED ZLIB_LIBRARIES)
-    if (ZLIB_LIBRARY_RELEASE)
-      set(ZLIB_LIBRARIES ${ZLIB_LIBRARY_RELEASE} CACHE STRING "ZLIB_LIBRARIES" FORCE)
-    else (ZLIB_LIBRARY_DEBUG)
-      set(ZLIB_LIBRARIES ${ZLIB_LIBRARY_DEBUG} CACHE STRING "ZLIB_LIBRARIES" FORCE)
-    endif (ZLIB_LIBRARY_RELEASE)
-  endif (NOT DEFINED ZLIB_LIBRARIES)
-  set(ZLIB_INCLUDE_DIRS "${ZLIB_INCLUDE_DIR}" CACHE STRING "ZLIB include directory" FORCE)
+  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/ZLIB_BLD-prefix")
 
 endif (BRLCAD_ZLIB_BUILD)
 

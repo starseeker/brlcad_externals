@@ -83,16 +83,13 @@ if (BRLCAD_ENABLE_TCL)
     set(ITCL_VERSION ${ITCL_MAJOR_VERSION}.${ITCL_MINOR_VERSION} CACHE STRING "Itcl version")
 
     set(ITCL_DEPS)
-    if (TARGET tcl_stage)
+    if (TARGET TCL_BLD)
       set(TCL_TARGET ON)
-      list(APPEND ITCL_DEPS tcl_stage)
-      list(APPEND ITCL_DEPS tclstub_stage)
-      list(APPEND ITCL_DEPS tclsh_exe_stage)
-    endif (TARGET tcl_stage)
-    if (TARGET tk_stage)
-      list(APPEND ITCL_DEPS tk_stage)
-      list(APPEND ITCL_DEPS tkstub_stage)
-    endif (TARGET tk_stage)
+      list(APPEND ITCL_DEPS TCL_BLD)
+    endif (TARGET TCL_BLD)
+    if (TARGET TK_BLD)
+      list(APPEND ITCL_DEPS TK_BLD)
+    endif (TARGET TK_BLD)
 
     #set(ITCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/itcl3.4)
     set(ITCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
@@ -113,7 +110,7 @@ if (BRLCAD_ENABLE_TCL)
       -DLIB_DIR=${LIB_DIR}
       -DSHARED_DIR=${SHARED_DIR}
       -DTCL_ENABLE_TK=${TCL_ENABLE_TK}
-      -DTCL_ROOT=$<$<BOOL:${TCL_TARGET}>:${CMAKE_BINARY_ROOT}>
+      -DTCL_ROOT=$<$<BOOL:${TCL_TARGET}>:${CMAKE_BINARY_INSTALL_ROOT}>
       -DTCL_VERSION=${TCL_VERSION}
       DEPENDS ${ITCL_DEPS}
       LOG_CONFIGURE ${EXT_BUILD_QUIET}
@@ -132,48 +129,12 @@ if (BRLCAD_ENABLE_TCL)
       set(ITCL_STUBNAME itclstub)
     endif (NOT MSVC)
 
-    # Tell the parent build about files and libraries
-    ExternalProject_Target(SHARED itcl ITCL_BLD ${ITCL_INSTDIR}
-      itcl${ITCL_VERSION}/${ITCL_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-      SUBDIR  itcl${ITCL_VERSION}
-      RPATH
-      )
-
-    ExternalProject_Target(STATIC itclstub ITCL_BLD ${ITCL_INSTDIR}
-      itcl${ITCL_VERSION}/${ITCL_STUBNAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-      SUBDIR  itcl${ITCL_VERSION}
-      )
-
-
-    ExternalProject_ByProducts(itcl ITCL_BLD ${ITCL_INSTDIR} ${INCLUDE_DIR}
-      itcl.h
-      itclDecls.h
-      itclInt.h
-      itclIntDecls.h
-      )
-
-    ExternalProject_ByProducts(itcl ITCL_BLD ${ITCL_INSTDIR} ${LIB_DIR}/itcl${ITCL_VERSION}
-      itcl.tcl
-      pkgIndex.tcl
-      )
-
-    set(ITCL_LIBRARY itcl CACHE STRING "Building bundled itcl" FORCE)
-    set(ITCL_LIBRARIES itcl CACHE STRING "Building bundled itcl" FORCE)
-
-    if (TARGET tcl_stage)
-      add_dependencies(itcl_stage tcl_stage)
-    endif (TARGET tcl_stage)
-
     SetTargetFolder(ITCL_BLD "Third Party Libraries")
 
     # Restore default rpath settings
     relative_rpath(RELPATH)
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_DIR}${RELPATH}")
     ext_build_rpath()
-
-  else (BUILD_ITCL)
-
-    set(BRLCAD_ITCL_BUILD "OFF" CACHE STRING "Disable Itcl build" FORCE)
 
   endif (BUILD_ITCL)
 endif (BRLCAD_ENABLE_TCL)

@@ -44,47 +44,10 @@ if (BRLCAD_SQLITE3_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/SQLITE3_BLD-prefix")
-
-  # Need to adjust for naming conventions with Visual Studio
-  if (MSVC)
-    set(SQLITE3_BASENAME "libsqlite3")
-  endif (MSVC)
-
-  # Tell the parent build about files and libraries
-  ExternalProject_Target(SHARED libsqlite3 SQLITE3_BLD ${SQLITE3_INSTDIR}
-    ${SQLITE3_BASENAME}${SQLITE3_SUFFIX}
-    SYMLINKS "${SQLITE3_SYMLINK_1};${SQLITE3_SYMLINK_2}"
-    LINK_TARGET "${SQLITE3_SYMLINK_1}"
-    RPATH
-    )
-
-  ExternalProject_Target(EXEC sqlite3_exe SQLITE3_BLD ${SQLITE3_INSTDIR}
-    sqlite3${CMAKE_EXECUTABLE_SUFFIX}
-    RPATH
-    )
-
-  ExternalProject_ByProducts(sqlite3 SQLITE3_BLD ${SQLITE3_INSTDIR} ${INCLUDE_DIR}
-    sqlite3.h
-    sqlite3ext.h
-    )
-
-  set(SQLite3_LIBRARY sqlite3 CACHE STRING "Building bundled sqlite3" FORCE)
-  set(SQLite3_LIBRARIES ${SQLite3_LIBRARY} CACHE STRING "Building bundled sqlite3" FORCE)
-  set(SQLite3_INCLUDE_DIR "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}" CACHE STRING "Directory containing sqlite3 headers." FORCE)
-  set(SQLite3_INCLUDE_DIRS "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}" CACHE STRING "Directory containing sqlite3 headers." FORCE)
-  set(SQLite3_EXECNAME sqlite3_exe CACHE STRING "Building bundled sqlite3" FORCE)
-
   SetTargetFolder(SQLITE3_BLD "Third Party Libraries")
   SetTargetFolder(sqlite3 "Third Party Libraries")
 
-else (BRLCAD_SQLITE3_BUILD)
-
-  set(SQLite3_LIBRARY "${SQLite3_LIBRARY}" CACHE STRING "Building bundled sqlite3" FORCE)
-  set(SQLite3_LIBRARIES ${SQLite3_LIBRARY} CACHE STRING "Building bundled sqlite3" FORCE)
-  set(SQLite3_INCLUDE_DIR "${SQLite3_INCLUDE_DIR}" CACHE STRING "Directory containing sqlite3 headers." FORCE)
-  set(SQLite3_INCLUDE_DIRS "${SQLite3_INCLUDE_DIR}" CACHE STRING "SQLite3 include directory" FORCE)
-  set(SQLite3_EXECNAME "${SQLite3_EXECNAME}" CACHE STRING "Building bundled sqlite3" FORCE)
+  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/SQLITE3_BLD-prefix")
 
 endif (BRLCAD_SQLITE3_BUILD)
 

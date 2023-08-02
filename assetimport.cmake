@@ -8,7 +8,7 @@ AUTO.
 THIRD_PARTY(assetimport ASSETIMPORT assetimport
   assetimport_DESCRIPTION
   ALIASES ENABLE_ASSETIMPORT
-  RESET_VARS ASSETIMPORT_LIBRARY ASSETIMPORT_LIBRARIES ASSETIMPORT_INCLUDE_DIR ASSETIMPORT_INCLUDE_DIRS 
+  RESET_VARS ASSETIMPORT_LIBRARY ASSETIMPORT_LIBRARIES ASSETIMPORT_INCLUDE_DIR ASSETIMPORT_INCLUDE_DIRS
   )
 
 if (BRLCAD_ASSETIMPORT_BUILD)
@@ -23,15 +23,17 @@ if (BRLCAD_ASSETIMPORT_BUILD)
 
   if (TARGET ZLIB_BLD)
     set(ZLIB_TARGET ZLIB_BLD)
-  endif (TARGET ZLIB_BLD)
 
-  if (MSVC)
-    set(ZLIB_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}.lib)
-  elseif (OPENBSD)
-    set(ZLIB_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.1.2)
-  else (MSVC)
-    set(ZLIB_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
-  endif (MSVC)
+    if (MSVC)
+      set(ZLIB_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}.lib)
+    elseif (OPENBSD)
+      set(ZLIB_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.1.2)
+    else (MSVC)
+      set(ZLIB_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    endif (MSVC)
+
+    set(ZLIB_INCLUDE_DIR ${CMAKE_BINARY_INSTALL_ROOT}/include)
+  endif (TARGET ZLIB_BLD)
 
   if (MSVC)
     set(ASSETIMPORT_BASENAME "assimp-vc${MSVC_TOOLSET_VERSION}-mt")
@@ -62,7 +64,8 @@ if (BRLCAD_ASSETIMPORT_BUILD)
     -DZLIB_LIBRARIES=$<$<BOOL:${ZLIB_TARGET}>:${ZLIB_LIBRARY}>
     -DZLIB_LIBRARY_DBG=$<$<BOOL:${ZLIB_TARGET}>:${ZLIB_LIBRARY}>
     -DZLIB_LIBRARY_REL=$<$<BOOL:${ZLIB_TARGET}>:${ZLIB_LIBRARY}>
-    -DZLIB_ROOT=${CMAKE_BINARY_ROOT}
+    -DZLIB_INCLUDE_DIR=$<$<BOOL:${ZLIB_TARGET}>:${ZLIB_INCLUDE_DIR}>
+    -DZLIB_ROOT=${CMAKE_BINARY_INSTALL_ROOT}
     -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
     -DASSIMP_BUILD_TESTS=OFF
     -DASSIMP_BUILD_MINIZIP=ON
@@ -75,125 +78,10 @@ if (BRLCAD_ASSETIMPORT_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/ASSETIMPORT_BLD-prefix")
-
-  # Tell the parent build about files and libraries
-  ExternalProject_Target(SHARED assetimport ASSETIMPORT_BLD ${ASSETIMPORT_INSTDIR}
-    ${ASSETIMPORT_BASENAME}${ASSETIMPORT_SUFFIX}
-    SYMLINKS ${ASSETIMPORT_SYMLINK_1};${ASSETIMPORT_SYMLINK_2}
-    LINK_TARGET ${ASSETIMPORT_SYMLINK_1}
-    RPATH
-    )
-
-  ExternalProject_ByProducts(assetimport ASSETIMPORT_BLD ${ASSETIMPORT_INSTDIR} ${INCLUDE_DIR}/assimp
-    NOINSTALL
-    Base64.hpp
-    BaseImporter.h
-    Bitmap.h
-    BlobIOSystem.h
-    ByteSwapper.h
-    ColladaMetaData.h
-    Compiler/poppack1.h
-    Compiler/pstdint.h
-    Compiler/pushpack1.h
-    CreateAnimMesh.h
-    DefaultIOStream.h
-    DefaultIOSystem.h
-    DefaultLogger.hpp
-    Exceptional.h
-    Exporter.hpp
-    GenericProperty.h
-    GltfMaterial.h
-    Hash.h
-    IOStream.hpp
-    IOStreamBuffer.h
-    IOSystem.hpp
-    Importer.hpp
-    LineSplitter.h
-    LogAux.h
-    LogStream.hpp
-    Logger.hpp
-    MathFunctions.h
-    MemoryIOWrapper.h
-    NullLogger.hpp
-    ObjMaterial.h
-    ParsingUtils.h
-    Profiler.h
-    ProgressHandler.hpp
-    RemoveComments.h
-    SGSpatialSort.h
-    SceneCombiner.h
-    SkeletonMeshBuilder.h
-    SmallVector.h
-    SmoothingGroups.h
-    SmoothingGroups.inl
-    SpatialSort.h
-    StandardShapes.h
-    StreamReader.h
-    StreamWriter.h
-    StringComparison.h
-    StringUtils.h
-    Subdivision.h
-    TinyFormatter.h
-    Vertex.h
-    XMLTools.h
-    XmlParser.h
-    ZipArchiveIOSystem.h
-    aabb.h
-    ai_assert.h
-    anim.h
-    camera.h
-    cexport.h
-    cfileio.h
-    cimport.h
-    color4.h
-    color4.inl
-    commonMetaData.h
-    config.h
-    defs.h
-    fast_atof.h
-    importerdesc.h
-    light.h
-    material.h
-    material.inl
-    matrix3x3.h
-    matrix3x3.inl
-    matrix4x4.h
-    matrix4x4.inl
-    mesh.h
-    metadata.h
-    pbrmaterial.h
-    postprocess.h
-    qnan.h
-    quaternion.h
-    quaternion.inl
-    scene.h
-    texture.h
-    types.h
-    vector2.h
-    vector2.inl
-    vector3.h
-    vector3.inl
-    version.h
-    )
-  set(SYS_INCLUDE_PATTERNS ${SYS_INCLUDE_PATTERNS} assetimport CACHE STRING "Bundled system include dirs" FORCE)
-
-  set(ASSETIMPORT_LIBRARY assetimport CACHE STRING "Building bundled assetimport" FORCE)
-  set(ASSETIMPORT_LIBRARIES assetimport CACHE STRING "Building bundled assetimport" FORCE)
-
-  set(ASSETIMPORT_INCLUDE_DIR
-    "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}/assetimport"
-    "${BRLCAD_SOURCE_DIR}/src/other/ext/assetimport"
-    CACHE STRING "Directories containing ASSETIMPORT headers." FORCE)
-  set(ASSETIMPORT_INCLUDE_DIRS "${ASSETIMPORT_INCLUDE_DIR}" CACHE STRING "Directories containing ASSETIMPORT headers." FORCE)
-
   SetTargetFolder(ASSETIMPORT_BLD "Third Party Libraries")
   SetTargetFolder(assetimport "Third Party Libraries")
 
-else (BRLCAD_ASSETIMPORT_BUILD)
-
-  set(ASSETIMPORT_LIBRARIES ${ASSETIMPORT_LIBRARY} CACHE STRING "assetimport" FORCE)
-  set(ASSETIMPORT_INCLUDE_DIRS "${ASSETIMPORT_INCLUDE_DIR}" CACHE STRING "Directories containing ASSETIMPORT headers." FORCE)
+  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/ASSETIMPORT_BLD-prefix")
 
 endif (BRLCAD_ASSETIMPORT_BUILD)
 

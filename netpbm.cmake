@@ -43,44 +43,10 @@ if (BRLCAD_NETPBM_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/NETPBM_BLD-prefix")
-
- # Tell the parent build about files and libraries
- ExternalProject_Target(SHARED netpbm NETPBM_BLD ${NETPBM_INSTDIR}
-   ${NETPBM_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-   RPATH
-   )
- if (BUILD_STATIC_LIBS)
-   ExternalProject_Target(STATIC netpbm-static NETPBM_BLD ${NETPBM_INSTDIR}
-     ${NETPBM_STATICNAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-     )
- endif (BUILD_STATIC_LIBS)
-
- ExternalProject_ByProducts(netpbm NETPBM_BLD ${NETPBM_INSTDIR} ${INCLUDE_DIR}/netpbm
-   bitio.h
-   colorname.h
-   pam.h
-   pammap.h
-   pbm.h
-   pbmfont.h
-   pgm.h
-   pm.h
-   pm_gamma.h
-   pnm.h
-   ppm.h
-   ppmcmap.h
-   ppmfloyd.h
-   pm_config.h
-   )
-  set(SYS_INCLUDE_PATTERNS ${SYS_INCLUDE_PATTERNS} netpbm  CACHE STRING "Bundled system include dirs" FORCE)
-
-  set(NETPBM_LIBRARY netpbm CACHE STRING "Building bundled netpbm" FORCE)
-  set(NETPBM_LIBRARIES netpbm CACHE STRING "Building bundled netpbm" FORCE)
-  set(NETPBM_INCLUDE_DIR "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}/netpbm" CACHE STRING "Directory containing netpbm headers." FORCE)
-  set(NETPBM_INCLUDE_DIRS "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}/netpbm" CACHE STRING "Directory containing netpbm headers." FORCE)
-
   SetTargetFolder(NETPBM_BLD "Third Party Libraries")
   SetTargetFolder(netpbm "Third Party Libraries")
+
+  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/NETPBM_BLD-prefix")
 
 endif (BRLCAD_NETPBM_BUILD)
 

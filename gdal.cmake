@@ -27,48 +27,48 @@ if (BRLCAD_GDAL_BUILD)
   if (TARGET ZLIB_BLD)
     set(ZLIB_TARGET ZLIB_BLD)
     if (MSVC)
-      set(ZLIB_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}.lib)
+      set(ZLIB_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}.lib)
     elseif (OPENBSD)
-      set(ZLIB_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.1.2)
+      set(ZLIB_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.1.2)
     else (MSVC)
-      set(ZLIB_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+      set(ZLIB_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${ZLIB_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
     endif (MSVC)
   endif (TARGET ZLIB_BLD)
 
   if (TARGET PNG_BLD)
     set(PNG_TARGET PNG_BLD)
     if (MSVC)
-      set(PNG_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${PNG_BASENAME}.lib)
+      set(PNG_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${PNG_BASENAME}.lib)
     elseif (OPENBSD)
-      set(PNG_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${PNG_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.1.6)
+      set(PNG_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${PNG_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.1.6)
     else (MSVC)
-      set(PNG_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${PNG_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+      set(PNG_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${PNG_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
     endif (MSVC)
   endif (TARGET PNG_BLD)
 
   if (TARGET PROJ_BLD)
     set(PROJ_TARGET PROJ_BLD)
     if (MSVC)
-      set(PROJ_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${PROJ_BASENAME}.lib)
+      set(PROJ_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${PROJ_BASENAME}.lib)
     elseif (OPENBSD)
-      set(PROJ_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.25.9.0.1)
+      set(PROJ_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.25.9.0.1)
     else (MSVC)
-      set(PROJ_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+      set(PROJ_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
     endif (MSVC)
   endif (TARGET PROJ_BLD)
 
   if (TARGET SQLITE3_BLD)
     set(SQLITE3_TARGET SQLITE3_BLD)
-    list(APPEND PROJ_DEPS SQLITE3_BLD libsqlite3_stage sqlite3_exe_stage)
+    list(APPEND PROJ_DEPS SQLITE3_BLD)
     if (MSVC)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/libsqlite3.lib)
+      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3.lib)
     elseif (OPENBSD)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX}.3.32)
+      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX}.3.32)
     else (MSVC)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX})
+      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX})
     endif (MSVC)
-    set(SQLite3_INCLUDE_DIR ${CMAKE_BINARY_ROOT}/${INCLUDE_DIR})
-    set(SQLite3_EXECNAME ${CMAKE_BINARY_ROOT}/${BIN_DIR}/sqlite3${CMAKE_EXECUTABLE_SUFFIX})
+    set(SQLite3_INCLUDE_DIR ${CMAKE_BINARY_INSTALL_ROOT}/${INCLUDE_DIR})
+    set(SQLite3_EXECNAME ${CMAKE_BINARY_INSTALL_ROOT}/${BIN_DIR}/sqlite3${CMAKE_EXECUTABLE_SUFFIX})
   endif (TARGET SQLITE3_BLD)
 
   if (MSVC)
@@ -97,12 +97,6 @@ if (BRLCAD_GDAL_BUILD)
   #set(GDAL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/gdal)
   set(GDAL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
 
-
-  # This option list needs to get a LOT more extensive - see
-  # https://gdal.org/build_hints.html for more details.  We'll
-  # probably need to disable the optional packages by default
-  # and build up as we figure out which ones can be turned on
-  # without requiring additional dependencies
   ExternalProject_Add(GDAL_BLD
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gdal"
     BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
@@ -125,15 +119,15 @@ if (BRLCAD_GDAL_BUILD)
     -DGDAL_USE_INTERNAL_LIBS=ON # GEOTIFF, GIF, JPEG, JSONC, LERC, OPENCAD, PNG, QHULL, TIFF, ZLIB
     -DGDAL_USE_ZLIB_INTERNAL=OFF
     -DGDAL_USE_ZLIB=ON
-    -DZLIB_ROOT=${CMAKE_BINARY_ROOT}
+    -DZLIB_ROOT=${CMAKE_BINARY_INSTALL_ROOT}
     -DZLIB_LIBRARY=$<$<BOOL:${ZLIB_TARGET}>:${ZLIB_LIBRARY}>
     -DGDAL_USE_PNG_INTERNAL=OFF
     -DGDAL_USE_PNG=ON
-    -DPNG_ROOT=${CMAKE_BINARY_ROOT}
+    -DPNG_ROOT=${CMAKE_BINARY_INSTALL_ROOT}
     -DPNG_LIBRARY=$<$<BOOL:${PNG_TARGET}>:${PNG_LIBRARY}>
     -DGDAL_USE_PROJ_INTERNAL=OFF
     -DGDAL_USE_PROJ=ON
-    -DPROJ_ROOT=${CMAKE_BINARY_ROOT}
+    -DPROJ_ROOT=${CMAKE_BINARY_INSTALL_ROOT}
     -DPROJ_LIBRARY=${PROJ_LIBRARY}
     -DPROJ_LIBRARY_RELEASE=${PROJ_LIBRARY}
     -DPROJ_LIBRARY_DEBUG=${PROJ_LIBRARY}
@@ -252,262 +246,10 @@ if (BRLCAD_GDAL_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/GDAL_BLD-prefix")
-
-  # Tell the parent build about files and libraries
-  ExternalProject_Target(SHARED gdal GDAL_BLD ${GDAL_INSTDIR}
-    ${GDAL_BASENAME}${GDAL_SUFFIX}
-    SYMLINKS ${GDAL_SYMLINK_1};${GDAL_SYMLINK_2}
-    LINK_TARGET ${GDAL_SYMLINK_1}
-    RPATH
-    )
-  if (BUILD_STATIC_LIBS)
-	  #ExternalProject_Target(STATIC gdal-static GDAL_BLD ${GDAL_INSTDIR}
-	  #${GDAL_STATICNAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-	  #)
-  endif (BUILD_STATIC_LIBS)
-
-  set(GDAL_EXECUTABLES gdalinfo gdallocationinfo gdal_translate gdaltransform gdaldem gdalwarp gdalbuildvrt)
-  foreach(GDALEXEC ${GDAL_EXECUTABLES})
-    ExternalProject_Target(EXEC ${GDALEXEC}_exe GDAL_BLD ${GDAL_INSTDIR}
-      ${GDALEXEC}${CMAKE_EXECUTABLE_SUFFIX}
-      RPATH
-      )
-  endforeach(GDALEXEC ${GDAL_EXECUTABLES})
-  ExternalProject_ByProducts(gdal GDAL_BLD ${GDAL_INSTDIR} ${DATA_DIR}/gdal
-	  GDALLogoBW.svg
-	  GDALLogoColor.svg
-	  GDALLogoGS.svg
-	  LICENSE.TXT
-	  bag_template.xml
-	  cubewerx_extra.wkt
-	  default.rsc
-	  ecw_cs.wkt
-	  eedaconf.json
-	  epsg.wkt
-	  esri_StatePlane_extra.wkt
-	  gdalicon.png
-	  gdalmdiminfo_output.schema.json
-	  gdalvrt.xsd
-	  gml_registry.xml
-	  gmlasconf.xml
-	  gmlasconf.xsd
-	  grib2_center.csv
-	  grib2_process.csv
-	  grib2_subcenter.csv
-	  grib2_table_4_2_0_0.csv
-	  grib2_table_4_2_0_1.csv
-	  grib2_table_4_2_0_13.csv
-	  grib2_table_4_2_0_14.csv
-	  grib2_table_4_2_0_15.csv
-	  grib2_table_4_2_0_16.csv
-	  grib2_table_4_2_0_17.csv
-	  grib2_table_4_2_0_18.csv
-	  grib2_table_4_2_0_19.csv
-	  grib2_table_4_2_0_190.csv
-	  grib2_table_4_2_0_191.csv
-	  grib2_table_4_2_0_2.csv
-	  grib2_table_4_2_0_20.csv
-	  grib2_table_4_2_0_3.csv
-	  grib2_table_4_2_0_4.csv
-	  grib2_table_4_2_0_5.csv
-	  grib2_table_4_2_0_6.csv
-	  grib2_table_4_2_0_7.csv
-	  grib2_table_4_2_10_0.csv
-	  grib2_table_4_2_10_1.csv
-	  grib2_table_4_2_10_191.csv
-	  grib2_table_4_2_10_2.csv
-	  grib2_table_4_2_10_3.csv
-	  grib2_table_4_2_10_4.csv
-	  grib2_table_4_2_1_0.csv
-	  grib2_table_4_2_1_1.csv
-	  grib2_table_4_2_1_2.csv
-	  grib2_table_4_2_20_0.csv
-	  grib2_table_4_2_20_1.csv
-	  grib2_table_4_2_20_2.csv
-	  grib2_table_4_2_2_0.csv
-	  grib2_table_4_2_2_3.csv
-	  grib2_table_4_2_2_4.csv
-	  grib2_table_4_2_2_5.csv
-	  grib2_table_4_2_3_0.csv
-	  grib2_table_4_2_3_1.csv
-	  grib2_table_4_2_3_2.csv
-	  grib2_table_4_2_3_3.csv
-	  grib2_table_4_2_3_4.csv
-	  grib2_table_4_2_3_5.csv
-	  grib2_table_4_2_3_6.csv
-	  grib2_table_4_2_4_0.csv
-	  grib2_table_4_2_4_1.csv
-	  grib2_table_4_2_4_10.csv
-	  grib2_table_4_2_4_2.csv
-	  grib2_table_4_2_4_3.csv
-	  grib2_table_4_2_4_4.csv
-	  grib2_table_4_2_4_5.csv
-	  grib2_table_4_2_4_6.csv
-	  grib2_table_4_2_4_7.csv
-	  grib2_table_4_2_4_8.csv
-	  grib2_table_4_2_4_9.csv
-	  grib2_table_4_2_local_Canada.csv
-	  grib2_table_4_2_local_HPC.csv
-	  grib2_table_4_2_local_MRMS.csv
-	  grib2_table_4_2_local_NCEP.csv
-	  grib2_table_4_2_local_NDFD.csv
-	  grib2_table_4_2_local_index.csv
-	  grib2_table_4_5.csv
-	  grib2_table_versions.csv
-	  gt_datum.csv
-	  gt_ellips.csv
-	  header.dxf
-	  inspire_cp_BasicPropertyUnit.gfs
-	  inspire_cp_CadastralBoundary.gfs
-	  inspire_cp_CadastralParcel.gfs
-	  inspire_cp_CadastralZoning.gfs
-	  jpfgdgml_AdmArea.gfs
-	  jpfgdgml_AdmBdry.gfs
-	  jpfgdgml_AdmPt.gfs
-	  jpfgdgml_BldA.gfs
-	  jpfgdgml_BldL.gfs
-	  jpfgdgml_Cntr.gfs
-	  jpfgdgml_CommBdry.gfs
-	  jpfgdgml_CommPt.gfs
-	  jpfgdgml_Cstline.gfs
-	  jpfgdgml_ElevPt.gfs
-	  jpfgdgml_GCP.gfs
-	  jpfgdgml_LeveeEdge.gfs
-	  jpfgdgml_RailCL.gfs
-	  jpfgdgml_RdASL.gfs
-	  jpfgdgml_RdArea.gfs
-	  jpfgdgml_RdCompt.gfs
-	  jpfgdgml_RdEdg.gfs
-	  jpfgdgml_RdMgtBdry.gfs
-	  jpfgdgml_RdSgmtA.gfs
-	  jpfgdgml_RvrMgtBdry.gfs
-	  jpfgdgml_SBAPt.gfs
-	  jpfgdgml_SBArea.gfs
-	  jpfgdgml_SBBdry.gfs
-	  jpfgdgml_WA.gfs
-	  jpfgdgml_WL.gfs
-	  jpfgdgml_WStrA.gfs
-	  jpfgdgml_WStrL.gfs
-	  netcdf_config.xsd
-	  nitf_spec.xml
-	  nitf_spec.xsd
-	  ogrvrt.xsd
-	  osmconf.ini
-	  ozi_datum.csv
-	  ozi_ellips.csv
-	  pci_datum.txt
-	  pci_ellips.txt
-	  pdfcomposition.xsd
-	  pds4_template.xml
-	  plscenesconf.json
-	  ruian_vf_ob_v1.gfs
-	  ruian_vf_st_uvoh_v1.gfs
-	  ruian_vf_st_v1.gfs
-	  ruian_vf_v1.gfs
-	  s57agencies.csv
-	  s57attributes.csv
-	  s57expectedinput.csv
-	  s57objectclasses.csv
-	  seed_2d.dgn
-	  seed_3d.dgn
-	  stateplane.csv
-	  template_tiles.mapml
-	  tms_LINZAntarticaMapTileGrid.json
-	  tms_MapML_APSTILE.json
-	  tms_MapML_CBMTILE.json
-	  tms_NZTM2000.json
-	  trailer.dxf
-	  vdv452.xml
-	  vdv452.xsd
-	  vicar.json
-	  )
-
-  ExternalProject_ByProducts(gdal GDAL_BLD ${GDAL_INSTDIR} ${INCLUDE_DIR}
-	  NOINSTALL
-	  cpl_atomic_ops.h
-	  cpl_auto_close.h
-	  cpl_compressor.h
-	  cpl_config_extras.h
-	  cpl_config.h
-	  cpl_conv.h
-	  cpl_csv.h
-	  cpl_error.h
-	  cpl_hash_set.h
-	  cpl_http.h
-	  cpl_json.h
-	  cplkeywordparser.h
-	  cpl_list.h
-	  cpl_minixml.h
-	  cpl_minizip_ioapi.h
-	  cpl_minizip_unzip.h
-	  cpl_minizip_zip.h
-	  cpl_multiproc.h
-	  cpl_port.h
-	  cpl_progress.h
-	  cpl_quad_tree.h
-	  cpl_spawn.h
-	  cpl_string.h
-	  cpl_time.h
-	  cpl_virtualmem.h
-	  cpl_vsi_error.h
-	  cpl_vsi.h
-	  cpl_vsi_virtual.h
-	  gdal_alg.h
-	  gdal_alg_priv.h
-	  gdalcachedpixelaccessor.h
-	  gdal_csv.h
-	  gdal_frmts.h
-	  gdalgeorefpamdataset.h
-	  gdalgrid.h
-	  gdalgrid_priv.h
-	  gdal.h
-	  gdaljp2abstractdataset.h
-	  gdaljp2metadata.h
-	  gdal_mdreader.h
-	  gdal_pam.h
-	  gdalpansharpen.h
-	  gdal_priv.h
-	  gdal_proxy.h
-	  gdal_rat.h
-	  gdal_simplesurf.h
-	  gdal_utils.h
-	  gdal_version.h
-	  gdal_vrt.h
-	  gdalwarper.h
-	  gnm_api.h
-	  gnmgraph.h
-	  gnm.h
-	  memdataset.h
-	  ogr_api.h
-	  ogr_core.h
-	  ogr_feature.h
-	  ogr_featurestyle.h
-	  ogr_geocoding.h
-	  ogr_geometry.h
-	  ogr_p.h
-	  ogrsf_frmts.h
-	  ogr_spatialref.h
-	  ogr_srs_api.h
-	  ogr_swq.h
-	  rawdataset.h
-	  vrtdataset.h
-    )
-  set(SYS_INCLUDE_PATTERNS ${SYS_INCLUDE_PATTERNS} gdal CACHE STRING "Bundled system include dirs" FORCE)
-
-  set(GDAL_LIBRARY gdal CACHE STRING "Building bundled gdal" FORCE)
-  set(GDAL_LIBRARIES gdal CACHE STRING "Building bundled gdal" FORCE)
-
-  set(GDAL_INCLUDE_DIR "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}/gdal" CACHE STRING "Directories containing GDAL headers." FORCE)
-  set(GDAL_INCLUDE_DIRS "${GDAL_INCLUDE_DIR}" CACHE STRING "Directories containing GDAL headers." FORCE)
-
   SetTargetFolder(GDAL_BLD "Third Party Libraries")
   SetTargetFolder(gdal "Third Party Libraries")
 
-else (BRLCAD_GDAL_BUILD)
-
-  set(GDAL_LIBRARIES ${GDAL_LIBRARY} CACHE STRING "gdal" FORCE)
-  set(GDAL_INCLUDE_DIRS "${GDAL_INCLUDE_DIR}" CACHE STRING "Directories containing GDAL headers." FORCE)
+  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/GDAL_BLD-prefix")
 
 endif (BRLCAD_GDAL_BUILD)
 

@@ -31,15 +31,15 @@ if (BRLCAD_ENABLE_TK)
     # If we have build targets, set the variables accordingly.  Otherwise,
     # we need to find the *Config.sh script locations.
     set(IWIDGETS_DEPS)
-    if (TARGET tcl_stage)
-      list(APPEND IWIDGETS_DEPS tcl_stage)
-    endif (TARGET tcl_stage)
-    if (TARGET itcl_stage)
-      list(APPEND IWIDGETS_DEPS itcl_stage)
-    endif (TARGET itcl_stage)
-    if (TARGET tk_stage)
-      list(APPEND IWIDGETS_DEPS tk_stage)
-    endif (TARGET tk_stage)
+    if (TARGET TCL_BLD)
+      list(APPEND IWIDGETS_DEPS TCL_BLD)
+    endif (TARGET TCL_BLD)
+    if (TARGET ITCL_BLD)
+      list(APPEND IWIDGETS_DEPS ITCL_BLD)
+    endif (TARGET ITCL_BLD)
+    if (TARGET TK_BLD)
+      list(APPEND IWIDGETS_DEPS TK_BLD)
+    endif (TARGET TK_BLD)
     if (TARGET itk_stage)
       list(APPEND IWIDGETS_DEPS itk_stage)
     endif (TARGET itk_stage)
@@ -66,82 +66,9 @@ if (BRLCAD_ENABLE_TK)
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
       )
 
-    DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/IWIDGETS_BLD-prefix")
-
-    # Tell the parent build about files and libraries
-    ExternalProject_ByProducts(iwidgets IWIDGETS_BLD ${IWIDGETS_INSTDIR} ${LIB_DIR}/Iwidgets${IWIDGETS_VERSION}
-      iwidgets.tcl
-      license.terms
-      pkgIndex.tcl
-      )
-
-    ExternalProject_ByProducts(iwidgets IWIDGETS_BLD ${IWIDGETS_INSTDIR} ${LIB_DIR}/Iwidgets${IWIDGETS_VERSION}/scripts
-      buttonbox.itk
-      calendar.itk
-      canvasprintbox.itk
-      canvasprintdialog.itk
-      checkbox.itk
-      colors.itcl
-      combobox.itk
-      dateentry.itk
-      datefield.itk
-      dialog.itk
-      dialogshell.itk
-      disjointlistbox.itk
-      entryfield.itk
-      extbutton.itk
-      extfileselectionbox.itk
-      extfileselectiondialog.itk
-      feedback.itk
-      fileselectionbox.itk
-      fileselectiondialog.itk
-      finddialog.itk
-      hierarchy.itk
-      hyperhelp.itk
-      labeledframe.itk
-      labeledwidget.itk
-      mainwindow.itk
-      menubar.itk
-      messagebox.itk
-      messagedialog.itk
-      notebook.itk
-      optionmenu.itk
-      pane.itk
-      panedwindow.itk
-      promptdialog.itk
-      pushbutton.itk
-      radiobox.itk
-      regexpfield.itk
-      roman.itcl
-      scopedobject.itcl
-      scrolledcanvas.itk
-      scrolledframe.itk
-      scrolledhtml.itk
-      scrolledlistbox.itk
-      scrolledtext.itk
-      scrolledwidget.itk
-      selectionbox.itk
-      selectiondialog.itk
-      shell.itk
-      spindate.itk
-      spinint.itk
-      spinner.itk
-      spintime.itk
-      tabnotebook.itk
-      tabset.itk
-      tclIndex
-      timeentry.itk
-      timefield.itk
-      toolbar.itk
-      unknownimage.gif
-      watch.itk
-      )
-
     SetTargetFolder(IWIDGETS_BLD "Third Party Libraries")
 
-  else (DO_IWIDGETS_BUILD)
-
-    set(BRLCAD_IWIDGETS_BUILD "OFF" CACHE STRING "Disable Iwidgets build" FORCE)
+    DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/IWIDGETS_BLD-prefix")
 
   endif (DO_IWIDGETS_BUILD)
 

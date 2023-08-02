@@ -49,24 +49,20 @@ if (BRLCAD_ENABLE_TK)
     set(ITK_VERSION ${ITK_MAJOR_VERSION}.${ITK_MINOR_VERSION} CACHE STRING "Itk version")
 
     set(ITK_DEPS)
-    if (TARGET tcl_stage)
+    if (TARGET TCL_BLD)
       set(TCL_TARGET ON)
-      list(APPEND ITK_DEPS tcl_stage)
-      list(APPEND ITK_DEPS tclstub_stage)
-      list(APPEND ITK_DEPS tclsh_exe_stage)
-    endif (TARGET tcl_stage)
+      list(APPEND ITK_DEPS TCL_BLD)
+    endif (TARGET TCL_BLD)
 
-    if (TARGET itcl_stage)
+    if (TARGET ITCL_BLD)
       set(ITCL_TARGET ON)
-      list(APPEND ITK_DEPS itcl_stage)
-      list(APPEND ITK_DEPS itclstub_stage)
-    endif (TARGET itcl_stage)
+      list(APPEND ITK_DEPS ITCL_BLD)
+      list(APPEND ITK_DEPS ITCL_BLD)
+    endif (TARGET ITCL_BLD)
 
-    if (TARGET tk_stage)
-      list(APPEND ITK_DEPS tk_stage)
-      list(APPEND ITK_DEPS tkstub_stage)
-      list(APPEND ITK_DEPS wish_exe_stage)
-    endif (TARGET tk_stage)
+    if (TARGET TK_BLD)
+      list(APPEND ITK_DEPS TK_BLD)
+    endif (TARGET TK_BLD)
 
     #set(ITK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/itk3)
     set(ITK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
@@ -84,11 +80,11 @@ if (BRLCAD_ENABLE_TK)
       -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=${CMAKE_INSTALL_RPATH_USE_LINK_PATH}
       -DCMAKE_SKIP_BUILD_RPATH=${CMAKE_SKIP_BUILD_RPATH}
       -DINCLUDE_DIR=${INCLUDE_DIR}
-      -DITCL_ROOT=$<$<BOOL:${ITCL_TARGET}>:${CMAKE_BINARY_ROOT}>
+      -DITCL_ROOT=$<$<BOOL:${ITCL_TARGET}>:${CMAKE_BINARY_INSTALL_ROOT}>
       -DLIB_DIR=${LIB_DIR}
       -DSHARED_DIR=${SHARED_DIR}
       -DTCL_ENABLE_TK=${TCL_ENABLE_TK}
-      -DTCL_ROOT=$<$<BOOL:${TCL_TARGET}>:${CMAKE_BINARY_ROOT}>
+      -DTCL_ROOT=$<$<BOOL:${TCL_TARGET}>:${CMAKE_BINARY_INSTALL_ROOT}>
       -DTCL_VERSION=${TCL_VERSION}
       DEPENDS ${ITK_DEPS}
       LOG_CONFIGURE ${EXT_BUILD_QUIET}
@@ -98,47 +94,6 @@ if (BRLCAD_ENABLE_TK)
       )
 
     DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/ITK_BLD-prefix")
-
-    if (NOT MSVC)
-      set(ITK_BASENAME libitk${ITK_MAJOR_VERSION}.${ITK_MINOR_VERSION})
-    else (NOT MSVC)
-      set(ITK_BASENAME itk${ITK_MAJOR_VERSION}.${ITK_MINOR_VERSION})
-    endif (NOT MSVC)
-
-    # Tell the parent build about files and libraries
-    ExternalProject_Target(SHARED itk ITK_BLD ${ITK_INSTDIR}
-      itk${ITK_VERSION}/${ITK_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-      SUBDIR itk${ITK_VERSION}
-      RPATH
-      )
-
-    ExternalProject_ByProducts(itk ITK_BLD ${ITK_INSTDIR} ${INCLUDE_DIR}
-      itk.h
-      itkDecls.h
-      )
-
-    ExternalProject_ByProducts(itk ITK_BLD ${ITK_INSTDIR} ${LIB_DIR}/itk${ITK_VERSION}
-      Archetype.itk
-      Toplevel.itk
-      Widget.itk
-      itk.tcl
-      tclIndex
-      )
-
-    ExternalProject_ByProducts(itk ITK_BLD ${ITK_INSTDIR} ${LIB_DIR}/itk${ITK_VERSION}
-      pkgIndex.tcl
-      )
-
-    set(ITK_LIBRARY itk CACHE STRING "Building bundled itk" FORCE)
-    set(ITK_LIBRARIES itk CACHE STRING "Building bundled itk" FORCE)
-
-    if (TARGET itcl_stage)
-      add_dependencies(itk_stage itcl_stage)
-    endif (TARGET itcl_stage)
-
-    if (TARGET tk_stage)
-      add_dependencies(itk_stage tk_stage)
-    endif (TARGET tk_stage)
 
     SetTargetFolder(ITK_BLD "Third Party Libraries")
 

@@ -49,16 +49,16 @@ if (BRLCAD_PROJ_BUILD)
   set(PROJ_DEPS)
   if (TARGET SQLITE3_BLD)
     set(SQLITE3_TARGET SQLITE3_BLD)
-    list(APPEND PROJ_DEPS SQLITE3_BLD libsqlite3_stage sqlite3_exe_stage)
+    list(APPEND PROJ_DEPS SQLITE3_BLD)
     if (MSVC)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/libsqlite3.lib)
+      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3.lib)
     elseif (OPENBSD)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX}.3.32)
+      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX}.3.32)
     else (MSVC)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX})
+      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX})
     endif (MSVC)
-    set(SQLite3_INCLUDE_DIR ${CMAKE_BINARY_ROOT}/${INCLUDE_DIR})
-    set(SQLite3_EXECNAME ${CMAKE_BINARY_ROOT}/${BIN_DIR}/sqlite3${CMAKE_EXECUTABLE_SUFFIX})
+    set(SQLite3_INCLUDE_DIR ${CMAKE_BINARY_INSTALL_ROOT}/${INCLUDE_DIR})
+    set(SQLite3_EXECNAME ${CMAKE_BINARY_INSTALL_ROOT}/${BIN_DIR}/sqlite3${CMAKE_EXECUTABLE_SUFFIX})
   endif (TARGET SQLITE3_BLD)
 
   #set(PROJ_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/proj)
@@ -94,62 +94,10 @@ if (BRLCAD_PROJ_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/PROJ_BLD-prefix")
-
-  # Tell the parent build about files and libraries
-  ExternalProject_Target(SHARED proj PROJ_BLD ${PROJ_INSTDIR}
-    ${PROJ_BASENAME}${PROJ_SUFFIX}
-    SYMLINKS ${PROJ_SYMLINK_1};${PROJ_SYMLINK_2}
-    LINK_TARGET ${PROJ_SYMLINK_1}
-    RPATH
-    WIN_DIF_LIB_NAME ${PROJ_BASENAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-    )
-
-  ExternalProject_ByProducts(proj PROJ_BLD ${PROJ_INSTDIR} ${DATA_DIR}/proj
-    CH
-    GL27
-    ITRF2000
-    ITRF2008
-    ITRF2014
-    deformation_model.schema.json
-    nad.lst
-    nad27
-    nad83
-    other.extra
-    proj.db
-    proj.ini
-    projjson.schema.json
-    triangulation.schema.json
-    world
-    )
-
-  ExternalProject_ByProducts(proj PROJ_BLD ${PROJ_INSTDIR} ${INCLUDE_DIR}
-    geodesic.h
-    proj.h
-    proj_constants.h
-    proj_experimental.h
-    proj_symbol_rename.h
-    )
-
-  ExternalProject_ByProducts(proj PROJ_BLD ${PROJ_INSTDIR} ${INCLUDE_DIR}/proj
-    common.hpp
-    crs.hpp
-    metadata.hpp
-    io.hpp
-    nn.hpp
-    datum.hpp
-    coordinatesystem.hpp
-    util.hpp
-    coordinateoperation.hpp
-    )
-  set(SYS_INCLUDE_PATTERNS ${SYS_INCLUDE_PATTERNS} proj  CACHE STRING "Bundled system include dirs" FORCE)
-
-
-  set(PROJ_LIBRARIES proj CACHE STRING "Building bundled proj" FORCE)
-  set(PROJ_INCLUDE_DIRS "${CMAKE_BINARY_ROOT}/${INCLUDE_DIR}/proj" CACHE STRING "Directory containing proj headers." FORCE)
-
   SetTargetFolder(PROJ_BLD "Third Party Libraries")
   SetTargetFolder(proj "Third Party Libraries")
+
+  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/PROJ_BLD-prefix")
 
 endif (BRLCAD_PROJ_BUILD)
 

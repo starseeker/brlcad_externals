@@ -39,6 +39,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 # cmakefiles and distclean
 include(TrackFiles)
 
+# set_lib_vars
+include(SetLibVars)
+
 # By default, unless we've been told otherwise, build everything
 if (NOT DEFINED BRLCAD_BUNDLED_LIBS)
   set(BRLCAD_BUNDLED_LIBS BUNDLED)
@@ -194,12 +197,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/buildpath_replace.cxx.in ${CMAK
 add_executable(buildpath_replace ${CMAKE_CURRENT_BINARY_DIR}/buildpath_replace.cxx)
 set_target_properties(buildpath_replace PROPERTIES FOLDER "Compilation Utilities")
 DISTCLEAN(${CMAKE_CURRENT_BINARY_DIR}/buildpath_replace.cxx)
-
-# BRL-CAD defines some additional custom targets used to manage the outputs of
-# ExternalProject_Add targets.
-# Note- make sure CMAKE_BINARY_DIR and CMAKE_INSTALL_PREFIX are finalized
-# BEFORE including this file!
-include(ExternalProject_Target)
 
 # External build outputs can be verbose - capture them to files instead of
 # outputting to console
@@ -378,7 +375,6 @@ std_build_rpath()
 if (COMMAND CMAKEFILES)
   CMAKEFILES(
     CMakeLists.txt
-    CMake/ExternalProject_Target.cmake
     CMake/FindASSETIMPORT.cmake
     CMake/FindITCL.cmake
     CMake/FindLEMON.cmake
