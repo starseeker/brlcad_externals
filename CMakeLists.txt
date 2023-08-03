@@ -134,7 +134,6 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_DIR}${RELPATH}")
 # function below encapsulates the setup needed for CMAKE_RPATH_BUILD
 ext_build_rpath()
 
-
 #---------------------------------------------------------------------
 # By default, changes in src/other/ext files won't trigger a rebuild.  Setting
 # this to 1 changes that, but at the expense of running the build step every
@@ -318,6 +317,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/itcl.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/itk.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/iwidgets.cmake)
 
+
 # TODO - we need to try and replace the above RPATH logic with an "all-in-one"
 # solution using a post-install update of all the rpaths in use in extinstall
 # to what we want.  The goal here should be to make everything work inside the
@@ -331,6 +331,34 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/iwidgets.cmake)
 # to arbitrarily rewrite the rpaths, which is what we'll need to handle
 # arbitrary 3rd party build outputs that don't do the particular RPATH
 # prep/setup steps CMake depends on.
+configure_file(rpath_process.cmake.in ${CMAKE_BINARY_DIR}/rpath_process.cmake @ONLY)
+add_custom_target(rpath_post ALL
+  COMMAND ${CMAKE_COMMAND} -E echo "Do rpath magic..."
+  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/rpath_process.cmake
+  )
+
+
+
+# For this build, all of our targets are defined in the top level
+# CMAKE_SOURCE_DIR.  (If this were not the case, we would need to duplicate
+# BRL-CAD's logic supporting the buildtimedelta target in full.)  Get the list
+# of targets using the BUILDSYSTEM_TARGETS property set on the directory.
+get_property(DIR_TARGETS DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY BUILDSYSTEM_TARGETS SET)
+if (DIR_TARGETS)
+  get_property(DIR_TARGETS DIRECTORY "${ad}" PROPERTY BUILDSYSTEM_TARGETS)
+  set(ALL_TARGETS ${ALL_TARGETS} ${DIR_TARGETS})
+endif (DIR_TARGETS)
+
+foreach(ctarget ${ALL_TARGETS})
+  if(NOT ${ctarget} MATCHES "rpath_post")
+    get_target_property(not_in_all ${ctarget} EXCLUDE_FROM_ALL)
+    get_target_property(not_in_default ${ctarget} EXCLUDE_FROM_DEFAULT_BUILD)
+    if(NOT not_in_all AND NOT not_in_default)
+      message("ctarget: ${ctarget}")
+      add_dependencies(rpath_post ${ctarget})
+    endif(NOT not_in_all AND NOT not_in_default)
+  endif(NOT ${ctarget} MATCHES "rpath_post")
+endforeach(ctarget ${ALL_TARGETS})
 
 # Local Variables:
 # tab-width: 8
