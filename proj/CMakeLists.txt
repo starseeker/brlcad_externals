@@ -18,6 +18,9 @@ project(PROJ
 
 # Only interpret if() arguments as variables or keywords when unquoted
 cmake_policy(SET CMP0054 NEW)
+if (POLICY CMP0074)
+   cmake_policy(SET CMP0074 NEW)
+endif (POLICY CMP0074)
 
 # Set C++ version
 # Make CMAKE_CXX_STANDARD available as cache option overridable by user
@@ -170,20 +173,19 @@ message(STATUS "nlohmann/json: ${NLOHMANN_JSON}")
 ################################################################################
 # Check for sqlite3
 ################################################################################
-
 find_program(EXE_SQLITE3 sqlite3)
 if(NOT EXE_SQLITE3)
   message(SEND_ERROR "sqlite3 binary not found!")
 endif()
 
-find_package(Sqlite3 REQUIRED)
+find_package(SQLite3 REQUIRED)
 if(NOT SQLITE3_FOUND)
   message(SEND_ERROR "sqlite3 dependency not found!")
 endif()
 
 # Would build and run with older versions, but with horrible performance
 # See https://github.com/OSGeo/PROJ/issues/1718
-if("${SQLITE3_VERSION}" VERSION_LESS "3.11")
+if("${SQLite3_VERSION}" VERSION_LESS "3.11")
   message(SEND_ERROR "sqlite3 >= 3.11 required!")
 endif()
 
