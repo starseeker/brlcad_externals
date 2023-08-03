@@ -13,51 +13,8 @@ THIRD_PARTY(proj PROJ proj
 
 if (BRLCAD_PROJ_BUILD)
 
-  set(PROJ_MAJOR_VERSION 9)
-  set(PROJ_MINOR_VERSION 2)
-  set(PROJ_API_VERSION 25)
-  set(PROJ_VERSION ${PROJ_API_VERSION}.${PROJ_MAJOR_VERSION}.${PROJ_MINOR_VERSION}.0)
-
-  # Our logic needs to know what files we are looking for to incorporate into
-  # our build, and unfortunately those names are not only platform specific but
-  # also project specific - they can (and do) define their own conventions, so
-  # we have to define these uniquely for each situation.
-  if (MSVC)
-    set(PROJ_BASENAME proj)
-    set(PROJ_SUFFIX _${PROJ_MAJOR_VERSION}_${PROJ_MINOR_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(PROJ_SYMLINK_1 ${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(PROJ_SYMLINK_2 ${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${PROJ_API_VERSION})
-  elseif (APPLE)
-    set(PROJ_BASENAME libproj)
-    set(PROJ_SUFFIX .${PROJ_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(PROJ_SYMLINK_1 ${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(PROJ_SYMLINK_2 ${PROJ_BASENAME}.${PROJ_API_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
-  elseif (OPENBSD)
-    set(PROJ_BASENAME libproj)
-    set(PROJ_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX}.${PROJ_MAJOR_VERSION}.${PROJ_MINOR_VERSION})
-  else (MSVC)
-    set(PROJ_BASENAME libproj)
-    set(PROJ_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX}.${PROJ_VERSION})
-    set(PROJ_SYMLINK_1 ${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(PROJ_SYMLINK_2 ${PROJ_BASENAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${PROJ_API_VERSION})
-  endif (MSVC)
-
-  # Unfortunately, because PROJ is a separate build, the custom import targets we have
-  # defined can't be passed to the PROJ build to identify these components - we need
-  # actual file paths.  We also need to depend on the staging targets that will actually
-  # place these files where we're telling the PROJ build they will be.
-  set(PROJ_DEPS)
   if (TARGET SQLITE3_BLD)
     set(SQLITE3_TARGET SQLITE3_BLD)
-    list(APPEND PROJ_DEPS SQLITE3_BLD)
-    if (MSVC)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3.lib)
-    elseif (OPENBSD)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX}.3.32)
-    else (MSVC)
-      set(SQLite3_LIBRARY ${CMAKE_BINARY_INSTALL_ROOT}/${LIB_DIR}/libsqlite3${CMAKE_SHARED_LIBRARY_SUFFIX})
-    endif (MSVC)
-    set(SQLite3_INCLUDE_DIR ${CMAKE_BINARY_INSTALL_ROOT}/${INCLUDE_DIR})
     set(SQLite3_EXECNAME ${CMAKE_BINARY_INSTALL_ROOT}/${BIN_DIR}/sqlite3${CMAKE_EXECUTABLE_SUFFIX})
   endif (TARGET SQLITE3_BLD)
 
@@ -80,8 +37,7 @@ if (BRLCAD_PROJ_BUILD)
     -DLIB_DIR=${LIB_DIR}
     -DCMAKE_INSTALL_LIBDIR=${LIB_DIR}
     -DPROJ_LIB_DIR=${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/proj
-    -DSQLITE3_LIBRARY=${SQLite3_LIBRARY}
-    -DSQLITE3_INCLUDE_DIR=${SQLite3_INCLUDE_DIR}
+    -DSQLite3_ROOT=$<$<BOOL:${SQLITE3_TARGET}>:${CMAKE_BINARY_INSTALL_ROOT}>
     -DEXE_SQLITE3=${SQLite3_EXECNAME}
     -DBUILD_TESTING=OFF
     -DENABLE_TIFF=OFF
@@ -95,7 +51,7 @@ if (BRLCAD_PROJ_BUILD)
     )
 
   if (TARGET SQLITE3_BLD)
-    ExternalProject_Add_StepDependencies(PNG_BLD configure SQLITE3_BLD-install)
+    ExternalProject_Add_StepDependencies(PROJ_BLD configure SQLITE3_BLD-install)
   endif (TARGET SQLITE3_BLD)
 
   ExternalProject_Add_StepTargets(PROJ_BLD install)

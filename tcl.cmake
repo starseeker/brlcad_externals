@@ -22,21 +22,19 @@ THIRD_PARTY(tcl TCL tcl
 
 if (BRLCAD_TCL_BUILD)
 
-  VERSIONS("${CMAKE_CURRENT_SOURCE_DIR}/tcl/generic/tcl.h" TCL_MAJOR_VERSION TCL_MINOR_VERSION TCL_PATCH_VERSION)
-
   set(TCL_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/TCL_BLD-prefix/src/TCL_BLD")
 
   # In addition to the usual target dependencies, we need to adjust for the
   # non-standard BRL-CAD zlib name, if we are using our bundled version.  Set a
   # variable here so the tcl_replace utility will know the right value.
-  if (TARGET zlib_stage)
-    set(ZLIB_TARGET zlib_stage)
+  if (TARGET ZLIB_BLD)
+    set(ZLIB_TARGET ZLIB_BLD)
     set(ZLIB_NAME z_brl)
     set(DEFLATE_NAME brl_deflateSetHeader)
-  else (TARGET zlib_stage)
+  else (TARGET ZLIB_BLD)
     set(ZLIB_NAME z)
     set(DEFLATE_NAME deflateSetHeader)
-  endif (TARGET zlib_stage)
+  endif (TARGET ZLIB_BLD)
 
   # We need to set internal Tcl variables to the final install paths, not the intermediate install paths that
   # Tcl's own build will think are the final paths.  Rather than attempt build system trickery we simply

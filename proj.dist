@@ -11,7 +11,6 @@ README
 README.md
 cmake/CMakeLists.txt
 cmake/Ccache.cmake
-cmake/FindSqlite3.cmake
 cmake/ProjConfig.cmake
 cmake/ProjInstallPath.cmake
 cmake/ProjMac.cmake
