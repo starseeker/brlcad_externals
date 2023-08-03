@@ -102,6 +102,12 @@ if (BRLCAD_ENABLE_TCL AND BRLCAD_ENABLE_TK AND TK_DO_BUILD)
 
   endif (NOT MSVC)
 
+  if (TARGET TCL_BLD)
+    ExternalProject_Add_StepDependencies(TK_BLD configure TCL_BLD-install)
+  endif (TARGET TCL_BLD)
+
+  ExternalProject_Add_StepTargets(TK_BLD install)
+
   SetTargetFolder(TK_BLD "Third Party Libraries")
   SetTargetFolder(tk "Third Party Libraries")
 

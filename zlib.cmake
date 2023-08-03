@@ -49,6 +49,8 @@ if (BRLCAD_ZLIB_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  ExternalProject_Add_StepTargets(ZLIB_BLD install)
+
   SetTargetFolder(ZLIB_BLD "Third Party Libraries")
   SetTargetFolder(zlib "Third Party Libraries")
 

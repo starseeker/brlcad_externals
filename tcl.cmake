@@ -121,6 +121,12 @@ if (BRLCAD_TCL_BUILD)
 
   endif (NOT MSVC)
 
+  if (TARGET ZLIB_BLD)
+    ExternalProject_Add_StepDependencies(TCL_BLD configure ZLIB_BLD-install)
+  endif (TARGET ZLIB_BLD)
+
+  ExternalProject_Add_StepTargets(TCL_BLD install)
+
   # Scripts expect a non-versioned tclsh program, but the Tcl build doesn't provide one,
   # we must provide it ourselves
   #install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:tclsh_exe> \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/tclsh${CMAKE_EXECUTABLE_SUFFIX}\")")

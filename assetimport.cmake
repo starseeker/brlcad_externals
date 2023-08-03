@@ -78,6 +78,11 @@ if (BRLCAD_ASSETIMPORT_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET ZLIB_BLD)
+    ExternalProject_Add_StepDependencies(ASSETIMPORT_BLD configure ZLIB_BLD-install)
+  endif (TARGET ZLIB_BLD)
+  ExternalProject_Add_StepTargets(ASSETIMPORT_BLD install)
+
   SetTargetFolder(ASSETIMPORT_BLD "Third Party Libraries")
   SetTargetFolder(assetimport "Third Party Libraries")
 

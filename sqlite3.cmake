@@ -44,6 +44,8 @@ if (BRLCAD_SQLITE3_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  ExternalProject_Add_StepTargets(SQLITE3_BLD install)
+
   SetTargetFolder(SQLITE3_BLD "Third Party Libraries")
   SetTargetFolder(sqlite3 "Third Party Libraries")
 

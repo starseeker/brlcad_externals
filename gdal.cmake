@@ -246,6 +246,22 @@ if (BRLCAD_GDAL_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET ZLIB_BLD)
+    ExternalProject_Add_StepDependencies(GDAL_BLD configure ZLIB_BLD-install)
+  endif (TARGET ZLIB_BLD)
+
+  if (TARGET PNG_BLD)
+    ExternalProject_Add_StepDependencies(GDAL_BLD configure PNG_BLD-install)
+  endif (TARGET PNG_BLD)
+
+  if (TARGET PROJ_BLD)
+    ExternalProject_Add_StepDependencies(GDAL_BLD configure PROJ_BLD-install)
+  endif (TARGET PROJ_BLD)
+
+  if (TARGET SQLITE3_BLD)
+    ExternalProject_Add_StepDependencies(GDAL_BLD configure SQLITE3_BLD-install)
+  endif (TARGET SQLITE3_BLD)
+
   SetTargetFolder(GDAL_BLD "Third Party Libraries")
   SetTargetFolder(gdal "Third Party Libraries")
 

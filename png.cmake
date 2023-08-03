@@ -110,6 +110,12 @@ if (BRLCAD_PNG_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET ZLIB_BLD)
+    ExternalProject_Add_StepDependencies(PNG_BLD configure ZLIB_BLD-install)
+  endif (TARGET ZLIB_BLD)
+
+  ExternalProject_Add_StepTargets(PNG_BLD install)
+
   SetTargetFolder(PNG_BLD "Third Party Libraries")
   SetTargetFolder(png "Third Party Libraries")
 

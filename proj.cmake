@@ -94,6 +94,12 @@ if (BRLCAD_PROJ_BUILD)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET SQLITE3_BLD)
+    ExternalProject_Add_StepDependencies(PNG_BLD configure SQLITE3_BLD-install)
+  endif (TARGET SQLITE3_BLD)
+
+  ExternalProject_Add_StepTargets(PROJ_BLD install)
+
   SetTargetFolder(PROJ_BLD "Third Party Libraries")
   SetTargetFolder(proj "Third Party Libraries")
 
