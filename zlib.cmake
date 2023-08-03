@@ -54,15 +54,11 @@ if (BRLCAD_ZLIB_BUILD)
   SetTargetFolder(ZLIB_BLD "Third Party Libraries")
   SetTargetFolder(zlib "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/ZLIB_BLD-prefix")
-
 endif (BRLCAD_ZLIB_BUILD)
 
 mark_as_advanced(ZLIB_INCLUDE_DIRS)
 mark_as_advanced(ZLIB_LIBRARIES)
 mark_as_advanced(Z_PREFIX_STR)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/zlib.dist")
 
 # Local Variables:
 # tab-width: 8

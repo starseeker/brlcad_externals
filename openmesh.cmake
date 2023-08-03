@@ -63,8 +63,6 @@ if (BRLCAD_OPENMESH_BUILD)
   SetTargetFolder(OPENMESH_BLD "Third Party Libraries")
   SetTargetFolder(openmesh "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/OPENMESH_BLD-prefix")
-
   # OpenMesh generates windows dll's in the root directory unlike most other builds which
   # stuff them in bin/
   # copy them over so our ext build logic can find them
@@ -93,8 +91,6 @@ mark_as_advanced(OPENMESH_TOOLS_SMOOTHER_DIR)
 mark_as_advanced(OPENMESH_TOOLS_SUBDIVIDER_DIR)
 mark_as_advanced(OPENMESH_TOOLS_UTILS_DIR)
 mark_as_advanced(OPENMESH_TOOLS_VDPM_DIR)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/openmesh.dist")
 
 # Local Variables:
 # tab-width: 8

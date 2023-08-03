@@ -68,8 +68,6 @@ if (BRLCAD_ENABLE_TK)
 
     SetTargetFolder(IWIDGETS_BLD "Third Party Libraries")
 
-    DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/IWIDGETS_BLD-prefix")
-
   endif (DO_IWIDGETS_BUILD)
 
 else (BRLCAD_ENABLE_TK)
@@ -81,8 +79,6 @@ else (BRLCAD_ENABLE_TK)
 endif (BRLCAD_ENABLE_TK)
 
 mark_as_advanced(IWIDGETS_VERSION)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/iwidgets.dist")
 
 # Local Variables:
 # tab-width: 8

@@ -119,16 +119,6 @@ if (BRLCAD_ENABLE_TCL)
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
       )
 
-    DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/ITCL_BLD-prefix")
-
-    if (NOT MSVC)
-      set(ITCL_BASENAME libitcl${ITCL_MAJOR_VERSION}.${ITCL_MINOR_VERSION})
-      set(ITCL_STUBNAME libitclstub)
-    else (NOT MSVC)
-      set(ITCL_BASENAME itcl${ITCL_MAJOR_VERSION}.${ITCL_MINOR_VERSION})
-      set(ITCL_STUBNAME itclstub)
-    endif (NOT MSVC)
-
     SetTargetFolder(ITCL_BLD "Third Party Libraries")
 
     # Restore default rpath settings
@@ -142,8 +132,6 @@ endif (BRLCAD_ENABLE_TCL)
 mark_as_advanced(ITCL_LIBRARY)
 mark_as_advanced(ITCL_LIBRARIES)
 mark_as_advanced(ITCL_VERSION)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/itcl3.dist")
 
 # Local Variables:
 # tab-width: 8

@@ -83,8 +83,6 @@ if(BRLCAD_SC_BUILD)
   SetTargetFolder(STEPCODE_BLD "Third Party Libraries")
   SetTargetFolder(stepcode "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/STEPCODE_BLD-prefix")
-
 endif(BRLCAD_SC_BUILD)
 
 mark_as_advanced(EXP2CXX_EXECUTABLE)
@@ -105,8 +103,6 @@ mark_as_advanced(STEPCODE_LIBRARIES)
 mark_as_advanced(STEPCODE_STEPCORE_DIR)
 mark_as_advanced(STEPCODE_UTILS_DIR)
 mark_as_advanced(STEPCODE_UTILS_LIBRARY)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/stepcode.dist")
 
 # Local Variables:
 # tab-width: 8

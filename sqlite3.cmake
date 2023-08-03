@@ -49,8 +49,6 @@ if (BRLCAD_SQLITE3_BUILD)
   SetTargetFolder(SQLITE3_BLD "Third Party Libraries")
   SetTargetFolder(sqlite3 "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/SQLITE3_BLD-prefix")
-
 endif (BRLCAD_SQLITE3_BUILD)
 
 mark_as_advanced(SQLite3_EXECNAME)
@@ -58,8 +56,6 @@ mark_as_advanced(SQLite3_INCLUDE_DIR)
 mark_as_advanced(SQLite3_INCLUDE_DIRS)
 mark_as_advanced(SQLite3_LIBRARY)
 mark_as_advanced(SQLite3_LIBRARIES)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.dist")
 
 # Local Variables:
 # tab-width: 8

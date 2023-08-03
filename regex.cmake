@@ -44,14 +44,10 @@ if (BRLCAD_REGEX_BUILD)
   SetTargetFolder(REGEX_BLD "Third Party Libraries")
   SetTargetFolder(regex "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/REGEX_BLD-prefix")
-
 endif (BRLCAD_REGEX_BUILD)
 
 mark_as_advanced(REGEX_INCLUDE_DIRS)
 mark_as_advanced(REGEX_LIBRARIES)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/regex.dist")
 
 # Local Variables:
 # tab-width: 8

@@ -69,8 +69,6 @@ if (BRLCAD_PNG_BUILD)
   SetTargetFolder(PNG_BLD "Third Party Libraries")
   SetTargetFolder(png "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/PNG_BLD-prefix")
-
 endif (BRLCAD_PNG_BUILD)
 
 mark_as_advanced(PNG_PNG_INCLUDE_DIR)
@@ -78,8 +76,6 @@ mark_as_advanced(PNG_INCLUDE_DIRS)
 mark_as_advanced(PNG_LIBRARIES)
 mark_as_advanced(PNG_LIBRARY_DEBUG)
 mark_as_advanced(PNG_LIBRARY_RELEASE)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/png.dist")
 
 # Local Variables:
 # tab-width: 8

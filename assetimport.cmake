@@ -56,14 +56,10 @@ if (BRLCAD_ASSETIMPORT_BUILD)
   SetTargetFolder(ASSETIMPORT_BLD "Third Party Libraries")
   SetTargetFolder(assetimport "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/ASSETIMPORT_BLD-prefix")
-
 endif (BRLCAD_ASSETIMPORT_BUILD)
 
 mark_as_advanced(ASSETIMPORT_INCLUDE_DIRS)
 mark_as_advanced(ASSETIMPORT_LIBRARIES)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/assetimport.dist")
 
 # Local Variables:
 # tab-width: 8

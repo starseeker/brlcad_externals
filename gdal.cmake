@@ -195,14 +195,10 @@ if (BRLCAD_GDAL_BUILD)
   SetTargetFolder(GDAL_BLD "Third Party Libraries")
   SetTargetFolder(gdal "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/GDAL_BLD-prefix")
-
 endif (BRLCAD_GDAL_BUILD)
 
 mark_as_advanced(GDAL_INCLUDE_DIRS)
 mark_as_advanced(GDAL_LIBRARIES)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/gdal.dist")
 
 # Local Variables:
 # tab-width: 8

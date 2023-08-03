@@ -46,14 +46,10 @@ if (BRLCAD_NETPBM_BUILD)
   SetTargetFolder(NETPBM_BLD "Third Party Libraries")
   SetTargetFolder(netpbm "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/NETPBM_BLD-prefix")
-
 endif (BRLCAD_NETPBM_BUILD)
 
 mark_as_advanced(NETPBM_INCLUDE_DIRS)
 mark_as_advanced(NETPBM_LIBRARIES)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/netpbm.dist")
 
 # Local Variables:
 # tab-width: 8

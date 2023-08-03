@@ -59,14 +59,10 @@ if (BRLCAD_PROJ_BUILD)
   SetTargetFolder(PROJ_BLD "Third Party Libraries")
   SetTargetFolder(proj "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/PROJ_BLD-prefix")
-
 endif (BRLCAD_PROJ_BUILD)
 
 mark_as_advanced(PROJ_INCLUDE_DIRS)
 mark_as_advanced(PROJ_LIBRARIES)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/proj.dist")
 
 # Local Variables:
 # tab-width: 8

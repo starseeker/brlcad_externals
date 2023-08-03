@@ -39,9 +39,6 @@ endif (POLICY CMP0114)
 # Location of CMake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
-# cmakefiles and distclean
-include(TrackFiles)
-
 # set_lib_vars
 include(SetLibVars)
 
@@ -90,7 +87,6 @@ endif (CMAKE_CONFIGURATION_TYPES)
 # We execute the install process of ExternalProjects into an output directory
 # what will eventually be incorporated into BRL-CAD packages.
 set(CMAKE_BINARY_INSTALL_ROOT "${CMAKE_BINARY_ROOT}/extinstall")
-DISTCLEAN("${CMAKE_BINARY_ROOT}/extinstall")
 
 #---------------------------------------------------------------------
 # Define relative install locations and output directories.  Don't set
@@ -176,7 +172,6 @@ endif(NOT DEFINED EXTPROJ_VERBOSE)
 configure_file(${BDEPS_CMAKE_DIR}/rpath_replace.cxx.in ${CMAKE_CURRENT_BINARY_DIR}/rpath_replace.cxx)
 add_executable(rpath_replace ${CMAKE_CURRENT_BINARY_DIR}/rpath_replace.cxx)
 set_target_properties(rpath_replace PROPERTIES FOLDER "Compilation Utilities")
-DISTCLEAN(${CMAKE_CURRENT_BINARY_DIR}/rpath_replace.cxx)
 
 # This project uses the superbuild pattern (see, for example,
 # https://www.kitware.com/cmake-superbuilds-git-submodules) via CMake's
@@ -189,7 +184,6 @@ include(ExternalProject)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/buildpath_replace.cxx.in ${CMAKE_CURRENT_BINARY_DIR}/buildpath_replace.cxx)
 add_executable(buildpath_replace ${CMAKE_CURRENT_BINARY_DIR}/buildpath_replace.cxx)
 set_target_properties(buildpath_replace PROPERTIES FOLDER "Compilation Utilities")
-DISTCLEAN(${CMAKE_CURRENT_BINARY_DIR}/buildpath_replace.cxx)
 
 # External build outputs can be verbose - capture them to files instead of
 # outputting to console
@@ -333,65 +327,6 @@ set(BUILD_STATIC_LIBS ${BSL_CACHE})
 if (COMMAND CONFIG_H_APPEND)
   CONFIG_H_APPEND(BRLCAD "#cmakedefine HAVE_TK\n")
 endif (COMMAND CONFIG_H_APPEND)
-
-if (COMMAND CMAKEFILES)
-  CMAKEFILES(
-    CMakeLists.txt
-    CMake/FindASSETIMPORT.cmake
-    CMake/FindITCL.cmake
-    CMake/FindLEMON.cmake
-    CMake/FindNETPBM.cmake
-    CMake/FindOPENNURBS.cmake
-    CMake/FindOpenMesh.cmake
-    CMake/FindPERPLEX.cmake
-    CMake/FindPOLY2TRI.cmake
-    CMake/FindPROJ.cmake
-    CMake/FindRE2C.cmake
-    CMake/FindREGEX.cmake
-    CMake/FindSQLite3.cmake
-    CMake/FindSTEPCODE.cmake
-    CMake/FindTCL.cmake
-    CMake/FindUTAHRLE.cmake
-    CMake/Path_Setup.cmake
-    CMake/RPath_Setup.cmake
-    CMake/ThirdParty.cmake
-    CMake/ThirdPartyExecutable.cmake
-    CMake/Versions.cmake
-    CMake/buildpath_replace.cxx.in
-    CMake/rpath_replace.cxx.in
-    CMake/tcl_replace.cxx.in
-    assetimport.cmake
-    assetimport.dist
-    gdal.cmake
-    gdal.dist
-    itcl.cmake
-    itcl3.dist
-    itk.cmake
-    itk3.dist
-    iwidgets.cmake
-    iwidgets.dist
-    netpbm.cmake
-    netpbm.dist
-    openmesh.cmake
-    openmesh.dist
-    png.cmake
-    png.dist
-    proj.dist
-    proj.cmake
-    regex.cmake
-    regex.dist
-    sqlite3.cmake
-    sqlite3.dist
-    stepcode.cmake
-    stepcode.dist
-    tcl.cmake
-    tcl.dist
-    tk.cmake
-    tk.dist
-    zlib.cmake
-    zlib.dist
-    )
-endif (COMMAND CMAKEFILES)
 
 # Local Variables:
 # tab-width: 8

@@ -44,7 +44,6 @@ if (BRLCAD_TCL_BUILD)
     add_executable(tcl_replace ${CMAKE_CURRENT_BINARY_DIR}/tcl_replace.cxx)
     set_target_properties(tcl_replace PROPERTIES FOLDER "Compilation Utilities")
   endif (NOT TARGET tcl_replace)
-  DISTCLEAN(${CMAKE_CURRENT_BINARY_DIR}/tcl_replace.cxx)
 
   #set(TCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/tcl)
   set(TCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
@@ -132,15 +131,11 @@ if (BRLCAD_TCL_BUILD)
   SetTargetFolder(TCL_BLD "Third Party Libraries")
   SetTargetFolder(tcl "Third Party Libraries")
 
-  DISTCLEAN("${CMAKE_CURRENT_BINARY_DIR}/TCL_BLD-prefix")
-
 endif (BRLCAD_TCL_BUILD)
 
 mark_as_advanced(TCL_INCLUDE_DIRS)
 mark_as_advanced(TCL_LIBRARIES)
 mark_as_advanced(TCL_VERSION)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/tcl.dist")
 
 # Local Variables:
 # tab-width: 8
