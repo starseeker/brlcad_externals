@@ -69,19 +69,9 @@ function(SetTargetFolder targetname folder)
   endif(TARGET ${targetname})
 endfunction(SetTargetFolder)
 
-# If defined, get feature variables from parent
-if (EXISTS ${CMAKE_BINARY_DIR}/brlcad_vars.cmake)
-  include(${CMAKE_BINARY_DIR}/brlcad_vars.cmake)
-endif (EXISTS ${CMAKE_BINARY_DIR}/brlcad_vars.cmake)
-
 # We need some extra functionality for this...
 set(BDEPS_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 set(CMAKE_MODULE_PATH "${BDEPS_CMAKE_DIR};${CMAKE_MODULE_PATH}")
-
-# We do not want to search in our install target; on a second
-# configure pass the outputs of previous builds will be detected
-# and mess up the results...
-set(CMAKE_SYSTEM_IGNORE_PATH "${CMAKE_INSTALL_PREFIX}")
 
 # For the individual builds to be done here, we need to place their outputs to
 # standard locations in the CMAKE_BINARY_DIR.  However, that target is not
@@ -97,9 +87,8 @@ else (CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BINARY_ROOT "${CMAKE_BINARY_DIR}")
 endif (CMAKE_CONFIGURATION_TYPES)
 
-# We execute the install process of ExternalProjects and then copy the outputs
-# we need into the BRL-CAD structure.  For cleanup convenience, use a common
-# install target that will hold all of the various subbuild outputs.
+# We execute the install process of ExternalProjects into an output directory
+# what will eventually be incorporated into BRL-CAD packages.
 set(CMAKE_BINARY_INSTALL_ROOT "${CMAKE_BINARY_ROOT}/extinstall")
 DISTCLEAN("${CMAKE_BINARY_ROOT}/extinstall")
 
@@ -189,8 +178,9 @@ add_executable(rpath_replace ${CMAKE_CURRENT_BINARY_DIR}/rpath_replace.cxx)
 set_target_properties(rpath_replace PROPERTIES FOLDER "Compilation Utilities")
 DISTCLEAN(${CMAKE_CURRENT_BINARY_DIR}/rpath_replace.cxx)
 
-# Independent projects with their own build systems (potentially not CMake
-# based) need ExternalProject_Add
+# This project uses the superbuild pattern (see, for example,
+# https://www.kitware.com/cmake-superbuilds-git-submodules) via CMake's
+# ExternalProject_Add feature to manage 3rd party builds
 include(ExternalProject)
 
 # Custom patch utility to replace the build directory path with the install
@@ -253,22 +243,6 @@ if(MSVC)
   endif(NOT EXISTS "${VCVARS_BAT}")
 
 endif(MSVC)
-
-# OpenBSD has its own naming conventions.  Set a platform variable based on
-# the OS name so we can test for it succinctly.
-if ("${CMAKE_SYSTEM}" MATCHES ".*OpenBSD.*")
-  set(OPENBSD ON)
-endif ("${CMAKE_SYSTEM}" MATCHES ".*OpenBSD.*")
-
-# TODO - need to set these based on the feature flags...
-set(BRLCAD_LEVEL2 ON)
-set(BRLCAD_LEVEL3 ON)
-
-# TODO - in stand-alone mode, these need to be set to enable the builds...
-#set(BRLCAD_ENABLE_STEP ON)
-#set(BRLCAD_ENABLE_GDAL ON)
-#set(BRLCAD_ENABLE_TCL ON)
-#set(BRLCAD_ENABLE_TK ON)
 
 ###############################################################################
 # Build logic is broken out per-library, but the ordering is important.  Some
