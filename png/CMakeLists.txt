@@ -27,8 +27,15 @@
 
 cmake_minimum_required(VERSION 3.1)
 cmake_policy(VERSION 3.1)
+if (POLICY CMP0074)
+	cmake_policy(SET CMP0074 NEW)
+endif (POLICY CMP0074)
 
 project(libpng C ASM)
+
+# Location of CMake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+
 enable_testing()
 
 set(PNGLIB_MAJOR 1)
