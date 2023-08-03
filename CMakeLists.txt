@@ -307,8 +307,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/openmesh.cmake)
 
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.
-set(BSL_CACHE ${BUILD_STATIC_LIBS})
-set(BUILD_STATIC_LIBS ON)
 if (BRLCAD_ENABLE_TK)
   # For FindTCL.cmake
   set(TCL_ENABLE_TK ON CACHE BOOL "enable tk")
@@ -319,14 +317,20 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/tk.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/itcl.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/itk.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/iwidgets.cmake)
-set(BUILD_STATIC_LIBS ${BSL_CACHE})
 
-# A lot of code depends on knowing about Tk being active,
-# so we set a flag in the configuration header to pass
-# on that information.
-if (COMMAND CONFIG_H_APPEND)
-  CONFIG_H_APPEND(BRLCAD "#cmakedefine HAVE_TK\n")
-endif (COMMAND CONFIG_H_APPEND)
+# TODO - we need to try and replace the above RPATH logic with an "all-in-one"
+# solution using a post-install update of all the rpaths in use in extinstall
+# to what we want.  The goal here should be to make everything work inside the
+# extinstall directory so BRL-CAD can use these copies of the libs in place -
+# when BRL-CAD wants to bundle them for its binaries, it will have to redo the
+# rpaths again on its side using a similar process.
+#
+# Guessing this will need to be a "depends on everybody's installs" target that
+# runs the necessary patchelf/LIEF voodoo to get the paths we need.  At least
+# currently CMake's internal rpath handling doesn't seem to be powerful enough
+# to arbitrarily rewrite the rpaths, which is what we'll need to handle
+# arbitrary 3rd party build outputs that don't do the particular RPATH
+# prep/setup steps CMake depends on.
 
 # Local Variables:
 # tab-width: 8
