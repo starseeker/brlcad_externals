@@ -238,6 +238,16 @@ if(MSVC)
 endif(MSVC)
 
 ###############################################################################
+# Build tools are used during compilation, but are not bundled or distributed
+# with BRL-CAD proper.
+###############################################################################
+include(${CMAKE_CURRENT_SOURCE_DIR}/astyle.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/patchelf.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/perplex.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/xmltools.cmake)
+
+
+###############################################################################
 # Build logic is broken out per-library, but the ordering is important.  Some
 # libraries will depend on others listed here (for example, we want openNURBS
 # to use our bundled zlib if it is enabled.) Developers adding, reordering or
