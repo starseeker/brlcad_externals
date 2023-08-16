@@ -1,32 +1,24 @@
-set (zlib_DESCRIPTION "
-Option for enabling and disabling compilation of the zlib library
-provided with BRL-CAD's source distribution.  Default is AUTO,
-responsive to the toplevel BRLCAD_BUNDLED_LIBS option and testing
-first for a system version if BRLCAD_BUNDLED_LIBS is also AUTO.
-")
+# Unless we have ENABLE_ALL set, based the building of zlib on
+# the system detection results
+if (ENABLE_ALL)
+  set(ENABLE_ZLIB ON)
+endif (ENABLE_ALL)
 
-THIRD_PARTY(libz ZLIB zlib
-  zlib_DESCRIPTION
-  ALIASES ENABLE_ZLIB ENABLE_LIBZ
-  RESET_VARS ZLIB_LIBRARY ZLIB_LIBRARIES ZLIB_INCLUDE_DIR ZLIB_INCLUDE_DIRS ZLIB_LIBRARY_DEBUG ZLIB_LIBRARY_RELEASE
-  )
+if (NOT ENABLE_ZLIB)
 
-if (BRLCAD_ZLIB_BUILD)
+  find_package(ZLIB)
 
-  VERSIONS("${CMAKE_CURRENT_SOURCE_DIR}/zlib/zlib.h.in" ZLIB_MAJOR_VERSION ZLIB_MINOR_VERSION ZLIB_PATCH_VERSION)
-  set(ZLIB_PATCH_VERSION "${ZLIB_PATCH_VERSION}.f-brl")
+  if (NOT ZLIB_FOUND AND NOT DEFINED ENABLE_ZLIB)
+    set(ENABLE_ZLIB "ON" CACHE BOOL "Enable astyle build")
+  endif (NOT ZLIB_FOUND AND NOT DEFINED ENABLE_ZLIB)
 
-  set(ZLIB_VERSION ${ZLIB_MAJOR_VERSION}.${ZLIB_MINOR_VERSION}.${ZLIB_PATCH_VERSION})
+endif (NOT ENABLE_ZLIB)
+set(ENABLE_ZLIB "${ENABLE_ZLIB}" CACHE BOOL "Enable astyle build")
+
+if (ENABLE_ZLIB)
 
   set(Z_PREFIX_STR "brl_")
-  add_definitions(-DZ_PREFIX)
-  add_definitions(-DZ_PREFIX_STR=${Z_PREFIX_STR})
-  set(Z_PREFIX_STR "${Z_PREFIX_STR}" CACHE STRING "prefix for zlib functions" FORCE)
-
-  set_lib_vars(ZLIB z_brl ${ZLIB_MAJOR_VERSION} ${ZLIB_MINOR_VERSION} ${ZLIB_PATCH_VERSION})
-
-  #set(ZLIB_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/zlib)
-  set(ZLIB_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
+  mark_as_advanced(Z_PREFIX_STR)
 
   ExternalProject_Add(ZLIB_BLD
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/zlib"
@@ -34,14 +26,11 @@ if (BRLCAD_ZLIB_BUILD)
     CMAKE_ARGS
     $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
     -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
     -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_INSTALL_PREFIX=${ZLIB_INSTDIR}
-    -DCMAKE_INSTALL_RPATH=${CMAKE_BUILD_RPATH}
-    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=${CMAKE_INSTALL_RPATH_USE_LINK_PATH}
-    -DCMAKE_SKIP_BUILD_RPATH=${CMAKE_SKIP_BUILD_RPATH}
-    -DLIB_DIR=${LIB_DIR}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
     -DZ_PREFIX_STR=${Z_PREFIX_STR}
     LOG_CONFIGURE ${EXT_BUILD_QUIET}
     LOG_BUILD ${EXT_BUILD_QUIET}
@@ -54,11 +43,7 @@ if (BRLCAD_ZLIB_BUILD)
   SetTargetFolder(ZLIB_BLD "Third Party Libraries")
   SetTargetFolder(zlib "Third Party Libraries")
 
-endif (BRLCAD_ZLIB_BUILD)
-
-mark_as_advanced(ZLIB_INCLUDE_DIRS)
-mark_as_advanced(ZLIB_LIBRARIES)
-mark_as_advanced(Z_PREFIX_STR)
+endif (ENABLE_ZLIB)
 
 # Local Variables:
 # tab-width: 8
