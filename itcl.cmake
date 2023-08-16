@@ -1,133 +1,61 @@
-# Because we're using Itcl 3, we have to check and see if it's present A system
-# install of Tcl/Tk may or may not have the older version.
-#
-# This is the only Tcl package we use that we can safely/reliably test for -
-# the others all depend on Tcl/Tk, and it is not possible to successfully load
-# Tcl/Tk packages requiring Tk on a non-graphical system (such as a Continuous
-# Integration runner.)  Tk itself cannot be loaded successfully without
-# creating a graphical window, so there is no option for a "headless" start of
-# Tk for testing purposes.  That limitation thus propagates to all packages
-# that require Tk.
-#
-# This limitation is unfortunate in the case of Itk, Tkhtml and Tktable. The
-# best we will be able to do will be to key off of the Itcl/Tk build settings,
-# which will mean that we won't be able to detect cases where Itcl and Tk *are*
-# installed but the others are not.
+if (ENABLE_TCL AND NOT DEFINED ENABLE_ITCL)
+  set(ENABLE_ITCL ON)
+endif (ENABLE_TCL AND NOT DEFINED ENABLE_ITCL)
 
-function(ITCL_TEST bvar)
+if (NOT ENABLE_ITCL)
+
+  find_package(ITCL)
+
+  if (NOT ITCL_FOUND AND NOT DEFINED ENABLE_ITCL)
+    set(ENABLE_ITCL "ON" CACHE BOOL "Enable itcl build")
+  endif (NOT ITCL_FOUND AND NOT DEFINED ENABLE_ITCL)
+
+endif (NOT ENABLE_ITCL)
+set(ENABLE_ITCL "${ENABLE_ITCL}" CACHE BOOL "Enable itcl build")
+
+if (ENABLE_ITCL)
+
+  # If we're building ITCL, it's path setup must take into account the
+  # subdirectory in which we are storing the library.
+  set(RPATH_SUFFIX itcl3.4)
 
   if (TARGET TCL_BLD)
-    # If we are building Tcl, we know the answer - we need to build Itcl3 as well.
-    set(${bvar} 1 PARENT_SCOPE)
-    return()
+    set(TCL_TARGET TCL_BLD)
   endif (TARGET TCL_BLD)
 
-  # If we're looking at a system Tcl, check for the package.  If it is there,
-  # we don't need to build.  If it's not there and we're set to "AUTO", build.
-  # If it's not there and we're set to SYSTEM, error.  By the time we are here,
-  # we should already have performed the find_package operation to locate Tcl
-  # and the necessary variables should be set.
-  if (NOT "${BRLCAD_ITCL}" STREQUAL "BUNDLED")
-    if (NOT TCL_TCLSH)
-      message(FATAL_ERROR "Need to test for Itcl3, but TCL_TCLSH is not set")
-    endif (NOT TCL_TCLSH)
-    file(WRITE "${CMAKE_BINARY_DIR}/CMakeTmp/itcl_test.tcl" "package require Itcl 3")
-    execute_process(
-      COMMAND ${TCL_TCLSH} "${CMAKE_BINARY_DIR}/CMakeTmp/itcl_test.tcl"
-      RESULT_VARIABLE ITCL_TEST_FAILED
-      )
-    file(REMOVE "${CMAKE_BINARY_DIR}/CMakeTmp/itcl_test.tcl")
-    if (ITCL_TEST_FAILED)
-      if ("${BRLCAD_ITCL}" STREQUAL "SYSTEM")
-	# Test failed, but user has specified system - this is fatal.
-	message(FATAL_ERROR "System-installed Itcl3 specified, but package is not available")
-      else ("${BRLCAD_ITCL}" STREQUAL "SYSTEM")
-	set(${bvar} 1 PARENT_SCOPE)
-      endif ("${BRLCAD_ITCL}" STREQUAL "SYSTEM")
-    else (ITCL_TEST_FAILED)
-      # We have Itcl 3, but that's not enough by itself - we may need to build
-      # Itk, and for that to work find_package has to also be able to locate Itcl.
-      find_package(ITCL)
-      if(ITCL_FOUND)
-	set(${bvar} 0 PARENT_SCOPE)
-      else(ITCL_FOUND)
-	if ("${BRLCAD_ITCL}" STREQUAL "SYSTEM")
-	  # Test failed, but user has specified system - this is fatal.
-	  message(FATAL_ERROR "System-installed Itcl3 specified, but package is not installed in such a way that find_package(ITCL) can locate its components.")
-	else ("${BRLCAD_ITCL}" STREQUAL "SYSTEM")
-	  set(${bvar} 1 PARENT_SCOPE)
-	endif ("${BRLCAD_ITCL}" STREQUAL "SYSTEM")
-      endif(ITCL_FOUND)
-    endif (ITCL_TEST_FAILED)
+  ExternalProject_Add(ITCL_BLD
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/itcl3"
+    BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+    CMAKE_ARGS
+    $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
+    -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_INSTALL_RPATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR}/${RPATH_SUFFIX}
+    -DINCLUDE_DIR=${INCLUDE_DIR}
+    -DSHARED_DIR=${LIB_DIR}
+    -DTCL_ENABLE_TK=ON
+    -DTCL_ROOT=$<$<BOOL:${TCL_TARGET}>:${CMAKE_INSTALL_PREFIX}>
+    LOG_CONFIGURE ${EXT_BUILD_QUIET}
+    LOG_BUILD ${EXT_BUILD_QUIET}
+    LOG_INSTALL ${EXT_BUILD_QUIET}
+    LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    )
 
-  endif (NOT "${BRLCAD_ITCL}" STREQUAL "BUNDLED")
-endfunction(ITCL_TEST bvar)
+  ExternalProject_Add_StepTargets(ITCL_BLD install)
 
-if (BRLCAD_ENABLE_TCL)
+  if (TARGET TCL_BLD)
+    ExternalProject_Add_StepDependencies(ITCL_BLD configure TCL_BLD-install)
+  endif (TARGET TCL_BLD)
+  if (TARGET TK_BLD)
+    ExternalProject_Add_StepDependencies(ITCL_BLD configure TK_BLD-install)
+  endif (TARGET TK_BLD)
 
-  ITCL_TEST(BUILD_ITCL)
+  SetTargetFolder(ITCL_BLD "Third Party Libraries")
 
-  if (BUILD_ITCL)
-
-    # If we're building ITCL, it's path setup must take into account the
-    # subdirectory in which we are storing the library.
-    relative_rpath(RELPATH SUFFIX itcl3.4)
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_DIR}${RELPATH}")
-    ext_build_rpath(SUFFIX itcl3.4)
-
-    set(BRLCAD_ITCL_BUILD "ON" CACHE STRING "Enable Itcl build" FORCE)
-
-    set(ITCL_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/ITCL_BLD-prefix/src/ITCL_BLD")
-
-    VERSIONS("${CMAKE_CURRENT_SOURCE_DIR}/itcl3/generic/itcl.h" ITCL_MAJOR_VERSION ITCL_MINOR_VERSION ITCL_PATCH_VERSION)
-    set(ITCL_VERSION ${ITCL_MAJOR_VERSION}.${ITCL_MINOR_VERSION} CACHE STRING "Itcl version")
-
-    set(ITCL_DEPS)
-    if (TARGET TCL_BLD)
-      set(TCL_TARGET ON)
-      list(APPEND ITCL_DEPS TCL_BLD)
-    endif (TARGET TCL_BLD)
-    if (TARGET TK_BLD)
-      list(APPEND ITCL_DEPS TK_BLD)
-    endif (TARGET TK_BLD)
-
-    #set(ITCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/itcl3.4)
-    set(ITCL_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
-
-    ExternalProject_Add(ITCL_BLD
-      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/itcl3"
-      BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CMAKE_ARGS
-      $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
-      -DBIN_DIR=${BIN_DIR}
-      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      -DCMAKE_INSTALL_PREFIX=${ITCL_INSTDIR}
-      -DCMAKE_INSTALL_RPATH=${CMAKE_BUILD_RPATH}
-      -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=${CMAKE_INSTALL_RPATH_USE_LINK_PATH}
-      -DCMAKE_SKIP_BUILD_RPATH=${CMAKE_SKIP_BUILD_RPATH}
-      -DINCLUDE_DIR=${INCLUDE_DIR}
-      -DLIB_DIR=${LIB_DIR}
-      -DSHARED_DIR=${SHARED_DIR}
-      -DTCL_ENABLE_TK=${TCL_ENABLE_TK}
-      -DTCL_ROOT=$<$<BOOL:${TCL_TARGET}>:${CMAKE_BINARY_INSTALL_ROOT}>
-      -DTCL_VERSION=${TCL_VERSION}
-      DEPENDS ${ITCL_DEPS}
-      LOG_CONFIGURE ${EXT_BUILD_QUIET}
-      LOG_BUILD ${EXT_BUILD_QUIET}
-      LOG_INSTALL ${EXT_BUILD_QUIET}
-      LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
-      )
-
-    SetTargetFolder(ITCL_BLD "Third Party Libraries")
-
-    # Restore default rpath settings
-    relative_rpath(RELPATH)
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_DIR}${RELPATH}")
-    ext_build_rpath()
-
-  endif (BUILD_ITCL)
-endif (BRLCAD_ENABLE_TCL)
+endif (ENABLE_ITCL)
 
 mark_as_advanced(ITCL_LIBRARY)
 mark_as_advanced(ITCL_LIBRARIES)

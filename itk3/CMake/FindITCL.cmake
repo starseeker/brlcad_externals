@@ -32,6 +32,8 @@ set(ITCL_POSSIBLE_LIB_PATH_SUFFIXES
   lib
   lib/itcl
   lib/itcl3.4
+  itcl
+  itcl3.4
   )
 
 set(ITCL_POSSIBLE_LIB_NAMES
@@ -72,6 +74,7 @@ endif()
 if(NOT ITCL_STUB_LIBRARY)
   find_library(ITCL_STUB_LIBRARY
     NAMES ${ITCLSTUB_POSSIBLE_LIB_NAMES}
+    PATH_SUFFIXES ${ITCL_POSSIBLE_LIB_PATH_SUFFIXES}
     )
 endif()
 

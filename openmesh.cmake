@@ -9,11 +9,11 @@ if (NOT ENABLE_OPENMESH)
   # We generally don't want the Mac framework libpng...
   set(CMAKE_FIND_FRAMEWORK LAST)
 
-  find_package(OPENMESH)
+  find_package(OpenMesh)
 
-  if (NOT OPENMESH_FOUND AND NOT DEFINED ENABLE_OPENMESH)
+  if (NOT OpenMesh_FOUND AND NOT DEFINED ENABLE_OPENMESH)
     set(ENABLE_OPENMESH "ON" CACHE BOOL "Enable openmesh build")
-  endif (NOT OPENMESH_FOUND AND NOT DEFINED ENABLE_OPENMESH)
+  endif (NOT OpenMesh_FOUND AND NOT DEFINED ENABLE_OPENMESH)
 
 endif (NOT ENABLE_OPENMESH)
 set(ENABLE_OPENMESH "${ENABLE_OPENMESH}" CACHE BOOL "Enable openmesh build")
