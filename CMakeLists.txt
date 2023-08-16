@@ -222,7 +222,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/gdal.cmake)
 # Open Asset Import Library - library for supporting I/O for a number of
 # Geometry file formats
 # https://github.com/assimp/assimp
-#include(${CMAKE_CURRENT_SOURCE_DIR}/assetimport.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/assetimport.cmake)
 
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
