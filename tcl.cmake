@@ -114,6 +114,17 @@ if (ENABLE_TCL)
     DEPENDS TCL_BLD-install
     )
 
+  # The library file permissions end up a bit strange - fix them
+  find_program(CHMOD_EXECUTABLE chmod)
+  mark_as_advanced(CHMOD_EXECUTABLE)
+  if (CHMOD_EXECUTABLE)
+    add_custom_target(tcl_permissionsfix ALL
+      COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_INSTALL_PREFIX}/${LIB_DIR}/libtcl${TCL_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
+      COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_INSTALL_PREFIX}/${LIB_DIR}/libtclstub${TCL_VERSION}${CMAKE_STATIC_LIBRARY_SUFFIX}
+      DEPENDS TCL_BLD-install
+      )
+  endif (CHMOD_EXECUTABLE)
+
   SetTargetFolder(TCL_BLD "Third Party Libraries")
   SetTargetFolder(tcl "Third Party Libraries")
 

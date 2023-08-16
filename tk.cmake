@@ -81,11 +81,6 @@ if (TK_DO_BUILD)
 
   else (NOT MSVC)
 
-    set(TK_BASENAME tk${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION})
-    set(TK_STUBNAME tkstub${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION})
-    set(TK_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(TK_WISHNAME wish${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION})
-
     ExternalProject_Add(TK_BLD
       URL "${CMAKE_CURRENT_SOURCE_DIR}/tk"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
@@ -102,6 +97,17 @@ if (TK_DO_BUILD)
     set(TK_APPINIT)
 
   endif (NOT MSVC)
+
+  # The library file permissions end up a bit strange - fix them
+  find_program(CHMOD_EXECUTABLE chmod)
+  mark_as_advanced(CHMOD_EXECUTABLE)
+  if (CHMOD_EXECUTABLE)
+    add_custom_target(tk_permissionsfix ALL
+      COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_INSTALL_PREFIX}/${LIB_DIR}/libtk${TCL_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
+      COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_INSTALL_PREFIX}/${LIB_DIR}/libtkstub${TCL_VERSION}${CMAKE_STATIC_LIBRARY_SUFFIX}
+      DEPENDS TK_BLD-install
+      )
+  endif (CHMOD_EXECUTABLE)
 
   if (TARGET TCL_BLD)
     ExternalProject_Add_StepDependencies(TK_BLD configure TCL_BLD-install)
