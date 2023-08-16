@@ -1,8 +1,8 @@
 # Unless we have ENABLE_ALL set, based the building of libregex on the system
 # detection results
-if (ENABLE_ALL)
+if (ENABLE_ALL AND NOT DEFINED ENABLE_REGEX)
   set(ENABLE_REGEX ON)
-endif (ENABLE_ALL)
+endif (ENABLE_ALL AND NOT DEFINED ENABLE_REGEX)
 
 if (NOT ENABLE_REGEX)
 

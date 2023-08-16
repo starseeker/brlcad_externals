@@ -1,8 +1,8 @@
 # Unless we have ENABLE_ALL set, based the building of netpbm on
 # the system detection results
-if (ENABLE_ALL)
+if (ENABLE_ALL AND NOT DEFINED ENABLE_NETPBM)
   set(ENABLE_NETPBM ON)
-endif (ENABLE_ALL)
+endif (ENABLE_ALL AND NOT DEFINED ENABLE_NETPBM)
 
 if (NOT ENABLE_NETPBM)
 

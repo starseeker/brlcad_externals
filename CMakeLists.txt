@@ -205,10 +205,10 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/png.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/stepcode.cmake)
 
 # SQLITE3 - embeddable database
-#include(${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.cmake)
 
 # PROJ - generic coordinate transformation - https://proj.org
-#include(${CMAKE_CURRENT_SOURCE_DIR}/proj.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/proj.cmake)
 
 # GDAL -  translator library for raster and vector geospatial data formats
 # https://gdal.org

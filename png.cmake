@@ -1,8 +1,8 @@
 # Unless we have ENABLE_ALL set, based the building of png on
 # the system detection results
-if (ENABLE_ALL)
+if (ENABLE_ALL AND NOT DEFINED ENABLE_PNG)
   set(ENABLE_PNG ON)
-endif (ENABLE_ALL)
+endif (ENABLE_ALL AND NOT DEFINED ENABLE_PNG)
 
 if (NOT ENABLE_PNG)
 
