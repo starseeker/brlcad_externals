@@ -12,6 +12,10 @@ if (NOT DEFINED LIB_DIR)
   set (LIB_DIR lib)
 endif (NOT DEFINED LIB_DIR)
 
+if (NOT DEFINED CMAKE_INSTALL_RPATH)
+  set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${LIB_DIR})
+endif (NOT DEFINED CMAKE_INSTALL_RPATH)
+
 include(CheckIncludeFile)
 check_include_file(string.h HAVE_STRING_H)
 check_include_file(sys/time.h HAVE_SYS_TIME_H)
