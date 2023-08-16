@@ -17,6 +17,8 @@ set(ENABLE_REGEX "${ENABLE_REGEX}" CACHE BOOL "Enable regex build")
 
 if (ENABLE_REGEX)
 
+  set(REGEX_PREFIX_STR "libregex_")
+
   # Platform differences in default linker behavior make it difficult to
   # guarantee that our libregex symbols will override libc. We'll avoid the
   # issue by renaming our libregex symbols to be incompatible with libc.
@@ -25,12 +27,13 @@ if (ENABLE_REGEX)
     BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
     CMAKE_ARGS
     $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
+    -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
     -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-    -DLIB_DIR=${LIB_DIR} -DBIN_DIR=${BIN_DIR}
-    -DREGEX_PREFIX_STR=libregex_
+    -DREGEX_PREFIX_STR=${REGEX_PREFIX_STR}
     LOG_CONFIGURE ${EXT_BUILD_QUIET}
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}

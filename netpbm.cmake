@@ -1,27 +1,21 @@
-set(netpbm_DESCRIPTION "
-Option for enabling and disabling compilation of the netpbm library
-provided with BRL-CAD's source code.  Default is AUTO, responsive to
-the toplevel BRLCAD_BUNDLED_LIBS option and testing first for a system
-version if BRLCAD_BUNDLED_LIBS is also AUTO.
-")
-THIRD_PARTY(netpbm NETPBM netpbm
-  netpbm_DESCRIPTION
-  ALIASES ENABLE_NETPBM
-  RESET_VARS NETPBM_LIBRARY NETPBM_INCLUDE_DIR
-  )
+# Unless we have ENABLE_ALL set, based the building of netpbm on
+# the system detection results
+if (ENABLE_ALL)
+  set(ENABLE_NETPBM ON)
+endif (ENABLE_ALL)
 
-if (BRLCAD_NETPBM_BUILD)
+if (NOT ENABLE_NETPBM)
 
-  if (MSVC)
-    set(NETPBM_BASENAME netpbm)
-    set(NETPBM_STATICNAME netpbm-static)
-  else (MSVC)
-    set(NETPBM_BASENAME libnetpbm)
-    set(NETPBM_STATICNAME libnetpbm)
-  endif (MSVC)
+  find_package(NETPBM)
 
-  #set(NETPBM_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/netpbm)
-  set(NETPBM_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
+  if (NOT NETPBM_FOUND AND NOT DEFINED ENABLE_NETPBM)
+    set(ENABLE_NETPBM "ON" CACHE BOOL "Enable netpbm build")
+  endif (NOT NETPBM_FOUND AND NOT DEFINED ENABLE_NETPBM)
+
+endif (NOT ENABLE_NETPBM)
+set(ENABLE_NETPBM "${ENABLE_NETPBM}" CACHE BOOL "Enable netpbm build")
+
+if (ENABLE_NETPBM)
 
   ExternalProject_Add(NETPBM_BLD
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/netpbm"
@@ -29,14 +23,11 @@ if (BRLCAD_NETPBM_BUILD)
     CMAKE_ARGS
     $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
     -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
     -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_INSTALL_PREFIX=${NETPBM_INSTDIR}
-    -DCMAKE_INSTALL_RPATH=${CMAKE_BUILD_RPATH}
-    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=${CMAKE_INSTALL_RPATH_USE_LINK_PATH}
-    -DCMAKE_SKIP_BUILD_RPATH=${CMAKE_SKIP_BUILD_RPATH}
-    -DLIB_DIR=${LIB_DIR}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
     LOG_CONFIGURE ${EXT_BUILD_QUIET}
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
@@ -46,10 +37,7 @@ if (BRLCAD_NETPBM_BUILD)
   SetTargetFolder(NETPBM_BLD "Third Party Libraries")
   SetTargetFolder(netpbm "Third Party Libraries")
 
-endif (BRLCAD_NETPBM_BUILD)
-
-mark_as_advanced(NETPBM_INCLUDE_DIRS)
-mark_as_advanced(NETPBM_LIBRARIES)
+endif (ENABLE_NETPBM)
 
 # Local Variables:
 # tab-width: 8

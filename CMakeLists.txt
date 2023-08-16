@@ -189,7 +189,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/regex.cmake)
 # form our netpbm copy isn't really a good fit for ext, but it is kept here
 # because a) there is an active upstream and b) we are unlikely to need to
 # modify these sources to our needs from a functional perspective.
-#include(${CMAKE_CURRENT_SOURCE_DIR}/netpbm.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/netpbm.cmake)
 
 # libpng - Portable Network Graphics image file support
 # http://www.libpng.org/pub/png/libpng.html
