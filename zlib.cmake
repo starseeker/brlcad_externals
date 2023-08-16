@@ -9,11 +9,11 @@ if (NOT ENABLE_ZLIB)
   find_package(ZLIB)
 
   if (NOT ZLIB_FOUND AND NOT DEFINED ENABLE_ZLIB)
-    set(ENABLE_ZLIB "ON" CACHE BOOL "Enable astyle build")
+    set(ENABLE_ZLIB "ON" CACHE BOOL "Enable zlib build")
   endif (NOT ZLIB_FOUND AND NOT DEFINED ENABLE_ZLIB)
 
 endif (NOT ENABLE_ZLIB)
-set(ENABLE_ZLIB "${ENABLE_ZLIB}" CACHE BOOL "Enable astyle build")
+set(ENABLE_ZLIB "${ENABLE_ZLIB}" CACHE BOOL "Enable zlib build")
 
 if (ENABLE_ZLIB)
 

@@ -178,7 +178,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/xmltools.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/zlib.cmake)
 
 # libregex regular expression matching
-#include(${CMAKE_CURRENT_SOURCE_DIR}/regex.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/regex.cmake)
 
 # netpbm library - support for pnm,ppm,pbm, etc. image files
 # http://netpbm.sourceforge.net/

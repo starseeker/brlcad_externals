@@ -1,22 +1,21 @@
-set (regex_DESCRIPTION "
-Option for enabling and disabling compilation of the Regular
-Expression Library provided with BRL-CAD's source distribution.
-Default is AUTO, responsive to the toplevel BRLCAD_BUNDLED_LIBS option
-and testing first for a system version if BRLCAD_BUNDLED_LIBS is also
-AUTO.
-")
-THIRD_PARTY(regex REGEX regex
-  regex_DESCRIPTION
-  ALIASES ENABLE_REGEX
-  RESET_VARS REGEX_LIBRARY REGEX_LIBRARIES REGEX_INCLUDE_DIR REGEX_INCLUDE_DIRS
-  )
+# Unless we have ENABLE_ALL set, based the building of libregex on the system
+# detection results
+if (ENABLE_ALL)
+  set(ENABLE_REGEX ON)
+endif (ENABLE_ALL)
 
-if (BRLCAD_REGEX_BUILD)
+if (NOT ENABLE_REGEX)
 
-  set_lib_vars(REGEX regex_brl "1" "0" "4")
+  find_package(REGEX)
 
-  #set(REGEX_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/regex)
-  set(REGEX_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
+  if (NOT REGEX_FOUND AND NOT DEFINED ENABLE_REGEX)
+    set(ENABLE_REGEX "ON" CACHE BOOL "Enable regex build")
+  endif (NOT REGEX_FOUND AND NOT DEFINED ENABLE_REGEX)
+
+endif (NOT ENABLE_REGEX)
+set(ENABLE_REGEX "${ENABLE_REGEX}" CACHE BOOL "Enable regex build")
+
+if (ENABLE_REGEX)
 
   # Platform differences in default linker behavior make it difficult to
   # guarantee that our libregex symbols will override libc. We'll avoid the
@@ -29,10 +28,7 @@ if (BRLCAD_REGEX_BUILD)
     -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_INSTALL_PREFIX=${REGEX_INSTDIR}
-    -DCMAKE_INSTALL_RPATH=${CMAKE_BUILD_RPATH}
-    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=${CMAKE_INSTALL_RPATH_USE_LINK_PATH}
-    -DCMAKE_SKIP_BUILD_RPATH=${CMAKE_SKIP_BUILD_RPATH}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
     -DLIB_DIR=${LIB_DIR} -DBIN_DIR=${BIN_DIR}
     -DREGEX_PREFIX_STR=libregex_
     LOG_CONFIGURE ${EXT_BUILD_QUIET}
@@ -44,10 +40,7 @@ if (BRLCAD_REGEX_BUILD)
   SetTargetFolder(REGEX_BLD "Third Party Libraries")
   SetTargetFolder(regex "Third Party Libraries")
 
-endif (BRLCAD_REGEX_BUILD)
-
-mark_as_advanced(REGEX_INCLUDE_DIRS)
-mark_as_advanced(REGEX_LIBRARIES)
+endif (ENABLE_REGEX)
 
 # Local Variables:
 # tab-width: 8
