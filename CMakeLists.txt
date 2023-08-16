@@ -230,12 +230,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/openmesh.cmake)
 
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.
-#if (BRLCAD_ENABLE_TK)
-#  # For FindTCL.cmake
-#  set(TCL_ENABLE_TK ON CACHE BOOL "enable tk")
-#endif (BRLCAD_ENABLE_TK)
-#mark_as_advanced(TCL_ENABLE_TK)
-#include(${CMAKE_CURRENT_SOURCE_DIR}/tcl.cmake)
+set(TCL_ENABLE_TK ON CACHE BOOL "enable tk")
+include(${CMAKE_CURRENT_SOURCE_DIR}/tcl.cmake)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/tk.cmake)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/itcl.cmake)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/itk.cmake)
