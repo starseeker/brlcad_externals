@@ -1,29 +1,24 @@
-# NOTE: we need to have libpng's internal call to find_package looking for zlib
-# locate our local copy if we have one.  Defining the ZLIB_ROOT prefix for
-# find_package and setting the library file to our custom library name is
-# intended to do this (requires CMake 3.12).
+# Unless we have ENABLE_ALL set, based the building of png on
+# the system detection results
+if (ENABLE_ALL)
+  set(ENABLE_PNG ON)
+endif (ENABLE_ALL)
 
-set(png_DESCRIPTION "
-Option for enabling and disabling compilation of the Portable Network
-Graphics library provided with BRL-CAD's source distribution.  Default
-is AUTO, responsive to the toplevel BRLCAD_BUNDLED_LIBS option and
-testing first for a system version if BRLCAD_BUNDLED_LIBS is also
-AUTO.
-")
+if (NOT ENABLE_PNG)
 
-# We generally don't want the Mac framework libpng...
-set(CMAKE_FIND_FRAMEWORK LAST)
+  # We generally don't want the Mac framework libpng...
+  set(CMAKE_FIND_FRAMEWORK LAST)
 
-THIRD_PARTY(png PNG png
-  png_DESCRIPTION
-  ALIASES ENABLE_PNG
-  RESET_VARS PNG_LIBRARY_DEBUG PNG_LIBRARY_RELEASE
-  )
+  find_package(PNG)
 
-if (BRLCAD_PNG_BUILD)
+  if (NOT PNG_FOUND AND NOT DEFINED ENABLE_PNG)
+    set(ENABLE_PNG "ON" CACHE BOOL "Enable png build")
+  endif (NOT PNG_FOUND AND NOT DEFINED ENABLE_PNG)
 
-  #set(PNG_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/png)
-  set(PNG_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
+endif (NOT ENABLE_PNG)
+set(ENABLE_PNG "${ENABLE_PNG}" CACHE BOOL "Enable png build")
+
+if (ENABLE_PNG)
 
   if (TARGET ZLIB_BLD)
     set(ZLIB_TARGET ZLIB_BLD)
@@ -39,10 +34,8 @@ if (BRLCAD_PNG_BUILD)
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_INSTALL_LIBDIR=${LIB_DIR}
-    -DCMAKE_INSTALL_PREFIX=${PNG_INSTDIR}
-    -DCMAKE_INSTALL_RPATH=${CMAKE_BUILD_RPATH}
-    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=${CMAKE_INSTALL_RPATH_USE_LINK_PATH}
-    -DCMAKE_SKIP_BUILD_RPATH=${CMAKE_SKIP_BUILD_RPATH}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_INSTALL_RPATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR}
     -DPNG_LIB_NAME=${PNG_LIB_NAME}
     -DPNG_NO_DEBUG_POSTFIX=ON
     -DPNG_DEBUG_POSTFIX=""
@@ -52,7 +45,7 @@ if (BRLCAD_PNG_BUILD)
     -DSKIP_INSTALL_EXECUTABLES=ON -DSKIP_INSTALL_FILES=ON
     -DSKIP_INSTALL_EXPORT=ON
     -DSKIP_INSTALL_EXPORT=ON
-    -DZLIB_ROOT=$<$<BOOL:${ZLIB_TARGET}>:${CMAKE_BINARY_INSTALL_ROOT}>
+    -DZLIB_ROOT=$<$<BOOL:${ZLIB_TARGET}>:${CMAKE_INSTALL_PREFIX}>
     -Dld-version-script=OFF
     LOG_CONFIGURE ${EXT_BUILD_QUIET}
     LOG_BUILD ${EXT_BUILD_QUIET}
@@ -69,13 +62,7 @@ if (BRLCAD_PNG_BUILD)
   SetTargetFolder(PNG_BLD "Third Party Libraries")
   SetTargetFolder(png "Third Party Libraries")
 
-endif (BRLCAD_PNG_BUILD)
-
-mark_as_advanced(PNG_PNG_INCLUDE_DIR)
-mark_as_advanced(PNG_INCLUDE_DIRS)
-mark_as_advanced(PNG_LIBRARIES)
-mark_as_advanced(PNG_LIBRARY_DEBUG)
-mark_as_advanced(PNG_LIBRARY_RELEASE)
+endif (ENABLE_PNG)
 
 # Local Variables:
 # tab-width: 8
