@@ -232,7 +232,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/openmesh.cmake)
 # static lib building on so we get the stub libraries.
 set(TCL_ENABLE_TK ON CACHE BOOL "enable tk")
 include(${CMAKE_CURRENT_SOURCE_DIR}/tcl.cmake)
-#include(${CMAKE_CURRENT_SOURCE_DIR}/tk.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/tk.cmake)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/itcl.cmake)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/itk.cmake)
 #include(${CMAKE_CURRENT_SOURCE_DIR}/iwidgets.cmake)

@@ -1,41 +1,24 @@
-
 # By the time we get here, we have run FindTCL and should know
 # if we have TK.
 
-if (NOT TK_LIBRARY OR TARGET tcl_stage)
+if (NOT TK_LIBRARY OR TARGET TCL_BLD)
   set(TK_DO_BUILD 1)
-else (NOT TK_LIBRARY OR TARGET tcl_stage)
+else (NOT TK_LIBRARY OR TARGET TCL_BLD)
   set(TK_DO_BUILD 0)
-endif (NOT TK_LIBRARY OR TARGET tcl_stage)
+endif (NOT TK_LIBRARY OR TARGET TCL_BLD)
 
-if (BRLCAD_ENABLE_TCL AND BRLCAD_ENABLE_TK AND TK_DO_BUILD)
+if (TK_DO_BUILD)
 
-  set(HAVE_TK 1 CACHE STRING "C level Tk flag" FORCE)
-  set(BRLCAD_TK_BUILD ON CACHE STRING "Enabling Tk build" FORCE)
-
-  if (TARGET tcl_stage)
+  if (TARGET TCL_BLD)
     # If we're building against a compiled Tcl and not a system Tcl,
     # set some vars accordingly
-    VERSIONS("${CMAKE_CURRENT_SOURCE_DIR}/tcl/generic/tcl.h" TCL_MAJOR_VERSION TCL_MINOR_VERSION TCL_PATCH_VERSION)
     set(TCL_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/TCL_BLD-prefix/src/TCL_BLD")
-    set(TCL_TARGET tcl_stage)
-  else (TARGET tcl_stage)
+    set(TCL_TARGET TCL_BLD)
+  else (TARGET TCL_BLD)
     get_filename_component(TCLCONF_DIR "${TCL_LIBRARY}" DIRECTORY)
-  endif (TARGET tcl_stage)
+  endif (TARGET TCL_BLD)
 
   set(TK_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/TK_BLD-prefix/src/TK_BLD")
-
-  # We need to set internal Tcl variables to the final install paths, not the intermediate install paths that
-  # Tcl's own build will think are the final paths.  Rather than attempt build system trickery we simply
-  # hard set the values in the source files by rewriting them.
-  if (NOT TARGET tcl_replace)
-    configure_file(${BDEPS_CMAKE_DIR}/tcl_replace.cxx.in ${CMAKE_CURRENT_BINARY_DIR}/tcl_replace.cxx @ONLY)
-    add_executable(tcl_replace ${CMAKE_CURRENT_BINARY_DIR}/tcl_replace.cxx)
-    set_target_properties(tcl_replace PROPERTIES FOLDER "Compilation Utilities")
-  endif (NOT TARGET tcl_replace)
-
-  #set(TK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/tk)
-  set(TK_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT})
 
   if (NOT MSVC)
 
@@ -48,28 +31,13 @@ if (BRLCAD_ENABLE_TCL AND BRLCAD_ENABLE_TK AND TK_DO_BUILD)
       message(FATAL_ERROR "Bundled Tk enabled, but the path \"${CMAKE_CURRENT_BINARY_DIR}\" contains spaces.  On this platform, Tk uses autotools to build; paths with spaces are not supported.  To continue you must select a build directory with a path that does not use spaces.")
     endif ("${CMAKE_CURRENT_BINARY_DIR}" MATCHES ".* .*")
 
-    if (OPENBSD)
-      set(TK_BASENAME libtk${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION})
-      set(TK_STUBNAME libtkstub${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION})
-      set(TK_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX}.1.0)
-    else (OPENBSD)
-      set(TK_BASENAME libtk${TCL_MAJOR_VERSION}.${TCL_MINOR_VERSION})
-      set(TK_STUBNAME libtkstub${TCL_MAJOR_VERSION}.${TCL_MINOR_VERSION})
-      set(TK_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
-    endif (OPENBSD)
-
-    set(TK_WISHNAME wish${TCL_MAJOR_VERSION}.${TCL_MINOR_VERSION})
-
-    set(TK_PATCH_FILES "${TK_SRC_DIR}/unix/configure" "${TK_SRC_DIR}/macosx/configure" "${TK_SRC_DIR}/unix/tcl.m4")
-
     ExternalProject_Add(TK_BLD
       URL "${CMAKE_CURRENT_SOURCE_DIR}/tk"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      PATCH_COMMAND rpath_replace ${TK_PATCH_FILES}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BINARY_ROOT}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BINARY_ROOT}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BINARY_ROOT}/${LIB_DIR} TK_SHLIB_LD_EXTRAS=-L${CMAKE_BINARY_ROOT}/${LIB_DIR} ${TK_SRC_DIR}/unix/configure --prefix=${TK_INSTDIR} --with-tcl=$<IF:$<BOOL:${TCL_TARGET}>,${CMAKE_BINARY_ROOT}/${LIB_DIR},${TCLCONF_DIR}>
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR} TK_SHLIB_LD_EXTRAS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR} ${TK_SRC_DIR}/unix/configure --prefix=${CMAKE_INSTALL_PREFIX} --with-tcl=$<IF:$<BOOL:${TCL_TARGET}>,${CMAKE_INSTALL_PREFIX}/${LIB_DIR},${TCLCONF_DIR}>
       BUILD_COMMAND make -j${pcnt}
       INSTALL_COMMAND make install
-      DEPENDS ${TCL_TARGET} rpath_replace
+      DEPENDS ${TCL_TARGET}
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
@@ -90,8 +58,8 @@ if (BRLCAD_ENABLE_TCL AND BRLCAD_ENABLE_TK AND TK_DO_BUILD)
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
       CONFIGURE_COMMAND ""
       BINARY_DIR ${TK_SRC_DIR}/win
-      BUILD_COMMAND ${VCVARS_BAT} && nmake -f makefile.vc INSTALLDIR=${TK_INSTDIR} TCLDIR=${TCL_SRC_DIR} SUFX=
-      INSTALL_COMMAND ${VCVARS_BAT} && nmake -f makefile.vc install INSTALLDIR=${TK_INSTDIR} TCLDIR=${TCL_SRC_DIR} SUFX=
+      BUILD_COMMAND ${VCVARS_BAT} && nmake -f makefile.vc INSTALLDIR=${CMAKE_INSTALL_PREFIX} TCLDIR=${TCL_SRC_DIR} SUFX=
+      INSTALL_COMMAND ${VCVARS_BAT} && nmake -f makefile.vc install INSTALLDIR=${CMAKE_INSTALL_PREFIX} TCLDIR=${TCL_SRC_DIR} SUFX=
       DEPENDS ${TCL_TARGET}
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
@@ -111,7 +79,7 @@ if (BRLCAD_ENABLE_TCL AND BRLCAD_ENABLE_TK AND TK_DO_BUILD)
   SetTargetFolder(TK_BLD "Third Party Libraries")
   SetTargetFolder(tk "Third Party Libraries")
 
-endif (BRLCAD_ENABLE_TCL AND BRLCAD_ENABLE_TK AND TK_DO_BUILD)
+endif (TK_DO_BUILD)
 
 mark_as_advanced(TK_INCLUDE_DIRS)
 mark_as_advanced(TK_LIBRARIES)
