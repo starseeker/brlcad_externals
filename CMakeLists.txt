@@ -202,7 +202,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/png.cmake)
 # stepcode copy has been extensively modified, but we are working to get our
 # copy and a released upstream copy synced - in anticipation of that, stepcode
 # lives in ext.
-#include(${CMAKE_CURRENT_SOURCE_DIR}/stepcode.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/stepcode.cmake)
 
 # SQLITE3 - embeddable database
 #include(${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.cmake)
