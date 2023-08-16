@@ -217,7 +217,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/proj.cmake)
 # build and source mods.  Upstream changes have largely eliminated the need for
 # this, and work is pending to migrate our code to using vanilla upstream GDAL
 # - hence, despite the mods, GDAL lives in ext in anticipation of that change.
-#include(${CMAKE_CURRENT_SOURCE_DIR}/gdal.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/gdal.cmake)
 
 # Open Asset Import Library - library for supporting I/O for a number of
 # Geometry file formats
