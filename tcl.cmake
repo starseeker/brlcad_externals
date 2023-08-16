@@ -54,12 +54,22 @@ if (ENABLE_TCL)
       message(FATAL_ERROR "Bundled Tcl enabled, but the path \"${CMAKE_CURRENT_BINARY_DIR}\" contains spaces.  On this platform, Tcl uses autotools to build; paths with spaces are not supported.  To continue you must select a build directory with a path that does not use spaces.")
     endif ("${CMAKE_CURRENT_BINARY_DIR}" MATCHES ".* .*")
 
-    set(TCL_REWORK_FILES ${TCL_PATCH_FILES} "${TCL_SRC_DIR}/unix/tclUnixInit.c" "${TCL_SRC_DIR}/generic/tclPkgConfig.c")
+    set(TCL_REWORK_FILES
+      "${TCL_SRC_DIR}/unix/configure"
+      "${TCL_SRC_DIR}/macosx/configure"
+      "${TCL_SRC_DIR}/unix/tcl.m4"
+      "${TCL_SRC_DIR}/unix/tclUnixInit.c"
+      "${TCL_SRC_DIR}/generic/tclPkgConfig.c"
+      )
+
+    if (TARGET ZLIB_BLD)
+      set(PCOMMAND "tcl_replace;${TCL_REWORK_FILES}")
+    endif (TARGET ZLIB_BLD)
 
     ExternalProject_Add(TCL_BLD
       URL "${CMAKE_CURRENT_SOURCE_DIR}/tcl"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      PATCH_COMMAND tcl_replace ${TCL_REWORK_FILES}
+      PATCH_COMMAND ${PCOMMAND}
       CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR} TCL_SHLIB_LD_EXTRAS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR} ${TCL_SRC_DIR}/unix/configure --prefix=${CMAKE_INSTALL_PREFIX}
       BUILD_COMMAND make -j${pcnt}
       INSTALL_COMMAND make install
