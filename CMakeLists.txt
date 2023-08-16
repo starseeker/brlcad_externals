@@ -226,7 +226,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/assetimport.cmake)
 
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
-#include(${CMAKE_CURRENT_SOURCE_DIR}/openmesh.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/openmesh.cmake)
 
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.
