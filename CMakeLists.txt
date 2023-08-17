@@ -36,6 +36,10 @@ if (POLICY CMP0114)
   cmake_policy(SET CMP0114 NEW)
 endif (POLICY CMP0114)
 
+# Require at least C++17
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
 # Location of CMake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
