@@ -154,6 +154,14 @@ if(MSVC)
 
 endif(MSVC)
 
+# TODO - investigate https://github.com/shannonbooth/patch
+# Applying patch files cross platform is a challenging problem due to the
+# shortage of portable tools and issues with LF vs CRLF files - see
+# https://gitlab.kitware.com/cmake/cmake/-/issues/16854 for more background
+# on this.  If the above implementation of patch can do what we need it to,
+# it might allow us to maintain vanilla sources and apply patch files during
+# the ExternalProject_Add process
+
 ###############################################################################
 # Build tools are used during compilation, but are not bundled or distributed
 # with BRL-CAD proper.
