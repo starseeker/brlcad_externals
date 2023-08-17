@@ -26,11 +26,6 @@
   The data format used by the zlib library is described by RFCs (Request for
   Comments) 1950 to 1952 in the files http://tools.ietf.org/html/rfc1950
   (zlib format), rfc1951 (deflate format) and rfc1952 (gzip format).
-
-  NOTE (2022-11-09): while this copy of Zlib is not intended to be functionally
-  altered from the upstream library, the sources are modified to allow a custom
-  prefix to be successfully defined for embedding without conflicting with
-  system Zlib versions - CY
 */
 
 #ifndef ZLIB_H
@@ -42,8 +37,8 @@
 extern "C" {
 #endif
 
-#define ZLIB_VERSION "1.2.13.f-brl"
-#define ZLIB_VERNUM 0x12d0f
+#define ZLIB_VERSION "1.2.13"
+#define ZLIB_VERNUM 0x12d0
 #define ZLIB_VER_MAJOR 1
 #define ZLIB_VER_MINOR 2
 #define ZLIB_VER_REVISION 13
@@ -1798,17 +1793,17 @@ ZEXTERN int ZEXPORT inflateBackInit_ OF((z_streamp strm, int windowBits,
                                          const char *version,
                                          int stream_size));
 #ifdef Z_PREFIX_SET
-#  define @Z_PREFIX_STR@deflateInit(strm, level) \
+#  define z_deflateInit(strm, level) \
           deflateInit_((strm), (level), ZLIB_VERSION, (int)sizeof(z_stream))
-#  define @Z_PREFIX_STR@inflateInit(strm) \
+#  define z_inflateInit(strm) \
           inflateInit_((strm), ZLIB_VERSION, (int)sizeof(z_stream))
-#  define @Z_PREFIX_STR@deflateInit2(strm, level, method, windowBits, memLevel, strategy) \
+#  define z_deflateInit2(strm, level, method, windowBits, memLevel, strategy) \
           deflateInit2_((strm),(level),(method),(windowBits),(memLevel),\
                         (strategy), ZLIB_VERSION, (int)sizeof(z_stream))
-#  define @Z_PREFIX_STR@inflateInit2(strm, windowBits) \
+#  define z_inflateInit2(strm, windowBits) \
           inflateInit2_((strm), (windowBits), ZLIB_VERSION, \
                         (int)sizeof(z_stream))
-#  define @Z_PREFIX_STR@inflateBackInit(strm, windowBits, window) \
+#  define z_inflateBackInit(strm, windowBits, window) \
           inflateBackInit_((strm), (windowBits), (window), \
                            ZLIB_VERSION, (int)sizeof(z_stream))
 #else
@@ -1843,8 +1838,8 @@ struct gzFile_s {
 };
 ZEXTERN int ZEXPORT gzgetc_ OF((gzFile file));  /* backward compatibility */
 #ifdef Z_PREFIX_SET
-#  undef @Z_PREFIX_STR@gzgetc
-#  define @Z_PREFIX_STR@gzgetc(g) \
+#  undef z_gzgetc
+#  define z_gzgetc(g) \
           ((g)->have ? ((g)->have--, (g)->pos++, *((g)->next)++) : (gzgetc)(g))
 #else
 #  define gzgetc(g) \
@@ -1869,13 +1864,13 @@ ZEXTERN int ZEXPORT gzgetc_ OF((gzFile file));  /* backward compatibility */
 
 #if !defined(ZLIB_INTERNAL) && defined(Z_WANT64)
 #  ifdef Z_PREFIX_SET
-#    define @Z_PREFIX_STR@gzopen @Z_PREFIX_STR@gzopen64
-#    define @Z_PREFIX_STR@gzseek @Z_PREFIX_STR@gzseek64
-#    define @Z_PREFIX_STR@gztell @Z_PREFIX_STR@gztell64
-#    define @Z_PREFIX_STR@gzoffset @Z_PREFIX_STR@gzoffset64
-#    define @Z_PREFIX_STR@adler32_combine @Z_PREFIX_STR@adler32_combine64
-#    define @Z_PREFIX_STR@crc32_combine @Z_PREFIX_STR@crc32_combine64
-#    define @Z_PREFIX_STR@crc32_combine_gen @Z_PREFIX_STR@crc32_combine_gen64
+#    define z_gzopen z_gzopen64
+#    define z_gzseek z_gzseek64
+#    define z_gztell z_gztell64
+#    define z_gzoffset z_gzoffset64
+#    define z_adler32_combine z_adler32_combine64
+#    define z_crc32_combine z_crc32_combine64
+#    define z_crc32_combine_gen z_crc32_combine_gen64
 #  else
 #    define gzopen gzopen64
 #    define gzseek gzseek64
