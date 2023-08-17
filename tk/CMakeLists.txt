@@ -20,6 +20,10 @@ if (TK_DO_BUILD)
 
   set(TK_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/TK_BLD-prefix/src/TK_BLD")
 
+  if (NOT DEFINED TCL_VERSION)
+    set(TCL_VERSION "8.6")
+  endif (NOT DEFINED TCL_VERSION)
+
   # In addition to the usual target dependencies, we need to adjust for the
   # non-standard BRL-CAD zlib name, if we are using our bundled version.  Set a
   # variable here so the tcl_replace utility will know the right value.
@@ -60,7 +64,7 @@ if (TK_DO_BUILD)
       )
 
     if (TARGET ZLIB_BLD)
-      set(PCOMMAND "tcl_replace;${TCL_REWORK_FILES}")
+      set(PCOMMAND "tcl_replace;${TK_REWORK_FILES}")
     endif (TARGET ZLIB_BLD)
 
     ExternalProject_Add(TK_BLD
