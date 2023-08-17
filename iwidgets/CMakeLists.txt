@@ -29,18 +29,27 @@ if (ENABLE_IWIDGETS)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(IWIDGETS_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
   if (TARGET TCL_BLD)
     ExternalProject_Add_StepDependencies(IWIDGETS_BLD configure TCL_BLD-install)
   endif (TARGET TCL_BLD)
+
   if (TARGET TK_BLD)
     ExternalProject_Add_StepDependencies(IWIDGETS_BLD configure TK_BLD-install)
   endif (TARGET TK_BLD)
+
   if (TARGET ITCL_BLD)
     ExternalProject_Add_StepDependencies(IWIDGETS_BLD configure ITCL_BLD-install)
   endif (TARGET ITCL_BLD)
+
   if (TARGET ITK_BLD)
     ExternalProject_Add_StepDependencies(IWIDGETS_BLD configure ITK_BLD-install)
   endif (TARGET ITK_BLD)
+
+  ExternalProject_Add_StepTargets(IWIDGETS_BLD install)
 
   SetTargetFolder(IWIDGETS_BLD "Third Party Libraries")
 

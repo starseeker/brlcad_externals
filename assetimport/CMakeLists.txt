@@ -47,9 +47,14 @@ if (ENABLE_ASSETIMPORT)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(ASSETIMPORT_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
   if (TARGET ZLIB_BLD)
     ExternalProject_Add_StepDependencies(ASSETIMPORT_BLD configure ZLIB_BLD-install)
   endif (TARGET ZLIB_BLD)
+
   ExternalProject_Add_StepTargets(ASSETIMPORT_BLD install)
 
   SetTargetFolder(ASSETIMPORT_BLD "Third Party Libraries")

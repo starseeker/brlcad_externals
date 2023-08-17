@@ -113,6 +113,10 @@ if (TK_DO_BUILD)
       )
   endif (CHMOD_EXECUTABLE)
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(TK_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
   if (TARGET TCL_BLD)
     ExternalProject_Add_StepDependencies(TK_BLD configure TCL_BLD-install)
   endif (TARGET TCL_BLD)

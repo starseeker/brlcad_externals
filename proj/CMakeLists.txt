@@ -49,6 +49,10 @@ if (ENABLE_PROJ)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(PROJ_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
   if (TARGET SQLITE3_BLD)
     ExternalProject_Add_StepDependencies(PROJ_BLD configure SQLITE3_BLD-install)
   endif (TARGET SQLITE3_BLD)

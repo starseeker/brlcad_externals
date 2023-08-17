@@ -40,6 +40,12 @@ if (ENABLE_OPENMESH)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(OPENMESH_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
+  ExternalProject_Add_StepTargets(OPENMESH_BLD install)
+
   SetTargetFolder(OPENMESH_BLD "Third Party Libraries")
   SetTargetFolder(openmesh "Third Party Libraries")
 

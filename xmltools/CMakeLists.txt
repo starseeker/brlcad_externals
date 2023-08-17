@@ -39,6 +39,10 @@ if (ENABLE_XMLTOOLS)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(XMLTOOLS_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
   ExternalProject_Add_StepTargets(XMLTOOLS_BLD install)
 
   SetTargetFolder(XMLTOOLS_BLD "Third Party Build Tools")

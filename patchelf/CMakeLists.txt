@@ -38,6 +38,10 @@ if (NOT MSVC AND NOT APPLE)
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
       )
 
+    if (TARGET PATCH_BLD)
+      ExternalProject_Add_StepDependencies(PATCHELF_BLD configure PATCH_BLD-install)
+    endif (TARGET PATCH_BLD)
+
     ExternalProject_Add_StepTargets(PATCHELF_BLD install)
 
     SetTargetFolder(PATCHELF_BLD "Third Party Build Tools")

@@ -34,6 +34,12 @@ if (ENABLE_NETPBM)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(NETPBM_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
+  ExternalProject_Add_StepTargets(NETPBM_BLD install)
+
   SetTargetFolder(NETPBM_BLD "Third Party Libraries")
   SetTargetFolder(netpbm "Third Party Libraries")
 

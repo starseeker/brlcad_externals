@@ -40,6 +40,12 @@ if (ENABLE_REGEX)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(REGEX_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
+  ExternalProject_Add_StepTargets(REGEX_BLD install)
+
   SetTargetFolder(REGEX_BLD "Third Party Libraries")
   SetTargetFolder(regex "Third Party Libraries")
 

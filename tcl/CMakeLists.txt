@@ -101,6 +101,10 @@ if (ENABLE_TCL)
 
   endif (NOT MSVC)
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(TCL_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
   if (TARGET ZLIB_BLD)
     ExternalProject_Add_StepDependencies(TCL_BLD configure ZLIB_BLD-install)
   endif (TARGET ZLIB_BLD)

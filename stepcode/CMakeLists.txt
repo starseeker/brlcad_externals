@@ -50,9 +50,15 @@ if (ENABLE_STEPCODE)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(STEPCODE_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
   if (TARGET PERPLEX_BLD)
     ExternalProject_Add_StepDependencies(STEPCODE_BLD configure PERPLEX_BLD-install)
   endif (TARGET PERPLEX_BLD)
+
+  ExternalProject_Add_StepTargets(STEPCODE_BLD install)
 
   SetTargetFolder(STEPCODE_BLD "Third Party Libraries")
   SetTargetFolder(stepcode "Third Party Libraries")

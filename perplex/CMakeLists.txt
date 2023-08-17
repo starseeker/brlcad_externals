@@ -43,6 +43,10 @@ if (ENABLE_PERPLEX)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(PERPLEX_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
+
   ExternalProject_Add_StepTargets(PERPLEX_BLD install)
 
   SetTargetFolder(PERPLEX_BLD "Third Party Build Tools")

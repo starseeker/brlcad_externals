@@ -61,18 +61,26 @@ if (ENABLE_ITK)
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
-  
+
   ExternalProject_Add_StepTargets(ITK_BLD install)
+
+  if (TARGET PATCH_BLD)
+    ExternalProject_Add_StepDependencies(ITK_BLD configure PATCH_BLD-install)
+  endif (TARGET PATCH_BLD)
 
   if (TARGET TCL_BLD)
     ExternalProject_Add_StepDependencies(ITK_BLD configure TCL_BLD-install)
   endif (TARGET TCL_BLD)
+
   if (TARGET TK_BLD)
     ExternalProject_Add_StepDependencies(ITK_BLD configure TK_BLD-install)
   endif (TARGET TK_BLD)
+
   if (TARGET ITCL_BLD)
     ExternalProject_Add_StepDependencies(ITK_BLD configure ITCL_BLD-install)
   endif (TARGET ITCL_BLD)
+
+  ExternalProject_Add_StepTargets(ITK_BLD install)
 
   SetTargetFolder(ITK_BLD "Third Party Libraries")
 
