@@ -1,198 +1,53 @@
-cmake_minimum_required(VERSION 3.18)
+# The perplex tool chain provides three tools - perplex, re2c and lemon.
+# If all of those are present on the system we can forego building this -
+# otherwise, we need it.  Most of the time we'll need it, since perplex was
+# developed for the BRL-CAD build and isn't a standard tool
+if (NOT ENABLE_PERPLEX)
 
-# set project name
-project(CITRUS)
+  find_program(PERPLEX_EXECUTABLE perplex)
+  mark_as_advanced(PERPLEX_EXECUTABLE)
 
-include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  find_program(LEMON_EXECUTABLE lemon)
+  mark_as_advanced(LEMON_EXECUTABLE)
 
-if (NOT BIN_DIR)
-  set (BIN_DIR bin)
-endif (NOT BIN_DIR)
-if (NOT DATA_DIR)
-  set (DATA_DIR share)
-endif (NOT DATA_DIR)
+  find_program(RE2C_EXECUTABLE re2c)
+  mark_as_advanced(RE2C_EXECUTABLE)
 
-include(CheckIncludeFile)
-CHECK_INCLUDE_FILE(inttypes.h HAVE_INTTYPES_H)
-CHECK_INCLUDE_FILE(memory.h HAVE_MEMORY_H)
-CHECK_INCLUDE_FILE(stdbool.h HAVE_STDBOOL_H)
-CHECK_INCLUDE_FILE(stdint.h HAVE_STDINT_H)
-CHECK_INCLUDE_FILE(stdlib.h HAVE_STDLIB_H)
-CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
-CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
-CHECK_INCLUDE_FILE(sys/stat.h HAVE_SYS_STAT_H)
-CHECK_INCLUDE_FILE(sys/types.h HAVE_SYS_TYPES_H)
-CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
-include(CheckFunctionExists)
-CHECK_FUNCTION_EXISTS(memset HAVE_MEMSET)
-CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
-CHECK_FUNCTION_EXISTS(munmap HAVE_MUNMAP)
-CHECK_FUNCTION_EXISTS(strdup HAVE_STRDUP)
-CHECK_FUNCTION_EXISTS(strndup HAVE_STRNDUP)
-include(CheckTypeSize)
-CHECK_TYPE_SIZE(char SIZEOF_CHAR)
-CHECK_TYPE_SIZE(int SIZEOF_INT)
-CHECK_TYPE_SIZE(long SIZEOF_LONG)
-CHECK_TYPE_SIZE(short SIZEOF_SHORT)
+  if (NOT PERPLEX_EXECUTABLE OR NOT LEMON_EXECUTABLE OR NOT RE2C_EXECUTABLE)
+    if (NOT DEFINED ENABLE_PERPLEX)
+      set(ENABLE_PERPLEX "ON" CACHE BOOL "Enable perplex build")
+    endif (NOT DEFINED ENABLE_PERPLEX)
+  endif (NOT PERPLEX_EXECUTABLE OR NOT LEMON_EXECUTABLE OR NOT RE2C_EXECUTABLE)
 
-configure_file(re2c/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-add_definitions(-DHAVE_CONFIG_H)
+endif (NOT ENABLE_PERPLEX)
+set(ENABLE_PERPLEX "${ENABLE_PERPLEX}" CACHE BOOL "Enable perplex build")
 
-# build the lemon binary
-add_executable(lemon lemon.c)
+if (ENABLE_PERPLEX)
 
-set(re2c_common_SRCS
-  re2c/code.cc
-  re2c/dfa.cc
-  re2c/main.cc
-  re2c/actions.cc
-  re2c/substr.cc
-  re2c/translate.cc
-  re2c/mbo_getopt.cc
-  )
+  set(PERPLEX_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/../extnoinstall)
 
-set(re2c_HDRS
-  re2c/basics.h
-  re2c/dfa.h
-  re2c/globals.h
-  re2c/ins.h
-  re2c/re2c_parser.h
-  re2c/re.h
-  re2c/scanner.h
-  re2c/substr.h
-  re2c/token.h
-  re2c/mbo_getopt.h
-  re2c/code.h
-  re2c/stream_lc.h
-  re2c/code_names.h
-  )
+  ExternalProject_Add(PERPLEX_BLD
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/perplex"
+    BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+    CMAKE_ARGS
+    $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
+    -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
+    -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_NOINSTALL_PREFIX}
+    LOG_CONFIGURE ${EXT_BUILD_QUIET}
+    LOG_BUILD ${EXT_BUILD_QUIET}
+    LOG_INSTALL ${EXT_BUILD_QUIET}
+    LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    )
 
-set(WD "${CMAKE_CURRENT_BINARY_DIR}/bootstrap_parser")
-file(MAKE_DIRECTORY "${WD}")
-add_custom_command(
-  OUTPUT ${WD}/parser.out ${WD}/parser.c ${WD}/parser.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/re2c/parser.yy ${WD}/parser.yy
-  COMMAND lemon -T${CMAKE_CURRENT_SOURCE_DIR}/lempar.c ${WD}/parser.yy
-  DEPENDS lemon ${CMAKE_CURRENT_SOURCE_DIR}/re2c/parser.yy
-  WORKING_DIRECTORY ${WD}
-  COMMENT "[LEMON][re2c] Building bootstrap parser with lemon"
-  )
+  ExternalProject_Add_StepTargets(PERPLEX_BLD install)
 
-add_custom_command(
-  OUTPUT bootstrap_parser.cc bootstrap_parser_tokens.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${WD}/parser.c bootstrap_parser.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${WD}/parser.h bootstrap_parser_tokens.h
-  DEPENDS ${WD}/parser.c ${WD}/parser.h
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  )
+  SetTargetFolder(PERPLEX_BLD "Third Party Build Tools")
 
-set(re2c_bootstrap_SRCS
-  ${re2c_common_SRCS}
-  re2c/bootstrap/scanner.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/bootstrap_parser.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/bootstrap_parser_tokens.h
-  )
-add_executable(re2c_bootstrap ${re2c_bootstrap_SRCS})
-set_property(TARGET re2c_bootstrap APPEND PROPERTY INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/re2c;${CMAKE_CURRENT_BINARY_DIR};${WD}")
-add_dependencies(re2c_bootstrap lemon)
-# Need to link against stl library with some compilers.
-target_link_libraries(re2c_bootstrap "${STDCXX_LIBRARIES}")
-
-if(TARGET_RUNTIME_OUTPUT_DIRECTORY)
-  set_target_properties(re2c_bootstrap PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TARGET_RUNTIME_OUTPUT_DIRECTORY}")
-  foreach(CFG_TYPE ${CMAKE_CONFIGURATION_TYPES})
-    string(TOUPPER "${CFG_TYPE}" CFG_TYPE_UPPER)
-    set_target_properties(re2c_bootstrap PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${CFG_TYPE_UPPER} "${TARGET_RUNTIME_OUTPUT_DIRECTORY}")
-  endforeach(CFG_TYPE ${CMAKE_CONFIGURATION_TYPES})
-endif(TARGET_RUNTIME_OUTPUT_DIRECTORY)
-
-set(WD "${CMAKE_CURRENT_BINARY_DIR}/re2c_parser")
-file(MAKE_DIRECTORY "${WD}")
-add_custom_command(
-  OUTPUT ${WD}/parser.out ${WD}/parser.c ${WD}/parser.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/re2c/parser.yy ${WD}/parser.yy
-  COMMAND lemon -T${CMAKE_CURRENT_SOURCE_DIR}/lempar.c ${WD}/parser.yy
-  DEPENDS lemon ${CMAKE_CURRENT_SOURCE_DIR}/re2c/parser.yy
-  WORKING_DIRECTORY ${WD}
-  COMMENT "[LEMON][re2c] Building parser with lemon"
-  )
-
-add_custom_command(
-  OUTPUT re2c_parser.cc re2c_parser_tokens.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${WD}/parser.c re2c_parser.cc
-  COMMAND ${CMAKE_COMMAND} -E copy ${WD}/parser.h re2c_parser_tokens.h
-  DEPENDS ${WD}/parser.c ${WD}/parser.h
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  )
-
-add_custom_command(
-  OUTPUT re2c_scanner.cc
-  COMMAND re2c_bootstrap -bi -o re2c_scanner.cc ${CMAKE_CURRENT_SOURCE_DIR}/re2c/scanner.re
-  DEPENDS re2c_bootstrap ${CMAKE_CURRENT_SOURCE_DIR}/re2c/scanner.re
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  )
-
-set(re2c_SRCS
-  ${re2c_common_SRCS}
-  ${CMAKE_CURRENT_BINARY_DIR}/re2c_parser.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/re2c_parser_tokens.h
-  ${CMAKE_CURRENT_BINARY_DIR}/re2c_scanner.cc
-  )
-
-add_executable(re2c ${re2c_SRCS})
-set_property(TARGET re2c APPEND PROPERTY INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/re2c;${CMAKE_CURRENT_BINARY_DIR};${WD}")
-# Need to link against stl library with some compilers.
-target_link_libraries(re2c "${STDCXX_LIBRARIES}")
-
-
-
-set(WD "${CMAKE_CURRENT_BINARY_DIR}/perplex_wd")
-file(MAKE_DIRECTORY "${WD}")
-add_custom_command(
-  OUTPUT ${WD}/parser.out ${WD}/parser.c ${WD}/parser.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/perplex/parser.y ${WD}/parser.y
-  COMMAND lemon -T${CMAKE_CURRENT_SOURCE_DIR}/lempar.c ${WD}/parser.y
-  DEPENDS lemon ${CMAKE_CURRENT_SOURCE_DIR}/perplex/parser.y
-  WORKING_DIRECTORY ${WD}
-  COMMENT "[LEMON][perplex] Building parser with lemon"
-  )
-add_custom_command(
-  OUTPUT perplex_parser.c perplex_parser.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${WD}/parser.c perplex_parser.c
-  COMMAND ${CMAKE_COMMAND} -E copy ${WD}/parser.h perplex_parser.h
-  DEPENDS ${WD}/parser.c ${WD}/parser.h
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  )
-
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/perplex_scanner.c
-  COMMAND re2c -c -o ${CMAKE_CURRENT_BINARY_DIR}/perplex_scanner.c ${CMAKE_CURRENT_SOURCE_DIR}/perplex/scanner.re
-  DEPENDS re2c ${CMAKE_CURRENT_SOURCE_DIR}/perplex/scanner.re perplex_parser.c perplex_parser.h
-  WORKING_DIRECTORY ${WD}
-  COMMENT "[RE2C][perplex] Building scanner with re2c"
-  )
-
-set(perplex_sources
-  ${CMAKE_CURRENT_BINARY_DIR}/perplex_parser.c
-  ${CMAKE_CURRENT_BINARY_DIR}/perplex_scanner.c
-  perplex/mbo_getopt.cpp
-  perplex/perplex.cpp
-  )
-
-add_executable(perplex ${perplex_sources})
-set_property(TARGET perplex APPEND PROPERTY INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/perplex")
-
-# install the binaries
-install(TARGETS lemon DESTINATION ${BIN_DIR})
-install(TARGETS re2c DESTINATION ${BIN_DIR})
-install(TARGETS perplex DESTINATION ${BIN_DIR})
-
-# install the templates
-install(FILES lempar.c DESTINATION ${DATA_DIR}/lemon)
-install(FILES perplex/perplex_template.c DESTINATION ${DATA_DIR}/perplex)
+endif (ENABLE_PERPLEX)
 
 # Local Variables:
 # tab-width: 8
@@ -200,3 +55,4 @@ install(FILES perplex/perplex_template.c DESTINATION ${DATA_DIR}/perplex)
 # indent-tabs-mode: t
 # End:
 # ex: shiftwidth=2 tabstop=8
+

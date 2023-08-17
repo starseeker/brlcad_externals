@@ -1,65 +1,49 @@
-# Minimum required version of CMake
-cmake_minimum_required(VERSION 3.18)
+# xmltools provides the xsltproc and xmllint tools If both of those are
+# present on the system we can forego building this - otherwise, we need
+# it.
+if (NOT ENABLE_XMLTOOLS)
 
-# Set CMake project name
-project(XSLTPROC)
+  find_program(XSLTPROC_EXECUTABLE xsltproc)
+  mark_as_advanced(XSLTPROC_EXECUTABLE)
 
-if (NOT DEFINED BIN_DIR)
-  set (BIN_DIR bin)
-endif (NOT DEFINED BIN_DIR)
+  find_program(XMLLINT_EXECUTABLE xmllint)
+  mark_as_advanced(XMLLINT_EXECUTABLE)
 
-if (NOT DEFINED LIB_DIR)
-  set (LIB_DIR lib)
-endif (NOT DEFINED LIB_DIR)
+  if (NOT XSLTPROC_EXECUTABLE OR NOT XMLLINT_EXECUTABLE)
+    if (NOT DEFINED ENABLE_XMLTOOLS)
+      set(ENABLE_XMLTOOLS "ON" CACHE BOOL "Enable perplex build")
+    endif (NOT DEFINED ENABLE_XMLTOOLS)
+  endif (NOT XSLTPROC_EXECUTABLE OR NOT XMLLINT_EXECUTABLE)
 
-if (NOT DEFINED CMAKE_INSTALL_RPATH)
-  set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${LIB_DIR})
-endif (NOT DEFINED CMAKE_INSTALL_RPATH)
+endif (NOT ENABLE_XMLTOOLS)
+set(ENABLE_XMLTOOLS "${ENABLE_XMLTOOLS}" CACHE BOOL "Enable perplex build")
 
-include(CheckIncludeFile)
-check_include_file(string.h HAVE_STRING_H)
-check_include_file(sys/time.h HAVE_SYS_TIME_H)
-check_include_file(time.h HAVE_TIME_H)
-check_include_file(sys/stat.h HAVE_SYS_STAT_H)
-check_include_file(unistd.h HAVE_UNISTD_H)
-check_include_file(stdlib.h HAVE_STDLIB_H)
-check_include_file(stdarg.h HAVE_STDARG_H)
+if (ENABLE_XMLTOOLS)
 
-if(WIN32)
-  add_definitions(-DWIN32 -D_WINDOWS -D_MBCS -DW3 -D_REENTRANT -D_DEBUG)
-  add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
-  add_definitions(-DNOLIBTOOL -DHAVE_WIN32_THREADS -DHAVE_COMPILER_TLS)
-endif(WIN32)
+  set(XMLTOOLS_INSTDIR ${CMAKE_BINARY_INSTALL_ROOT}/../extnoinstall)
 
-add_subdirectory(libxml)
-add_subdirectory(libxslt)
-add_subdirectory(libexslt)
+  ExternalProject_Add(XMLTOOLS_BLD
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/xmltools"
+    BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+    CMAKE_ARGS
+    $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
+    -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
+    -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_NOINSTALL_PREFIX}
+    LOG_CONFIGURE ${EXT_BUILD_QUIET}
+    LOG_BUILD ${EXT_BUILD_QUIET}
+    LOG_INSTALL ${EXT_BUILD_QUIET}
+    LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    )
 
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/libxml/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/libxslt/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/libxslt/include/libxslt
-  ${CMAKE_CURRENT_SOURCE_DIR}/libexslt/include
-  ${CMAKE_CURRENT_BINARY_DIR}/include
-  ${CMAKE_CURRENT_BINARY_DIR}/include/libxslt
-  /usr/local/include
-  )
+  ExternalProject_Add_StepTargets(XMLTOOLS_BLD install)
 
-add_executable(xsltproc xsltproc.c)
-target_link_libraries(xsltproc xml xslt exslt)
-install(TARGETS xsltproc
-  RUNTIME DESTINATION ${BIN_DIR}
-  LIBRARY DESTINATION ${LIB_DIR}
-  ARCHIVE DESTINATION ${LIB_DIR}
-  )
+  SetTargetFolder(XMLTOOLS_BLD "Third Party Build Tools")
 
-add_executable(xmllint xmllint.c)
-target_link_libraries(xmllint xml xslt exslt)
-install(TARGETS xmllint
-  RUNTIME DESTINATION ${BIN_DIR}
-  LIBRARY DESTINATION ${LIB_DIR}
-  ARCHIVE DESTINATION ${LIB_DIR}
-  )
+endif (ENABLE_XMLTOOLS)
 
 # Local Variables:
 # tab-width: 8
@@ -67,3 +51,4 @@ install(TARGETS xmllint
 # indent-tabs-mode: t
 # End:
 # ex: shiftwidth=2 tabstop=8
+

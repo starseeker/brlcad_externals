@@ -1,76 +1,51 @@
-# SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022 Shannon Booth <shannon.ml.booth@gmail.com>
+# For the patch tool, unless the user specifically requests it be built, only
+# enable it if we can't find a system version - patch is not bundled with
+# BRL-CAD, so a system version is fine if available.  We set up ENABLE_PATCH
+# this way so it will show as an option in the CMake GUI even without a
+# default value set.
+if (NOT ENABLE_PATCH)
 
-cmake_minimum_required(VERSION 3.15)
-cmake_policy(VERSION 3.15)
+  find_program(PATCH_EXECUTABLE patch)
+  mark_as_advanced(PATCH_EXECUTABLE)
 
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-endif()
+  if (NOT PATCH_EXECUTABLE AND NOT DEFINED ENABLE_PATCH)
+    set(ENABLE_PATCH "ON" CACHE BOOL "Enable patch build")
+  endif (NOT PATCH_EXECUTABLE AND NOT DEFINED ENABLE_PATCH)
 
-project(patch
-  DESCRIPTION "Patch library"
-  LANGUAGES CXX
-)
+endif (NOT ENABLE_PATCH)
+set(ENABLE_PATCH "${ENABLE_PATCH}" CACHE BOOL "Enable patch build")
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_EXTENSIONS OFF)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+if (ENABLE_PATCH)
 
-include(GNUInstallDirs)
-include(coverage)
+  ExternalProject_Add(PATCH_BLD
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/patch"
+    BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+    CMAKE_ARGS
+    $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
+    -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
+    -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_NOINSTALL_PREFIX}
+    LOG_CONFIGURE ${EXT_BUILD_QUIET}
+    LOG_BUILD ${EXT_BUILD_QUIET}
+    LOG_INSTALL ${EXT_BUILD_QUIET}
+    LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    )
 
-option(PATCH_ENABLE_COVERAGE "Build with gcov support" OFF)
-option(BUILD_TESTING "Build the tests" OFF)
+  ExternalProject_Add_StepTargets(PATCH_BLD install)
 
-if(PATCH_ENABLE_COVERAGE)
-  add_coverage_flags()
-endif()
+  SetTargetFolder(PATCH_BLD "Third Party Build Tools")
 
-add_library(patch
-  src/applier.cpp
-  src/cmdline.cpp
-  src/formatter.cpp
-  src/locator.cpp
-  src/options.cpp
-  src/parser.cpp
-  src/patch.cpp
-  src/system.cpp
-  src/file.cpp
-)
+  set(PATCH_EXECUTABLE ${CMAKE_NOINSTALL_PREFIX}/${BIN_DIR}/sb_patch${CMAKE_EXECUTABLE_SUFFIX} CACHE STRING "Patch executable" FORCE)
 
-target_include_directories(patch
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
+endif (ENABLE_PATCH)
 
-add_library(patch::patch ALIAS patch)
+# Local Variables:
+# tab-width: 8
+# mode: cmake
+# indent-tabs-mode: t
+# End:
+# ex: shiftwidth=2 tabstop=8
 
-install(TARGETS patch
-  EXPORT patch-config
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-install(EXPORT patch-config
-  NAMESPACE patch::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/patch
-)
-
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/patch/
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/patch
-)
-
-add_subdirectory(app)
-
-if(BUILD_TESTING)
-  enable_testing()
-  add_subdirectory(tests)
-  if(PATCH_ENABLE_COVERAGE)
-    add_coverage_target()
-  endif()
-endif()

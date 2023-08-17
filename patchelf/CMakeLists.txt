@@ -1,31 +1,50 @@
-# Minimum required version of CMake
-cmake_minimum_required(VERSION 3.18)
+# Patchelf is only useful on some platforms - don't worry about trying
+# to build it everywhere
+if (NOT MSVC AND NOT APPLE)
 
-# Set CMake project name
-project(PATCHELF)
+  # Unless the user specifically requests it be built, only enable it if we
+  # can't find a system version - patchelf is not bundled with BRL-CAD, so
+  # a system version is fine if available.  We set up ENABLE_PATCHELF this
+  # way so it will show as an option in the CMake GUI even without a
+  # default value set.
+  if (NOT ENABLE_PATCHELF)
 
-if(NOT DEFINED BIN_DIR)
-  set(BIN_DIR bin)
-endif(NOT DEFINED BIN_DIR)
+    find_program(PATCHELF_EXECUTABLE patchelf)
+    mark_as_advanced(PATCHELF_EXECUTABLE)
 
-if (NOT DEFINED LIB_DIR)
-  set (LIB_DIR lib)
-endif (NOT DEFINED LIB_DIR)
+    if (NOT PATCHELF_EXECUTABLE AND NOT DEFINED ENABLE_PATCHELF)
+      set(ENABLE_PATCHELF "ON" CACHE BOOL "Enable patchelf build")
+    endif (NOT PATCHELF_EXECUTABLE AND NOT DEFINED ENABLE_PATCHELF)
 
-include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  endif (NOT ENABLE_PATCHELF)
+  set(ENABLE_PATCHELF "${ENABLE_PATCHELF}" CACHE BOOL "Enable patchelf build")
 
-add_executable(patchelf patchelf.cc)
-set_target_properties(patchelf PROPERTIES FOLDER "Compilation Utilities")
-set(PATCHELF_EXECUTABLE "${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${BIN_DIR}/patchelf" CACHE STRING "patchelf location" FORCE)
+  if (ENABLE_PATCHELF)
 
-install(TARGETS patchelf
-  RUNTIME DESTINATION ${BIN_DIR}
-  LIBRARY DESTINATION ${LIB_DIR}
-  ARCHIVE DESTINATION ${LIB_DIR}
-  )
+    ExternalProject_Add(PATCHELF_BLD
+      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/patchelf"
+      BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+      CMAKE_ARGS
+      $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
+      -DBIN_DIR=${BIN_DIR}
+      -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
+      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DCMAKE_INSTALL_PREFIX=${CMAKE_NOINSTALL_PREFIX}
+      -DLIB_DIR=${LIB_DIR}
+      LOG_CONFIGURE ${EXT_BUILD_QUIET}
+      LOG_BUILD ${EXT_BUILD_QUIET}
+      LOG_INSTALL ${EXT_BUILD_QUIET}
+      LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      )
+
+    ExternalProject_Add_StepTargets(PATCHELF_BLD install)
+
+    SetTargetFolder(PATCHELF_BLD "Third Party Build Tools")
+
+  endif (ENABLE_PATCHELF)
+
+endif (NOT MSVC AND NOT APPLE)
 
 # Local Variables:
 # tab-width: 8
@@ -33,3 +52,4 @@ install(TARGETS patchelf
 # indent-tabs-mode: t
 # End:
 # ex: shiftwidth=2 tabstop=8
+

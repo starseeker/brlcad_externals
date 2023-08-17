@@ -98,16 +98,6 @@ endif(NOT DEFINED EXTPROJ_VERBOSE)
 # ExternalProject_Add feature to manage 3rd party builds
 include(ExternalProject)
 
-# Custom patch utility to replace the build directory path with the install
-# directory path in text files - make sure CMAKE_BINARY_DIR and
-# CMAKE_INSTALL_PREFIX are finalized before generating this file!
-#
-# TODO - this probably belongs in the main BRL-CAD build as an install(CODE)
-# step for files that need it...
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/buildpath_replace.cxx.in ${CMAKE_CURRENT_BINARY_DIR}/buildpath_replace.cxx)
-add_executable(buildpath_replace ${CMAKE_CURRENT_BINARY_DIR}/buildpath_replace.cxx)
-set_target_properties(buildpath_replace PROPERTIES FOLDER "Compilation Utilities")
-
 # External build outputs can be verbose - capture them to files instead of
 # outputting to console
 #set(LOG_OPTS
@@ -165,7 +155,7 @@ endif(MSVC)
 # of patch unless ENABLE_PATCH is explicitly set by the user.  The patch
 # bundled here is from https://github.com/shannonbooth/patch
 ###############################################################################
-include(${CMAKE_CURRENT_SOURCE_DIR}/patch.cmake)
+add_subdirectory(patch)
 
 ###############################################################################
 # Build tools are used during compilation, but are not bundled or distributed
@@ -176,10 +166,10 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/patch.cmake)
 # present.  The tool-specific ENABLE_* flags may be used to explicitly override
 # system detection.
 ###############################################################################
-include(${CMAKE_CURRENT_SOURCE_DIR}/astyle.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/patchelf.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/perplex.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/xmltools.cmake)
+add_subdirectory(astyle)
+add_subdirectory(patchelf)
+add_subdirectory(perplex)
+add_subdirectory(xmltools)
 
 ###############################################################################
 # Build logic is broken out per-library, but the ordering is important.  Some
@@ -195,10 +185,10 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/xmltools.cmake)
 # Note - our copy is modified from Vanilla upstream to support specifying a
 # custom prefix - until a similar feature is available in upstream zlib, we
 # need this to reliably avoid conflicts between bundled and system zlib.
-include(${CMAKE_CURRENT_SOURCE_DIR}/zlib.cmake)
+add_subdirectory(zlib)
 
 # libregex regular expression matching
-include(${CMAKE_CURRENT_SOURCE_DIR}/regex.cmake)
+add_subdirectory(regex)
 
 # netpbm library - support for pnm,ppm,pbm, etc. image files
 # http://netpbm.sourceforge.net/
@@ -209,11 +199,11 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/regex.cmake)
 # form our netpbm copy isn't really a good fit for ext, but it is kept here
 # because a) there is an active upstream and b) we are unlikely to need to
 # modify these sources to our needs from a functional perspective.
-include(${CMAKE_CURRENT_SOURCE_DIR}/netpbm.cmake)
+add_subdirectory(netpbm)
 
 # libpng - Portable Network Graphics image file support
 # http://www.libpng.org/pub/png/libpng.html
-include(${CMAKE_CURRENT_SOURCE_DIR}/png.cmake)
+add_subdirectory(png)
 
 # STEPcode - support for reading and writing STEP files
 # https://github.com/stepcode/stepcode
@@ -222,13 +212,13 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/png.cmake)
 # stepcode copy has been extensively modified, but we are working to get our
 # copy and a released upstream copy synced - in anticipation of that, stepcode
 # lives in ext.
-include(${CMAKE_CURRENT_SOURCE_DIR}/stepcode.cmake)
+add_subdirectory(stepcode)
 
 # SQLITE3 - embeddable database
-include(${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.cmake)
+add_subdirectory(sqlite3)
 
 # PROJ - generic coordinate transformation - https://proj.org
-include(${CMAKE_CURRENT_SOURCE_DIR}/proj.cmake)
+add_subdirectory(proj)
 
 # GDAL -  translator library for raster and vector geospatial data formats
 # https://gdal.org
@@ -237,25 +227,25 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/proj.cmake)
 # build and source mods.  Upstream changes have largely eliminated the need for
 # this, and work is pending to migrate our code to using vanilla upstream GDAL
 # - hence, despite the mods, GDAL lives in ext in anticipation of that change.
-include(${CMAKE_CURRENT_SOURCE_DIR}/gdal.cmake)
+add_subdirectory(gdal)
 
 # Open Asset Import Library - library for supporting I/O for a number of
 # Geometry file formats
 # https://github.com/assimp/assimp
-include(${CMAKE_CURRENT_SOURCE_DIR}/assetimport.cmake)
+add_subdirectory(assetimport)
 
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
-include(${CMAKE_CURRENT_SOURCE_DIR}/openmesh.cmake)
+add_subdirectory(openmesh)
 
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.
 set(TCL_ENABLE_TK ON CACHE BOOL "enable tk")
-include(${CMAKE_CURRENT_SOURCE_DIR}/tcl.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/tk.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/itcl.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/itk.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/iwidgets.cmake)
+add_subdirectory(tcl)
+add_subdirectory(tk)
+add_subdirectory(itcl3)
+add_subdirectory(itk3)
+add_subdirectory(iwidgets)
 
 # Local Variables:
 # tab-width: 8

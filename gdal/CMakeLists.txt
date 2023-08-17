@@ -1,237 +1,201 @@
-# CMake4GDAL project is distributed under MIT license. See accompanying file LICENSE.txt.
-cmake_minimum_required(VERSION 3.9...3.23)
+# Unless we have ENABLE_ALL set, based the building of png on
+# the system detection results
+if (ENABLE_ALL AND NOT DEFINED ENABLE_GDAL)
+  set(ENABLE_GDAL ON)
+endif (ENABLE_ALL AND NOT DEFINED ENABLE_GDAL)
 
-project(gdal LANGUAGES C CXX)
-include(CTest)
+if (NOT ENABLE_GDAL)
 
-set(GDAL_LIB_TARGET_NAME GDAL)
+  find_package(GDAL)
 
-#
-# setup cmake modules paths
-include(cmake/modules/init.cmake)
+  if (NOT GDAL_FOUND AND NOT DEFINED ENABLE_GDAL)
+    set(ENABLE_GDAL "ON" CACHE BOOL "Enable gdal build")
+  endif (NOT GDAL_FOUND AND NOT DEFINED ENABLE_GDAL)
 
-#
-# template files path
-set(GDAL_CMAKE_TEMPLATE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/template)
-#
-# Custom global properties
-define_property(
-  GLOBAL
-  PROPERTY GDAL_FORMATS
-  BRIEF_DOCS "Builtin format"
-  FULL_DOCS "Builtin format")
-define_property(
-  GLOBAL
-  PROPERTY OGR_FORMATS
-  BRIEF_DOCS "Builtin ogr drivers"
-  FULL_DOCS "Builtin ogr drivers")
-define_property(
-  GLOBAL
-  PROPERTY PLUGIN_MODULES
-  BRIEF_DOCS "Plugin modules"
-  FULL_DOCS "Plugin modules")
-define_property(
-  TARGET
-  PROPERTY PLUGIN_OUTPUT_DIR
-  BRIEF_DOCS "Plugin modules build directories"
-  FULL_DOCS "Plugin modules build directories")
-#
-# check compiler and set preferences.
-if (NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
+endif (NOT ENABLE_GDAL)
+set(ENABLE_GDAL "${ENABLE_GDAL}" CACHE BOOL "Enable gdal build")
 
-if (NOT CMAKE_C_STANDARD)
-    set(CMAKE_C_STANDARD 99)
-    set(CMAKE_C_STANDARD_REQUIRED ON)
-endif()
+if (ENABLE_GDAL)
 
-#
-if (MSVC)
-  add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
-  add_definitions(-DNOMINMAX)
-endif ()
-#
-include(CheckCompilerMachineOption)
-include(CheckCompilerSIMDFeature)
-include(Ccache)
+  if (TARGET ZLIB_BLD)
+    set(ZLIB_TARGET ZLIB_BLD)
+  endif (TARGET ZLIB_BLD)
 
-#
-if ("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "(x86|AMD64)")
-  check_compiler_machine_option(flag SSE)
-  if (NOT ${flag} STREQUAL "")
-    set(HAVE_SSE_AT_COMPILE_TIME 1)
-    add_definitions(-DHAVE_SSE_AT_COMPILE_TIME)
-    if (NOT ${flag} STREQUAL " ")
-      set(GDAL_SSE_FLAG ${flag})
-    endif ()
-  endif ()
+  if (TARGET PNG_BLD)
+    set(PNG_TARGET PNG_BLD)
+  endif (TARGET PNG_BLD)
 
-  check_compiler_machine_option(flag SSE2)
-  if (NOT ${flag} STREQUAL "")
-    set(HAVE_SSE2_AT_COMPILE_TIME 1)
-    if (NOT ${flag} STREQUAL " ")
-      set(GDAL_SSE2_FLAG ${flag})
-    endif ()
-  endif ()
+  if (TARGET PROJ_BLD)
+    set(PROJ_TARGET PROJ_BLD)
+  endif (TARGET PROJ_BLD)
 
-  check_compiler_machine_option(flag SSSE3)
-  if (NOT ${flag} STREQUAL "")
-    set(HAVE_SSSE3_AT_COMPILE_TIME 1)
-    add_definitions(-DHAVE_SSSE3_AT_COMPILE_TIME)
-    if (NOT ${flag} STREQUAL " ")
-      set(GDAL_SSSE3_FLAG ${flag})
-    endif ()
-  endif ()
+  if (TARGET SQLITE3_BLD)
+    set(SQLITE3_TARGET SQLITE3_BLD)
+  endif (TARGET SQLITE3_BLD)
 
-  check_compiler_machine_option(flag SSE4_1)
-  if (NOT ${flag} STREQUAL "")
-    set(HAVE_SSE41_AT_COMPILE_TIME 1)
-    if (NOT ${flag} STREQUAL " ")
-      set(GDAL_SSE41_FLAG ${flag})
-    endif ()
-  endif ()
+  ExternalProject_Add(GDAL_BLD
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gdal"
+    BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+    CMAKE_ARGS
+    $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
+    $<$<BOOL:${ZLIB_TARGET}>:-DZ_PREFIX=ON>
+    $<$<BOOL:${ZLIB_TARGET}>:-DZ_PREFIX_STR=${Z_PREFIX_STR}>
+    -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
+    -DCMAKE_INSTALL_LIBDIR=${LIB_DIR}
+    -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_INSTALL_RPATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR}
+    -DGDAL_INST_DATA_DIR=${CMAKE_INSTALL_PREFIX}/${DATA_DIR}/gdal
+    -DGDAL_USE_EXTERNAL_LIBS=OFF
+    -DGDAL_USE_INTERNAL_LIBS=ON # GEOTIFF, GIF, JPEG, JSONC, LERC, OPENCAD, PNG, QHULL, TIFF, ZLIB
+    -DGDAL_USE_ZLIB_INTERNAL=OFF
+    -DGDAL_USE_ZLIB=ON
+    $<$<BOOL:${ZLIB_TARGET}>:-DZLIB_ROOT=${CMAKE_INSTALL_PREFIX}>
+    -DGDAL_USE_PNG_INTERNAL=OFF
+    -DGDAL_USE_PNG=ON
+    $<$<BOOL:${PNG_TARGET}>:-DPNG_ROOT=${CMAKE_INSTALL_PREFIX}>
+    -DGDAL_USE_PROJ_INTERNAL=OFF
+    -DGDAL_USE_PROJ=ON
+    $<$<BOOL:${PROJ_TARGET}>:-DPROJ_ROOT=${CMAKE_INSTALL_PREFIX}>
+    -DGDAL_USE_SQLITE3=ON
+    $<$<BOOL:${SQLITE3_TARGET}>:-DSQLite3_ROOT=${CMAKE_INSTALL_PREFIX}>
+    -DGDAL_BUILD_OPTIONAL_DRIVERS=OFF
+    -DGDAL_ENABLE_DRIVER_RAW=ON # ACE2, BT, BYN, CPG, CTable2, DIPEx, DOQ1, DOQ2, EHDR, EIR, ENVI, FAST, GenBIN, GSC, GTX, MFF2, ISCE, KRO, MFF, LAN, LCP, LOSLAS, NDF, NTv2, PAUX, PNM, ROIPAC, RRASTER, SNODAS
+    -DGDAL_ENABLE_DRIVER_PDS=ON # PDS, PDS4, ISIS2, ISIS3, VICAR
+    -DGDAL_ENABLE_DRIVER_AAIGRID=ON # AAIGRID, GRASSASCIIGRID, ISG
+    -DGDAL_ENABLE_DRIVER_GSG=ON # GSAG, GSBG, GS7BG
+    -DGDAL_ENABLE_DRIVER_NITF=ON # NITF, RPFTOC, ECRGTOC
+    -DGDAL_ENABLE_DRIVER_NORTHWOOD=ON # NWT_GRD, NWT_GRC
+    -DGDAL_ENABLE_DRIVER_ADRG=ON # SRP, ADRG
+    -DGDAL_ENABLE_DRIVER_AVC=ON # AVCBIN, AVCE00
+    -DGDAL_ENABLE_DRIVER_AIGRID=ON
+    -DGDAL_ENABLE_DRIVER_AIRSAR=ON
+    -DGDAL_ENABLE_DRIVER_ARG=ON
+    -DGDAL_ENABLE_DRIVER_BLX=ON
+    -DGDAL_ENABLE_DRIVER_BMP=ON
+    -DGDAL_ENABLE_DRIVER_BSB=ON
+    -DGDAL_ENABLE_DRIVER_CALS=ON
+    -DGDAL_ENABLE_DRIVER_CEOS=ON
+    -DGDAL_ENABLE_DRIVER_COASP=ON
+    -DGDAL_ENABLE_DRIVER_COSAR=ON
+    -DGDAL_ENABLE_DRIVER_CTG=ON
+    -DGDAL_ENABLE_DRIVER_DIMAP=ON
+    -DGDAL_ENABLE_DRIVER_DTED=ON
+    -DGDAL_ENABLE_DRIVER_ELAS=ON
+    -DGDAL_ENABLE_DRIVER_ERS=ON
+    -DGDAL_ENABLE_DRIVER_ENVISAT=ON
+    -DGDAL_ENABLE_DRIVER_ESRIC=ON
+    -DGDAL_ENABLE_DRIVER_FIT=ON
+    -DGDAL_ENABLE_DRIVER_GFF=ON
+    -DGDAL_ENABLE_DRIVER_GIF=ON
+    -DGDAL_ENABLE_DRIVER_GRIB=ON
+    -DGDAL_ENABLE_DRIVER_GXF=ON
+    -DGDAL_ENABLE_DRIVER_HF2=ON
+    -DGDAL_ENABLE_DRIVER_HFA=ON
+    -DGDAL_ENABLE_DRIVER_IDRISI=ON
+    -DGDAL_ENABLE_DRIVER_ILWIS=ON
+    -DGDAL_ENABLE_DRIVER_IRIS=ON
+    -DGDAL_ENABLE_DRIVER_JDEM=ON
+    -DGDAL_ENABLE_DRIVER_JPEG=ON
+    -DGDAL_ENABLE_DRIVER_KMLSUPEROVERLAY=ON
+    -DGDAL_ENABLE_DRIVER_L1B=ON
+    -DGDAL_ENABLE_DRIVER_LEVELLER=ON
+    -DGDAL_ENABLE_DRIVER_MAP=ON
+    -DGDAL_ENABLE_DRIVER_MRF=ON
+    -DGDAL_ENABLE_DRIVER_MEM=ON
+    -DGDAL_ENABLE_DRIVER_MSGN=ON
+    -DGDAL_ENABLE_DRIVER_NGSGEOID=ON
+    -DGDAL_ENABLE_DRIVER_OZI=ON
+    -DGDAL_ENABLE_DRIVER_JAXAPALSAR=ON
+    -DGDAL_ENABLE_DRIVER_PCIDSK=ON
+    -DGDAL_ENABLE_DRIVER_PCRASTER=ON
+    -DGDAL_ENABLE_DRIVER_PDF=ON
+    -DGDAL_ENABLE_DRIVER_PNG=ON
+    -DGDAL_ENABLE_DRIVER_PRF=ON
+    -DGDAL_ENABLE_DRIVER_R=ON
+    -DGDAL_ENABLE_DRIVER_RASTERLITE=ON
+    -DGDAL_ENABLE_DRIVER_RIK=ON
+    -DGDAL_ENABLE_DRIVER_RMF=ON
+    -DGDAL_ENABLE_DRIVER_RS2=ON
+    -DGDAL_ENABLE_DRIVER_SAFE=ON
+    -DGDAL_ENABLE_DRIVER_SAR_CEOS=ON
+    -DGDAL_ENABLE_DRIVER_SAGA=ON
+    -DGDAL_ENABLE_DRIVER_SDTS=ON
+    -DGDAL_ENABLE_DRIVER_SENTINEL2=ON
+    -DGDAL_ENABLE_DRIVER_SGI=ON
+    -DGDAL_ENABLE_DRIVER_SIGDEM=ON
+    -DGDAL_ENABLE_DRIVER_SRTMHGT=ON
+    -DGDAL_ENABLE_DRIVER_STACIT=ON
+    -DGDAL_ENABLE_DRIVER_STACTA=ON
+    -DGDAL_ENABLE_DRIVER_TERRAGEN=ON
+    -DGDAL_ENABLE_DRIVER_TGA=ON
+    -DGDAL_ENABLE_DRIVER_TIL=ON
+    -DGDAL_ENABLE_DRIVER_TSX=ON
+    -DGDAL_ENABLE_DRIVER_USGSDEM=ON
+    -DGDAL_ENABLE_DRIVER_VRT=ON
+    -DGDAL_ENABLE_DRIVER_XPM=ON
+    -DGDAL_ENABLE_DRIVER_XYZ=ON
+    -DGDAL_ENABLE_DRIVER_ZARR=ON
+    -DGDAL_ENABLE_DRIVER_ZMAP=ON
+    -DOGR_BUILD_OPTIONAL_DRIVERS=OFF
+    -DOGR_ENABLE_DRIVER_AVC=ON
+    -DOGR_ENABLE_DRIVER_CAD=ON
+    -DOGR_ENABLE_DRIVER_CSV=ON
+    -DOGR_ENABLE_DRIVER_DGN=ON
+    -DOGR_ENABLE_DRIVER_DXF=ON
+    -DOGR_ENABLE_DRIVER_EDIGEO=ON
+    -DOGR_ENABLE_DRIVER_FLATGEOBUF=ON
+    -DOGR_ENABLE_DRIVER_GEOCONCEPT=ON
+    -DOGR_ENABLE_DRIVER_GPKG=ON
+    -DOGR_ENABLE_DRIVER_GMT=ON
+    -DOGR_ENABLE_DRIVER_IDRISI=ON
+    -DOGR_ENABLE_DRIVER_MAPML=ON
+    -DOGR_ENABLE_DRIVER_MITAB=ON
+    -DOGR_ENABLE_DRIVER_NTF=ON
+    -DOGR_ENABLE_DRIVER_PGDUMP=ON
+    -DOGR_ENABLE_DRIVER_S57=ON
+    -DOGR_ENABLE_DRIVER_SDTS=ON
+    -DOGR_ENABLE_DRIVER_SELAFIN=ON
+    -DOGR_ENABLE_DRIVER_SQLITE=ON
+    -DOGR_ENABLE_DRIVER_SXF=ON
+    -DOGR_ENABLE_DRIVER_TIGER=ON
+    -DOGR_ENABLE_DRIVER_VDV=ON
+    -DOGR_ENABLE_DRIVER_WASP=ON
+    -DBUILD_PYTHON_BINDINGS=OFF
+    -DBUILD_JAVA_BINDINGS=OFF
+    -DBUILD_CSHARP_BINDINGS=OFF
+    LOG_CONFIGURE ${EXT_BUILD_QUIET}
+    LOG_BUILD ${EXT_BUILD_QUIET}
+    LOG_INSTALL ${EXT_BUILD_QUIET}
+    LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    )
 
-  check_compiler_machine_option(flag AVX)
-  if (NOT ${flag} STREQUAL "")
-    set(HAVE_AVX_AT_COMPILE_TIME 1)
-    add_definitions(-DHAVE_AVX_AT_COMPILE_TIME)
-    if (NOT ${flag} STREQUAL " ")
-      set(GDAL_AVX_FLAG ${flag})
-    endif ()
-  endif ()
+  if (TARGET ZLIB_BLD)
+    ExternalProject_Add_StepDependencies(GDAL_BLD configure ZLIB_BLD-install)
+  endif (TARGET ZLIB_BLD)
 
-  check_compiler_machine_option(flag AVX2)
-  if (NOT ${flag} STREQUAL "")
-    set(HAVE_AVX2_AT_COMPILE_TIME 1)
-    if (NOT ${flag} STREQUAL " ")
-      set(GDAL_AVX2_FLAG ${flag})
-    endif ()
-  endif ()
+  if (TARGET PNG_BLD)
+    ExternalProject_Add_StepDependencies(GDAL_BLD configure PNG_BLD-install)
+  endif (TARGET PNG_BLD)
 
-endif ()
-#
-option(CLANG_TIDY_ENABLED "Run clang-tidy with the compiler." OFF)
-set(CLANG_TIDY_CHECKS
-    "-*,clang-analyzer-alpha.unix.cstring.*"
-    CACHE STRING "clang-tidy checks")
-set(CLANG_TIDY_WARNINGS_AS_ERRORS
-    "clang-analyzer-alpha.unix.cstring.*"
-    CACHE STRING "clang-tidy warnings as errors.")
-if (RUN_CLANG_TIDY)
-  if (PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-    message(FATAL_ERROR "RUN_CLANG_TIDY requires an out-of-source build!")
-  endif ()
-  find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
-  if (NOT CLANG_TIDY_COMMAND)
-    message(WARNING "RUN_CLANG_TIDY is ON but clang-tidy is not found!")
-    set(CMAKE_CXX_CLANG_TIDY)
-  else ()
-    set(CMAKE_CXX_CLANG_TIDY
-        "${CLANG_TIDY_COMMAND}" "-checks='${CLANG_TIDY_CHECKS}'" "-header-filter='${PROJECT_SOURCE_DIR}/*'"
-        "-warnings-as-errors='${CLANG_TIDY_WARNINGS_AS_ERRORS}'")
-  endif ()
-endif ()
+  if (TARGET PROJ_BLD)
+    ExternalProject_Add_StepDependencies(GDAL_BLD configure PROJ_BLD-install)
+  endif (TARGET PROJ_BLD)
 
-if (APPLE)
-  # To avoid the issue mentioned at
-  # https://stackoverflow.com/questions/36523911/osx-homebrew-cmake-libpng-version-mismatch-issue on github action
-  # MacOSX workers that have the Mono framework installed, whose libpng headers will be used instead of the homebrew
-  # ones
-  get_property(
-    result
-    CACHE CMAKE_FIND_FRAMEWORK
-    PROPERTY TYPE)
-  if (NOT result)
-    set(CMAKE_FIND_FRAMEWORK LAST)
-    message(STATUS "Setting CMAKE_FIND_FRAMEWORK=${CMAKE_FIND_FRAMEWORK}")
-  endif ()
-endif ()
+  if (TARGET SQLITE3_BLD)
+    ExternalProject_Add_StepDependencies(GDAL_BLD configure SQLITE3_BLD-install)
+  endif (TARGET SQLITE3_BLD)
 
-#
-# Developer may want to specify some variable to find proper version.
-# ~~~
-# Priority is as same order as follows:
-#   1. `Python_LOOKUP_VERSION`: specify major.minor version to find.
-#   2. 'Python_FIND_VIRTUALENV': specify 'ONLY' to use virtualenv activated.
-#   3. `Python_ROOT`: specify installed location.
-#   4. If nothing specified, use default behavior.
-#
-# for example
-#   $ cmake -DPython_LOOKUP_VERSION=3.6.0 ..
-#   $ cmake -DPython_FIND_VIRTUALENV=ONLY ..
-#   $ cmake -DPython_ROOT=C:\Python36 ..
-# ~~~
-#
-include(FeatureSummary)
-option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
-if (BUILD_PYTHON_BINDINGS)
-  if (Python_LOOKUP_VERSION)
-    set(Python_FIND_STRATEGY VERSION)
-    find_package(Python ${Python_LOOKUP_VERSION} EXACT COMPONENTS Interpreter Development NumPy)
-  else ()
-    set(Python_FIND_STRATEGY LOCATION)
-    find_package(Python 3.6 COMPONENTS Interpreter Development NumPy)
-  endif ()
-endif ()
-set_package_properties(Python PROPERTIES PURPOSE "SWIG_PYTHON: Python binding")
+  ExternalProject_Add_StepTargets(GDAL_BLD install)
 
-if (NOT Python_FOUND AND ${CMAKE_VERSION} VERSION_LESS "3.12.0")
-  # On Ubuntu 18.04 with Python 3.6, the backported FindPython package we have in cmake/modules/3.16 doesn't manage to
-  # find automatically Python (we can make it work by manually setting -DPython_LOOKUP_VERSION=3.6.9
-  # -DPython_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.6m.so
-  # -DPython_NumPy_INCLUDE_DIR=/usr/lib/python3/dist-packages/numpy/core/include/numpy ) but this is a bit painful. So
-  # use the deprecated method (since CMake 3.12), which works out of the box in that situation.
-  find_package(PythonInterp)
-  find_package(PythonLibs)
-  if (PYTHONINTERP_FOUND AND "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" VERSION_LESS "3.6")
-    set(PYTHONINTERP_FOUND FALSE)
-    set(PYTHONLIBS_FOUND FALSE)
-  endif()
-  if (PYTHONINTERP_FOUND)
-    set(Python_Interpreter_FOUND TRUE)
-    set(Python_EXECUTABLE ${PYTHON_EXECUTABLE})
-    set(Python_VERSION_MAJOR ${PYTHON_VERSION_MAJOR})
-    set(Python_VERSION_MINOR ${PYTHON_VERSION_MINOR})
+endif (ENABLE_GDAL)
 
-    # Detect numpy
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/get_numpy.py
-         "try:\n  import numpy\n  print(numpy.get_include())\nexcept:\n  pass\n")
-    execute_process(
-      COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/get_numpy.py
-      OUTPUT_VARIABLE _numpy_include
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if (NOT _numpy_include STREQUAL "")
-      set(Python_NumPy_FOUND TRUE)
-      set(Python_NumPy_INCLUDE_DIRS ${Python_NumPy_INCLUDE_DIRS})
-    endif ()
-  endif ()
-  if (PYTHONLIBS_FOUND)
-    set(Python_Development_FOUND TRUE)
-    set(Python_LIBRARIES ${PYTHON_LIBRARIES})
-    set(Python_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
-  endif ()
-endif ()
-if (Python_Interpreter_FOUND)
-  file(
-    GENERATE
-    OUTPUT "python_executable.txt"
-    CONTENT "${Python_EXECUTABLE}")
-endif()
-
-#
-include(${CMAKE_CURRENT_SOURCE_DIR}/gdal.cmake)
-
-if (BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/autotest")
-  # unit tests
-  add_subdirectory(autotest/cpp)
-  add_subdirectory(autotest)
-endif ()
-# Google OSS-Fuzz project utilities
-add_subdirectory(fuzzers)
-if (BUILD_TESTING)
-  # Google OSS-Fuzz tests
-  add_subdirectory(fuzzers/tests)
-endif ()
-# vim: ts=4 sw=4 sts=4 et
+# Local Variables:
+# tab-width: 8
+# mode: cmake
+# indent-tabs-mode: t
+# End:
+# ex: shiftwidth=2 tabstop=8

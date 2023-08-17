@@ -1,101 +1,42 @@
-#                     C M A K E L I S T S . T X T
-# BRL-CAD
-#
-# Copyright (c) 2022 United States Government as represented by
-# the U.S. Army Research Laboratory.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-#
-# 1. Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following
-# disclaimer in the documentation and/or other materials provided
-# with the distribution.
-#
-# 3. The name of the author may not be used to endorse or promote
-# products derived from this software without specific prior written
-# permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
-# OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-# GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# Build file for sqlite (above license applies to only this file - lmdb is
-# covered by its own license.)
-#
-# SQLite is an in-process library that implements a self-contained, serverless,
-# zero-configuration, transactional SQL database engine.
-# https://www.sqlite.org/index.html
-###
+# Unless we have ENABLE_ALL set, based the building of png on
+# the system detection results
+if (ENABLE_ALL AND NOT DEFINED ENABLE_SQLite3)
+  set(ENABLE_SQLite3 ON)
+endif (ENABLE_ALL AND NOT DEFINED ENABLE_SQLite3)
 
-# Minimum required version of CMake
-cmake_minimum_required(VERSION 3.12)
+if (NOT ENABLE_SQLite3)
 
-# Set CMake project name
-project(SQLITE)
+  find_package(SQLite3)
 
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  if (NOT SQLite3_FOUND AND NOT DEFINED ENABLE_SQLite3)
+    set(ENABLE_SQLite3 "ON" CACHE BOOL "Enable sqlite3 build")
+  endif (NOT SQLite3_FOUND AND NOT DEFINED ENABLE_SQLite3)
 
-if (NOT DEFINED BIN_DIR)
-  set (BIN_DIR bin)
-endif (NOT DEFINED BIN_DIR)
+endif (NOT ENABLE_SQLite3)
+set(ENABLE_SQLite3 "${ENABLE_SQLite3}" CACHE BOOL "Enable sqlite3 build")
 
-if (NOT DEFINED LIB_DIR)
-  set (LIB_DIR lib)
-endif (NOT DEFINED LIB_DIR)
+if (ENABLE_SQLite3)
 
-if (NOT DEFINED INCLUDE_DIR)
-  set (INCLUDE_DIR include)
-endif (NOT DEFINED INCLUDE_DIR)
+  ExternalProject_Add(SQLITE3_BLD
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sqlite3"
+    BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+    CMAKE_ARGS
+    $<$<NOT:$<BOOL:${CMAKE_CONFIGURATION_TYPES}>>:-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}>
+    -DBIN_DIR=${BIN_DIR}
+    -DLIB_DIR=${LIB_DIR}
+    -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    LOG_CONFIGURE ${EXT_BUILD_QUIET}
+    LOG_BUILD ${EXT_BUILD_QUIET}
+    LOG_INSTALL ${EXT_BUILD_QUIET}
+    LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    )
 
-find_package(Threads)
+  ExternalProject_Add_StepTargets(SQLITE3_BLD install)
 
-include(CheckLibraryExists)
-check_library_exists(m cos "" HAVE_M_LIBRARY)
-if (HAVE_M_LIBRARY)
-  set(M_LIBRARY m)
-endif (HAVE_M_LIBRARY)
-
-# https://www.sqlite.org/howtocompile.html
-add_definitions(-DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_ENABLE_RTREE=1)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
-add_library(libsqlite3 SHARED sqlite3.c)
-set_target_properties(libsqlite3 PROPERTIES PREFIX "")
-set_target_properties(libsqlite3 PROPERTIES VERSION 3.41.2 SOVERSION 3)
-target_link_libraries(libsqlite3 PRIVATE Threads::Threads ${M_LIBRARY})
-set_property(TARGET libsqlite3 APPEND PROPERTY COMPILE_DEFINITIONS "SQLITE_ENABLE_RTREE")
-set_property(TARGET libsqlite3 APPEND PROPERTY COMPILE_DEFINITIONS "SQLITE_DLL_EXPORTS")
-set_property(TARGET libsqlite3 APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "SQLITE_DLL_IMPORTS")
-install(TARGETS libsqlite3
-  RUNTIME DESTINATION ${BIN_DIR}
-  LIBRARY DESTINATION ${LIB_DIR}
-  ARCHIVE DESTINATION ${LIB_DIR}
-  )
-
-add_executable(sqlite3 sqlite3.c shell.c)
-target_link_libraries(sqlite3 Threads::Threads ${M_LIBRARY})
-install(TARGETS sqlite3
-  RUNTIME DESTINATION ${BIN_DIR}
-  LIBRARY DESTINATION ${LIB_DIR}
-  ARCHIVE DESTINATION ${LIB_DIR}
-  )
-
-install(FILES sqlite3.h sqlite3ext.h DESTINATION ${INCLUDE_DIR})
+endif (ENABLE_SQLite3)
 
 # Local Variables:
 # tab-width: 8
@@ -103,3 +44,4 @@ install(FILES sqlite3.h sqlite3ext.h DESTINATION ${INCLUDE_DIR})
 # indent-tabs-mode: t
 # End:
 # ex: shiftwidth=2 tabstop=8
+
