@@ -154,23 +154,32 @@ if(MSVC)
 
 endif(MSVC)
 
-# TODO - investigate https://github.com/shannonbooth/patch
+###############################################################################
 # Applying patch files cross platform is a challenging problem due to the
 # shortage of portable tools and issues with LF vs CRLF files - see
-# https://gitlab.kitware.com/cmake/cmake/-/issues/16854 for more background
-# on this.  If the above implementation of patch can do what we need it to,
-# it might allow us to maintain vanilla sources and apply patch files during
-# the ExternalProject_Add process
+# https://gitlab.kitware.com/cmake/cmake/-/issues/16854 for more background on
+# this.  We need to address the patch build tool first thing, since any of the
+# other ExternalProject_Add builds that follow may depend on it.
+#
+# Like the other build tools below, patch will default to a system install
+# of patch unless ENABLE_PATCH is explicitly set by the user.  The patch
+# bundled here is from https://github.com/shannonbooth/patch
+###############################################################################
+include(${CMAKE_CURRENT_SOURCE_DIR}/patch.cmake)
 
 ###############################################################################
 # Build tools are used during compilation, but are not bundled or distributed
-# with BRL-CAD proper.
+# with BRL-CAD proper.  We group these tools here for convenience.  Unlike the
+# build targets intended for distribution with BRL-CAD, these outputs are all
+# targeted to extnoinstall.  These builds ignore the ENABLE_ALL flag used by
+# the bundling targets and by default defer to a system version if one is
+# present.  The tool-specific ENABLE_* flags may be used to explicitly override
+# system detection.
 ###############################################################################
 include(${CMAKE_CURRENT_SOURCE_DIR}/astyle.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/patchelf.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/perplex.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/xmltools.cmake)
-
 
 ###############################################################################
 # Build logic is broken out per-library, but the ordering is important.  Some
