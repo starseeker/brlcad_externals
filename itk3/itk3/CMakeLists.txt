@@ -175,23 +175,23 @@ mark_as_advanced(ITK_INCLUDE_DIRS)
 # Like ITcl, Itk requires private Tcl headers, which we can't assume from a system
 # install of Tcl.  The workaround is to use our local copies and hope they
 # are workable. (Ugh.)
-if (NOT EXISTS "${TCL_INCLUDE_PATH}/tcl-private/generic")
-    set(TCL_PRIVATE_HDRS ${CMAKE_CURRENT_SOURCE_DIR}/../tcl/generic)
-  if(NOT WIN32)
-    set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${CMAKE_CURRENT_SOURCE_DIR}/../tcl/unix)
-  else(NOT WIN32)
-    set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${CMAKE_CURRENT_SOURCE_DIR}/../tcl/win)
-    set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${CMAKE_CURRENT_SOURCE_DIR}/../tk/xlib)
-  endif(NOT WIN32)
-else()
-  set(TCL_PRIVATE_HDRS ${TCL_INCLUDE_PATH}/tcl-private/generic)
-  if(NOT WIN32)
-    set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${TCL_INCLUDE_PATH}/tcl-private/unix)
-    set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${TK_INCLUDE_PATH}/tk-private/xlib)
-  else(NOT WIN32)
-    set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${TCL_INCLUDE_PATH}/tcl-private/win)
-  endif(NOT WIN32)
-endif ()
+if (NOT DEFINED TCL_SOURCE_DIR)
+  message(FATAL_ERROR "Itk3 needs to know where to find the Tcl source directory")
+endif (NOT DEFINED TCL_SOURCE_DIR)
+set(TCL_PRIVATE_HDRS ${TCL_SOURCE_DIR}/generic)
+if(NOT WIN32)
+  set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${TCL_SOURCE_DIR}/unix)
+else(NOT WIN32)
+  set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${TCL_SOURCE_DIR}/win)
+endif(NOT WIN32)
+
+# Itk also requires private Tk headers
+if (NOT DEFINED TK_SOURCE_DIR)
+  message(FATAL_ERROR "Itk3 needs to know where to find the Tk source directory")
+endif (NOT DEFINED TK_SOURCE_DIR)
+if(WIN32)
+  set(TCL_PRIVATE_HDRS ${TCL_PRIVATE_HDRS} ${TK_SOURCE_DIR}/xlib)
+endif(NOT WIN32)
 
 include_directories(
   ${TCL_INCLUDE_PATH}
@@ -201,7 +201,7 @@ include_directories(
   ${X11_INCLUDE_DIR}
   ${TCL_PRIVATE_HDRS}
   # Itcl3 is iffy as a system install - just reference the local copy
-  ${CMAKE_CURRENT_SOURCE_DIR}/../itcl3/generic
+  ${CMAKE_SOURCE_DIR}/itcl3/itcl3/generic
   )
 
 add_library(itk${ITK_VERSION} SHARED ${ITK_SRCS})
