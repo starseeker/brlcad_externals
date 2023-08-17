@@ -4,7 +4,9 @@ if (ENABLE_ALL AND NOT DEFINED ENABLE_TCL)
   set(ENABLE_TCL ON)
 endif (ENABLE_ALL AND NOT DEFINED ENABLE_TCL)
 
-set(TCL_VERSION "8.6")
+set(TCL_MAJOR_VERSION 8)
+set(TCL_MINOR_VERSION 6)
+set(TCL_VERSION "${TCL_MAJOR_VERSION}.${TCL_MINOR_VERSION}")
 
 if (NOT ENABLE_TCL)
 
@@ -113,10 +115,17 @@ if (ENABLE_TCL)
 
   # Scripts expect a non-versioned tclsh program, but the Tcl build doesn't provide one,
   # we must provide it ourselves
-  add_custom_target(tclsh_cpy ALL
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/tclsh${TCL_VERSION}${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/tclsh${CMAKE_EXECUTABLE_SUFFIX}
-    DEPENDS TCL_BLD-install
-    )
+  if (MSVC)
+    add_custom_target(tclsh_cpy ALL
+      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/tclsh${CMAKE_EXECUTABLE_SUFFIX}
+      DEPENDS TCL_BLD-install
+      )
+  else (MSVC)
+    add_custom_target(tclsh_cpy ALL
+      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/tclsh${TCL_VERSION}${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/tclsh${CMAKE_EXECUTABLE_SUFFIX}
+      DEPENDS TCL_BLD-install
+      )
+  endif (MSVC)
 
   # The library file permissions end up a bit strange - fix them
   find_program(CHMOD_EXECUTABLE chmod)
