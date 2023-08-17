@@ -34,16 +34,24 @@ This module will set the following variables if found:
 
 #]=======================================================================]
 
-# Look for the necessary header
-find_path(SQLite3_INCLUDE_DIR NAMES sqlite3.h)
-mark_as_advanced(SQLite3_INCLUDE_DIR)
+set(_SQLite3_SEARCHES)
 
-# Look for the necessary library
-find_library(SQLite3_LIBRARY NAMES sqlite3 sqlite)
-mark_as_advanced(SQLite3_LIBRARY)
+# Search SQLite3_ROOT first if it is set.
+if(SQLite3_ROOT)
+  set(_SQLite3_SEARCH_ROOT PATHS ${SQLite3_ROOT} NO_DEFAULT_PATH)
+  list(APPEND _SQLite3_SEARCHES _SQLite3_SEARCH_ROOT)
+endif()
 
-# Look for the necessary exec
-find_program(SQLite3_EXECNAME NAMES sqlite3 sqlite)
+set(SQLite3_NAMES sqlite3 sqlite)
+
+# Try each search configuration.
+foreach(search ${_SQLite3_SEARCHES})
+  find_path(SQLite3_INCLUDE_DIR NAMES sqlite3.h        ${${search}} PATH_SUFFIXES include)
+  find_library(SQLite3_LIBRARY  NAMES ${SQLite3_NAMES} ${${search}} PATH_SUFFIXES lib)
+  find_program(SQLite3_EXECNAME NAMES sqlite3 sqlite   ${${search}} PATH_SUFFIXES bin)
+endforeach()
+
+mark_as_advanced(SQLite3_LIBRARY SQLite3_INCLUDE_DIR)
 
 # Extract version information from the header file
 if(SQLite3_INCLUDE_DIR)

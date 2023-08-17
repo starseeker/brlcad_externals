@@ -25,6 +25,8 @@ This module will set the following variables if found:
   where to find sqlite3.h, etc.
 ``SQLite3_LIBRARIES``
   the libraries to link against to use SQLite3.
+``SQLite3_EXECNAME``
+  the sqlite3 program name.
 ``SQLite3_VERSION``
   version of the SQLite3 library found
 ``SQLite3_FOUND``
@@ -46,7 +48,10 @@ set(SQLite3_NAMES sqlite3 sqlite)
 foreach(search ${_SQLite3_SEARCHES})
   find_path(SQLite3_INCLUDE_DIR NAMES sqlite3.h        ${${search}} PATH_SUFFIXES include)
   find_library(SQLite3_LIBRARY  NAMES ${SQLite3_NAMES} ${${search}} PATH_SUFFIXES lib)
+  find_program(SQLite3_EXECNAME NAMES sqlite3 sqlite   ${${search}} PATH_SUFFIXES bin)
 endforeach()
+
+mark_as_advanced(SQLite3_LIBRARY SQLite3_INCLUDE_DIR)
 
 # Extract version information from the header file
 if(SQLite3_INCLUDE_DIR)
