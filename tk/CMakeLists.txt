@@ -12,7 +12,7 @@ if (TK_DO_BUILD)
   if (TARGET TCL_BLD)
     # If we're building against a compiled Tcl and not a system Tcl,
     # set some vars accordingly
-    set(TCL_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/TCL_BLD-prefix/src/TCL_BLD")
+    set(TCL_SRC_DIR "${CMAKE_BINARY_DIR}/tcl/TCL_BLD-prefix/src/TCL_BLD")
     set(TCL_TARGET TCL_BLD)
   else (TARGET TCL_BLD)
     get_filename_component(TCLCONF_DIR "${TCL_LIBRARY}" DIRECTORY)
