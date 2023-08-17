@@ -3,7 +3,7 @@
 # BRL-CAD, so a system version is fine if available.  We set up ENABLE_PATCH
 # this way so it will show as an option in the CMake GUI even without a
 # default value set.
-set(PATCH_OPTIONS "-p1" CACHE STRING "Command line options to use when patching" FORCE)
+set(PATCH_OPTIONS "--ignore-whitespace" CACHE STRING "Command line options to use when patching" FORCE)
 if (NOT ENABLE_PATCH)
 
   find_program(PATCH_EXECUTABLE patch)
@@ -41,7 +41,7 @@ if (ENABLE_PATCH)
   SetTargetFolder(PATCH_BLD "Third Party Build Tools")
 
   set(PATCH_EXECUTABLE ${CMAKE_NOINSTALL_PREFIX}/${BIN_DIR}/sb_patch${CMAKE_EXECUTABLE_SUFFIX} CACHE STRING "Patch executable" FORCE)
-  set(PATCH_OPTIONS "-p1;--newline-output;preserve" CACHE STRING "Command line options to use when patching" FORCE)
+  set(PATCH_OPTIONS "--ignore-whitespace;--newline-output;preserve" CACHE STRING "Command line options to use when patching" FORCE)
 
 endif (ENABLE_PATCH)
 
