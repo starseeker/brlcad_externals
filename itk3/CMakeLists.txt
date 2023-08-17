@@ -36,6 +36,14 @@ set(ENABLE_ITK "${ENABLE_ITK}" CACHE BOOL "Enable itk build")
 
 if (ENABLE_ITK)
 
+  if (TARGET TCL_BLD)
+    set(TCL_TARGET TCL_BLD)
+  endif (TARGET TCL_BLD)
+
+  if (TARGET ITCL_BLD)
+    set(ITCL_TARGET ITCL_BLD)
+  endif (TARGET ITCL_BLD)
+
   # If we're building ITK, it's path setup must take into account the
   # subdirectory in which we are storing the library.
   set(RPATH_SUFFIX itk3.4)
