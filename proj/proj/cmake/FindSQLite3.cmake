@@ -42,7 +42,7 @@ if(SQLite3_ROOT)
   list(APPEND _SQLite3_SEARCHES _SQLite3_SEARCH_ROOT)
 endif()
 
-set(SQLite3_NAMES sqlite3 sqlite)
+set(SQLite3_NAMES sqlite3 sqlite libsqlite3 libsqlite)
 
 # Try each search configuration.
 foreach(search ${_SQLite3_SEARCHES})

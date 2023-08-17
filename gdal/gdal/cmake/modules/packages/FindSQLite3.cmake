@@ -58,7 +58,7 @@ find_path(SQLite3_INCLUDE_DIR
           NAMES  sqlite3.h
           HINTS ${PC_SQLITE3_INCLUDE_DIRS})
 find_library(SQLite3_LIBRARY
-             NAMES sqlite3 sqlite3_i
+             NAMES sqlite3 sqlite3_i libsqlite3 libsqlite libsqlite3_i
              HINTS ${PC_SQLITE3_LIBRARY_DIRS})
 
 # Extract version information from the header file
