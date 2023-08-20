@@ -258,8 +258,8 @@ main(int argc, const char *argv[])
 	std::cerr << "Error:  replacing string in text file - need file, target string and replacement string as arguments.\n";
 	return -1;
     }
-    std::string target_str(nonopts[0]);
-    std::string replace_str(nonopts[1]);
+    std::string target_str(nonopts[1]);
+    std::string replace_str(nonopts[2]);
     return process_text(fname, target_str, replace_str, verbose);
 }
 
