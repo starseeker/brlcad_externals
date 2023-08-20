@@ -51,9 +51,10 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "cxxopts.hpp"
 
 int
-process_binary(std::string &fname, std::vector<std::string> &target_strs, bool verbose)
+process_binary(std::string &fname, std::vector<std::string> &target_strs, char clear_char, bool verbose)
 {
     // Read binary contents
     std::ifstream input_fs;
@@ -71,7 +72,7 @@ process_binary(std::string &fname, std::vector<std::string> &target_strs, bool v
 	std::vector<char> search_chars(target_strs[i].begin(), target_strs[i].end());
 	std::vector<char> null_chars;
 	for (size_t j = 0; j < search_chars.size(); j++)
-	    null_chars.push_back('\0');
+	    null_chars.push_back(clear_char);
 
 	// Find instances of target string in binary, and replace any we find
 	auto position = std::search(bin_contents.begin(), bin_contents.end(), search_chars.begin(), search_chars.end());
@@ -148,52 +149,84 @@ process_text(std::string &fname, std::string &target_str, std::string &replace_s
 int
 main(int argc, const char *argv[])
 {
-    bool verbose = false;
     bool binary_mode = false;
+    bool binary_test_mode = false;
+    bool clear_mode = false;
+    char clear_char = '\0';
+    bool swap_mode = false;
     bool text_mode = false;
-    const char *usage = "Usage: strclear [-v] [-b] [-t] file string_to_clear [replacement_string]";
+    bool verbose = false;
 
-    argc--; argv++;
+    cxxopts::Options options(argv[0], "A program to clear or replace strings in files\n");
 
-    if (argc < 2) {
-	std::cerr << usage << "\n";
+    std::vector<std::string> nonopts;
+
+    try
+    {
+
+
+	options
+	    .set_width(70)
+	    .add_options()
+	    ("B,is_binary","Test the file to see if it is a binary file.)", cxxopts::value<bool>(binary_test_mode))
+	    ("b,binary",   "Treat the input file as binary.  (Note that only string clearing is supported with binary files.)", cxxopts::value<bool>(binary_mode))
+	    ("c,clear",    "Replace strings in files by overwriting a specified character (defaults to NULL)", cxxopts::value<bool>(clear_mode))
+	    ("clear_char", "Specify a character to use when clearing strings in files", cxxopts::value<char>(clear_char))
+	    ("r,replace",  "Replace one string with another (text mode only).", cxxopts::value<bool>(swap_mode))
+	    ("t,text",     "Refuse to run unless the input file is a text file.", cxxopts::value<bool>(text_mode))
+	    ("v,verbose",  "Verbose reporting during processing", cxxopts::value<bool>(verbose))
+	    ("h,help",     "Print help")
+	    ;
+	auto result = options.parse(argc, argv);
+
+	nonopts = result.unmatched();
+
+	if (result.count("help")) {
+	    std::cout << options.help({""}) << std::endl;
+	    return 0;
+	}
+
+	if (binary_mode && text_mode) {
+	    std::cerr << "Error:  need to specify either binary or text mode, not both\n";
+	    return -1;
+	}
+
+	if (!clear_mode && !swap_mode && !binary_test_mode) {
+	    std::cerr << "Error:  need to specify either clear mode (-c), replace mode (-r), or binary file test mode (-B)\n";
+	    return -1;
+	}
+
+	if (clear_mode && swap_mode) {
+	    std::cerr << "Error:  need to specify either clear or replace mode, not both\n";
+	    return -1;
+	}
+    }
+    catch (const cxxopts::exceptions::exception& e)
+    {
+	std::cerr << "error parsing options: " << e.what() << std::endl;
 	return -1;
     }
 
-    while (argc > 2 && argv[0][0] == '-') {
-	const char *arg = argv[0];
-	argc--; argv++;
-	if (std::string(arg) == std::string("-v")) {
-	    verbose = true;
-	    continue;
-	}
-	if (std::string(arg) == std::string("-b")) {
-	    binary_mode = true;
-	    continue;
-	}
-	if (std::string(arg) == std::string("-t")) {
-	    text_mode = true;
-	    continue;
-	}
-	std::cerr << usage << "\n";
-	return -1;
-    }
-
-    if (binary_mode && text_mode) {
-	std::cerr << "Error:  need to specify either binary or text mode, not both\n";
+    // Unless the goal is strictly to test file type, we need at least two args
+    if (nonopts.size() < 2 && !binary_test_mode) {
+	std::cout << options.help({""}) << std::endl;
 	return -1;
     }
 
     // If we only have a filename and a single string, the only thing we can
     // do is treat the file as binary and replace the string
-    if (argc == 2)
-	binary_mode = true;
+    if (nonopts.size() == 2 && swap_mode) {
+	std::cerr << "Error:  string replacement mode indicated, but no replacement specified\n";
+	return -1;
+    }
 
-    std::string fname(argv[0]);
+    std::string fname(nonopts[0]);
 
     // Determine if the file is a binary or text file, if we've not been told
-    // to treat it as binary explicitly with -b.
+    // to treat it as binary explicitly with -b.  If we've been told text mode
+    // we still check to make sure we really have a text file before processing.
     if (!binary_mode) {
+	// TODO - can we do this faster?
 	std::ifstream check_fs;
 	check_fs.open(fname);
 	int c;
@@ -202,28 +235,31 @@ main(int argc, const char *argv[])
 	check_fs.close();
     }
 
-    if (binary_mode && text_mode) {
-	if (verbose)
-	    std::cerr << "Text mode specified, but file is binary - no op\n";
-	return 0;
+    // If all we're supposed to do is determine the type, return success (0) if
+    // the file is binary, else 1
+    if (binary_test_mode)
+	return (binary_mode) ? 0 : 1;
+
+    if (binary_mode && swap_mode) {
+	std::cerr << "Error:  string replacement indicated, but file is binary\n";
+	return -1;
     }
 
-    // If we're explicitly in binary mode or we have no replacement
-    // string, we're just nulling out the target string.
+    // If we're in binary mode we're just nulling out the target string(s).
     if (binary_mode) {
 	std::vector<std::string> target_strs;
-	for (int i = 1; i < argc; i++) {
-	    target_strs.push_back(std::string(argv[i]));
+	for (size_t i = 1; i < nonopts.size(); i++) {
+	    target_strs.push_back(nonopts[i]);
 	}
-	return process_binary(fname, target_strs, verbose);
+	return process_binary(fname, target_strs, clear_char, verbose);
     }
 
     if (argc > 3) {
-	std::cerr << "Error:  processing text file, but more than three args supplied.  For text files, the supported mode is to replace a single string with a replacement.\n";
+	std::cerr << "Error:  replacing string in text file - need file, target string and replacement string as arguments.\n";
 	return -1;
     }
-    std::string target_str(argv[1]);
-    std::string replace_str(argv[2]);
+    std::string target_str(nonopts[0]);
+    std::string replace_str(nonopts[1]);
     return process_text(fname, target_str, replace_str, verbose);
 }
 
