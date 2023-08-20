@@ -173,6 +173,7 @@ add_subdirectory(patch)
 add_subdirectory(astyle)
 add_subdirectory(patchelf)
 add_subdirectory(perplex)
+add_subdirectory(strclear)
 add_subdirectory(xmltools)
 
 ###############################################################################
