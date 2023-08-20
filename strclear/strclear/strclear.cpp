@@ -254,7 +254,7 @@ main(int argc, const char *argv[])
 	return process_binary(fname, target_strs, clear_char, verbose);
     }
 
-    if (argc > 3) {
+    if (nonopts.size() > 3) {
 	std::cerr << "Error:  replacing string in text file - need file, target string and replacement string as arguments.\n";
 	return -1;
     }
