@@ -82,6 +82,8 @@ if (ENABLE_TCL)
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
       )
 
+    # TODO - may need a post-install custom step, if possible, to scrub useless/misleading paths from tclConfig.sh
+
     set(TCL_APPINIT tclAppInit.c)
 
   else (NOT MSVC)
