@@ -103,7 +103,7 @@
 
 /* Based on the public domain wrapper implemented by Mike Frysinger:
  * https://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/tree/utils/mmap-windows.c */
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #  define PROT_READ     0x1
 #  define PROT_WRITE    0x2
 /* This flag is only available in WinXP+ */
