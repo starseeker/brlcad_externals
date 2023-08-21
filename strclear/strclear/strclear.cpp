@@ -60,6 +60,21 @@ strnstr(const char *h, const char *n, size_t hlen);
 int
 process_binary(std::string &fname, std::vector<std::string> &target_strs, char clear_char, bool verbose)
 {
+    // See if any of the target strings are present
+    MappedFile *mf = new MappedFile(fname.c_str());
+    bool process = false;
+    if (mf && mf->buf) {
+	for (size_t i = 0; i < target_strs.size(); i++) {
+	    if (strnstr((const char *)mf->buf, target_strs[i].c_str(), mf->buflen)) {
+		process = true;
+		break;
+	    }
+	}
+    }
+    delete mf;
+    if (!process)
+	return 0;
+
     // Read binary contents
     std::ifstream input_fs;
     input_fs.open(fname, std::ios::binary);
@@ -118,6 +133,15 @@ process_text(std::string &fname, std::string &target_str, std::string &replace_s
 	std::cerr << "Replacement string \"" << replace_str << "\" contains target string \"" << target_str << "\" - unsupported.\n";
 	return -1;
     }
+
+    // See if the target string is present
+    MappedFile *mf = new MappedFile(fname.c_str());
+    bool process = true;
+    if (mf && mf->buf && !strnstr((const char *)mf->buf, target_str.c_str(), mf->buflen))
+	process = false;
+    delete mf;
+    if (!process)
+	return 0;
 
     std::ifstream input_fs(fname);
     std::stringstream fbuffer;
