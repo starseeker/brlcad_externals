@@ -90,7 +90,7 @@ process_binary(std::string &fname, std::vector<std::string> &target_strs, char c
 		std::string cchar(1, clear_char);
 		if (clear_char == '\0')
 		    cchar = std::string("\\0");
-		std::cout << "\tclearing instance #" << rcnt << " of " << target_strs[i] << "with the '" << cchar << "' char\n";
+		std::cout << "\tclearing instance #" << rcnt << " of " << target_strs[i] << " with the '" << cchar << "' char\n";
 	    }
 	    position = std::search(position, bin_contents.end(), search_chars.begin(), search_chars.end());
 	}
