@@ -52,6 +52,10 @@
 #include <string>
 #include <vector>
 #include "cxxopts.hpp"
+#include "MappedFile.hpp"
+
+extern "C" char *
+strnstr(const char *h, const char *n, size_t hlen);
 
 int
 process_binary(std::string &fname, std::vector<std::string> &target_strs, char clear_char, bool verbose)
