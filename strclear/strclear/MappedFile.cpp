@@ -74,6 +74,10 @@
 #  undef WIN32_LEAN_AND_MEAN /* unset to not interfere with calling apps */
 #  undef NOMINMAX
 #  include <io.h>
+
+#  define O_RDONLY _O_RDONLY
+#  define O_BINARY _O_BINARY
+
 #else
 #  define O_BINARY 0
 #endif
