@@ -74,31 +74,52 @@
 #  undef WIN32_LEAN_AND_MEAN /* unset to not interfere with calling apps */
 #  undef NOMINMAX
 #  include <io.h>
+#  include <fcntl.h>
 
 #  define O_RDONLY _O_RDONLY
 #  define O_BINARY _O_BINARY
 
 #else
+
+#  ifdef HAVE_SYS_STAT_H
+#    include <sys/stat.h>
+#  endif
+
+#  ifdef HAVE_SYS_MMAN_H
+#    include <sys/mman.h>
+#  endif
+
+#  ifdef HAVE_FCNTL_H
+#    include <fcntl.h>
+#  endif
+
+#  ifdef HAVE_UNISTD_H
+#    include <unistd.h>
+#  endif
+
 #  define O_BINARY 0
 #endif
 
-#ifdef HAVE_SYS_STAT_H
-#  include <sys/stat.h>
-#endif
-
-#ifdef HAVE_SYS_MMAN_H
-#  include <sys/mman.h>
-#endif
 #if !defined(MAP_FAILED)
 #  define MAP_FAILED ((void *)-1)     /* Error return from mmap() */
 #endif
 
-#ifdef HAVE_FCNTL_H
-#  include <fcntl.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-#  include <unistd.h>
+/* off_t is 32 bit size even on 64 bit Windows. In the past we have tried to
+ * force off_t to be 64 bit but this is failing on newer Windows/Visual Studio
+ * versions in 2020 - therefore, we instead introduce the b_off_t define to
+ * properly substitute the correct numerical type for the correct platform.  */
+#if defined(_WIN64)
+#  include <sys/stat.h>
+#  define b_off_t __int64
+#  define fstat _fstati64
+#  define stat  _stati64
+#elif defined (_WIN32)
+#  include <sys/stat.h>
+#  define b_off_t _off_t
+#  define fstat _fstat
+#  define stat  _stat
+#else
+#  define b_off_t off_t
 #endif
 
 /* Based on the public domain wrapper implemented by Mike Frysinger:
