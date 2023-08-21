@@ -88,9 +88,9 @@
 
 #ifdef HAVE_SYS_MMAN_H
 #  include <sys/mman.h>
-#  if !defined(MAP_FAILED)
-#    define MAP_FAILED ((void *)-1)     /* Error return from mmap() */
-#  endif
+#endif
+#if !defined(MAP_FAILED)
+#  define MAP_FAILED ((void *)-1)     /* Error return from mmap() */
 #endif
 
 #ifdef HAVE_FCNTL_H
