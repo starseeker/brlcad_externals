@@ -60,21 +60,6 @@ strnstr(const char *h, const char *n, size_t hlen);
 int
 process_binary(std::string &fname, std::vector<std::string> &target_strs, char clear_char, bool verbose)
 {
-    // See if any of the target strings are present
-    MappedFile *mf = new MappedFile(fname.c_str());
-    bool process = false;
-    if (mf && mf->buf) {
-	for (size_t i = 0; i < target_strs.size(); i++) {
-	    if (strnstr((const char *)mf->buf, target_strs[i].c_str(), mf->buflen)) {
-		process = true;
-		break;
-	    }
-	}
-    }
-    delete mf;
-    if (!process)
-	return 0;
-
     // Read binary contents
     std::ifstream input_fs;
     input_fs.open(fname, std::ios::binary);
@@ -99,8 +84,14 @@ process_binary(std::string &fname, std::vector<std::string> &target_strs, char c
 	while (position != bin_contents.end()) {
 	    std::copy(null_chars.begin(), null_chars.end(), position);
 	    rcnt++;
-	    if (verbose)
-		std::cout << "Replacing instance #" << rcnt << " of " << target_strs[i] << "\n";
+	    if (verbose && rcnt == 1)
+		std::cout << fname << ":\n";
+	    if (verbose) {
+		std::string cchar(1, clear_char);
+		if (clear_char == '\0')
+		    cchar = std::string("\\0");
+		std::cout << "\tclearing instance #" << rcnt << " of " << target_strs[i] << "with the '" << cchar << "' char\n";
+	    }
 	    position = std::search(position, bin_contents.end(), search_chars.begin(), search_chars.end());
 	}
 	grcnt += rcnt;
@@ -155,8 +146,10 @@ process_text(std::string &fname, std::string &target_str, std::string &replace_s
     while (position != nfile_contents.end()) {
 	nfile_contents.replace(nfile_contents.find(target_str), target_str.size(), replace_str);
 	rcnt++;
+	if (verbose && rcnt == 1)
+	    std::cout << fname << ":\n";
 	if (verbose)
-	    std::cout << "Replacing instance #" << rcnt << " of " << target_str << " with " << replace_str << "\n";
+	    std::cout << "\treplacing instance #" << rcnt << " of " << target_str << " with " << replace_str << "\n";
 	position = std::search(nfile_contents.begin(), nfile_contents.end(), target_str.begin(), target_str.end());
     }
     if (!rcnt)
