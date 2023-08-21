@@ -49,28 +49,6 @@ if (ENABLE_OPENMESH)
   SetTargetFolder(OPENMESH_BLD "Third Party Libraries")
   SetTargetFolder(openmesh "Third Party Libraries")
 
-  # OpenMesh generates windows dll's in the root directory unlike most other builds which
-  # stuff them in bin/
-  # move them over so our ext build logic can find them
-  if(MSVC)
-    set(OPENMESH_LIBS Core Tools)
-    set(OPENMESH_BASENAME OpenMesh)
-    set(OPENMESH_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
-    foreach(OMLIB ${OPENMESH_LIBS})
-      add_custom_command(
-	OUTPUT ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/${OPENMESH_BASENAME}${OMLIB}${OPENMESH_SUFFIX}
-	COMMAND ${CMAKE_COMMAND} -E rename
-	${CMAKE_INSTALL_PREFIX}/${OPENMESH_BASENAME}${OMLIB}${OPENMESH_SUFFIX}
-	${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/${OPENMESH_BASENAME}${OMLIB}${OPENMESH_SUFFIX}
-	DEPENDS OPENMESH_BLD-install
-	)
-      add_custom_target(OPENMESH_MOVE_${OMLIB}
-	ALL
-	DEPENDS ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/${OPENMESH_BASENAME}${OMLIB}${OPENMESH_SUFFIX}
-	)
-    endforeach(OMLIB ${OPENMESH_LIBS})
-  endif(MSVC)
-
 endif (ENABLE_OPENMESH)
 
 mark_as_advanced(OPENMESH_INCLUDE_DIRS)

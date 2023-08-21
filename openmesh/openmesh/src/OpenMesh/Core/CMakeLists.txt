@@ -73,7 +73,7 @@ if ( ${CMAKE_PROJECT_NAME} MATCHES "OpenMesh")
     FILE(GLOB files_install_libs "${CMAKE_BINARY_DIR}/Build/lib/*.lib" )
     FILE(GLOB files_install_dlls "${CMAKE_BINARY_DIR}/Build/*.dll" )
     INSTALL(FILES ${files_install_libs} DESTINATION lib )
-    INSTALL(FILES ${files_install_dlls} DESTINATION . )
+    INSTALL(FILES ${files_install_dlls} DESTINATION bin )
   endif()
 endif()
 
