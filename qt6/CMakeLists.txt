@@ -17,15 +17,13 @@ endif (NOT ENABLE_QT)
 set(ENABLE_QT "${ENABLE_QT}" CACHE BOOL "Enable Qt6 build")
 
 if (ENABLE_QT)
- 
-  set(Qt6_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/Qt6_BLD-prefix/src/Qt6_BLD")
 
   if (NOT MSVC)
 
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${Qt6_SRC_DIR}/configure -xcb --prefix=${CMAKE_INSTALL_PREFIX}
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb --prefix=${CMAKE_INSTALL_PREFIX}
       BUILD_COMMAND cmake --build . --parallel --config Release
       INSTALL_COMMAND cmake --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
@@ -39,7 +37,7 @@ if (ENABLE_QT)
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND ${Qt6_SRC_DIR}/configure.bat --prefix=${CMAKE_INSTALL_PREFIX}
+      CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat --prefix=${CMAKE_INSTALL_PREFIX}
       BUILD_COMMAND cmake --build . --parallel --config Release
       INSTALL_COMMAND cmake --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
