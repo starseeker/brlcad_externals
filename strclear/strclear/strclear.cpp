@@ -139,6 +139,8 @@ process_text(std::string &fname, std::string &target_str, std::string &replace_s
     fbuffer << input_fs.rdbuf();
     std::string nfile_contents = fbuffer.str();
     input_fs.close();
+    if (!nfile_contents.length())
+	return 0;
     auto position = std::search(nfile_contents.begin(), nfile_contents.end(), target_str.begin(), target_str.end());
     if (position == fbuffer.str().end())
 	return 0;
