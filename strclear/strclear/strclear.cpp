@@ -142,7 +142,7 @@ process_text(std::string &fname, std::string &target_str, std::string &replace_s
     if (!nfile_contents.length())
 	return 0;
     auto position = std::search(nfile_contents.begin(), nfile_contents.end(), target_str.begin(), target_str.end());
-    if (position == fbuffer.str().end())
+    if (position == nfile_contents.end())
 	return 0;
     int rcnt = 0;
     while (position != nfile_contents.end()) {
