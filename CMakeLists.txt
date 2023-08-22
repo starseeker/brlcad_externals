@@ -244,6 +244,10 @@ add_subdirectory(itcl3)
 add_subdirectory(itk3)
 add_subdirectory(iwidgets)
 
+# Qt - cross-platform user interface/application development toolkit
+# https://download.qt.io/archive/qt
+add_subdirectory(qt6)
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake
