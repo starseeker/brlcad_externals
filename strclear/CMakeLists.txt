@@ -34,8 +34,6 @@ if (ENABLE_STRCLEAR)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     )
 
-  SetTargetFolder(STRCLEAR_BLD "Custom Build Tools")
-
 endif (ENABLE_STRCLEAR)
 
 # Local Variables:

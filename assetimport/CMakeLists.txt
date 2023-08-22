@@ -57,9 +57,6 @@ if (ENABLE_ASSETIMPORT)
 
   ExternalProject_Add_StepTargets(ASSETIMPORT_BLD install)
 
-  SetTargetFolder(ASSETIMPORT_BLD "Third Party Libraries")
-  SetTargetFolder(assetimport "Third Party Libraries")
-
 endif (ENABLE_ASSETIMPORT)
 
 # Local Variables:

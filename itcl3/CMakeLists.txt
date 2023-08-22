@@ -59,8 +59,6 @@ if (ENABLE_ITCL)
 
   ExternalProject_Add_StepTargets(ITCL_BLD install)
 
-  SetTargetFolder(ITCL_BLD "Third Party Libraries")
-
 endif (ENABLE_ITCL)
 
 mark_as_advanced(ITCL_LIBRARY)

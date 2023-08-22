@@ -45,9 +45,6 @@ if (ENABLE_ZLIB)
 
   ExternalProject_Add_StepTargets(ZLIB_BLD install)
 
-  SetTargetFolder(ZLIB_BLD "Third Party Libraries")
-  SetTargetFolder(zlib "Third Party Libraries")
-
 endif (ENABLE_ZLIB)
 
 # Local Variables:

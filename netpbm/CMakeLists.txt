@@ -40,9 +40,6 @@ if (ENABLE_NETPBM)
 
   ExternalProject_Add_StepTargets(NETPBM_BLD install)
 
-  SetTargetFolder(NETPBM_BLD "Third Party Libraries")
-  SetTargetFolder(netpbm "Third Party Libraries")
-
 endif (ENABLE_NETPBM)
 
 # Local Variables:

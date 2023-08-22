@@ -45,8 +45,6 @@ if (ENABLE_XMLTOOLS)
 
   ExternalProject_Add_StepTargets(XMLTOOLS_BLD install)
 
-  SetTargetFolder(XMLTOOLS_BLD "Third Party Build Tools")
-
 endif (ENABLE_XMLTOOLS)
 
 # Local Variables:

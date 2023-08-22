@@ -51,8 +51,6 @@ if (ENABLE_IWIDGETS)
 
   ExternalProject_Add_StepTargets(IWIDGETS_BLD install)
 
-  SetTargetFolder(IWIDGETS_BLD "Third Party Libraries")
-
 endif (ENABLE_IWIDGETS)
 
 # Local Variables:

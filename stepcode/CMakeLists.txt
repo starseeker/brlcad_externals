@@ -60,9 +60,6 @@ if (ENABLE_STEPCODE)
 
   ExternalProject_Add_StepTargets(STEPCODE_BLD install)
 
-  SetTargetFolder(STEPCODE_BLD "Third Party Libraries")
-  SetTargetFolder(stepcode "Third Party Libraries")
-
 endif(ENABLE_STEPCODE)
 
 # Local Variables:

@@ -44,8 +44,6 @@ if (NOT MSVC AND NOT APPLE)
 
     ExternalProject_Add_StepTargets(PATCHELF_BLD install)
 
-    SetTargetFolder(PATCHELF_BLD "Third Party Build Tools")
-
   endif (ENABLE_PATCHELF)
 
 endif (NOT MSVC AND NOT APPLE)

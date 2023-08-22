@@ -46,9 +46,6 @@ if (ENABLE_REGEX)
 
   ExternalProject_Add_StepTargets(REGEX_BLD install)
 
-  SetTargetFolder(REGEX_BLD "Third Party Libraries")
-  SetTargetFolder(regex "Third Party Libraries")
-
 endif (ENABLE_REGEX)
 
 # Local Variables:

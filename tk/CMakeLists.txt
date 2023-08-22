@@ -123,9 +123,6 @@ if (TK_DO_BUILD)
 
   ExternalProject_Add_StepTargets(TK_BLD install)
 
-  SetTargetFolder(TK_BLD "Third Party Libraries")
-  SetTargetFolder(tk "Third Party Libraries")
-
 endif (TK_DO_BUILD)
 
 mark_as_advanced(TK_INCLUDE_DIRS)

@@ -49,8 +49,6 @@ if (ENABLE_PERPLEX)
 
   ExternalProject_Add_StepTargets(PERPLEX_BLD install)
 
-  SetTargetFolder(PERPLEX_BLD "Third Party Build Tools")
-
 endif (ENABLE_PERPLEX)
 
 # Local Variables:

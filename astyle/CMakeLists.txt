@@ -40,8 +40,6 @@ if (ENABLE_ASTYLE)
 
   ExternalProject_Add_StepTargets(ASTYLE_BLD install)
 
-  SetTargetFolder(ASTYLE_BLD "Third Party Build Tools")
-
 endif (ENABLE_ASTYLE)
 
 # Local Variables:

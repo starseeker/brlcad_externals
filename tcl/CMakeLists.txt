@@ -138,9 +138,6 @@ if (ENABLE_TCL)
       )
   endif (CHMOD_EXECUTABLE)
 
-  SetTargetFolder(TCL_BLD "Third Party Libraries")
-  SetTargetFolder(tcl "Third Party Libraries")
-
 endif (ENABLE_TCL)
 
 mark_as_advanced(TCL_INCLUDE_DIRS)

@@ -63,14 +63,6 @@ endif(NOT DEFINED DATA_DIR)
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/extinstall" CACHE PATH "Outputs for BRL-CAD bundling" FORCE)
 set(CMAKE_NOINSTALL_PREFIX "${CMAKE_BINARY_DIR}/extnoinstall" CACHE PATH "Build tools NOT bundled with BRL-CAD" FORCE)
 
-# If targets are built, we want to group them in build tools that support
-# doing so.
-function(SetTargetFolder targetname folder)
-  if(TARGET ${targetname})
-    set_target_properties(${targetname} PROPERTIES FOLDER "${folder}")
-  endif(TARGET ${targetname})
-endfunction(SetTargetFolder)
-
 #---------------------------------------------------------------------
 # By default, changes in src/other/ext files won't trigger a rebuild.  Setting
 # this to 1 changes that, but at the expense of running the build step every

@@ -63,9 +63,6 @@ if (ENABLE_PNG)
 
   ExternalProject_Add_StepTargets(PNG_BLD install)
 
-  SetTargetFolder(PNG_BLD "Third Party Libraries")
-  SetTargetFolder(png "Third Party Libraries")
-
 endif (ENABLE_PNG)
 
 # Local Variables:

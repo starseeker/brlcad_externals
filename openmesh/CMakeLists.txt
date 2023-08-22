@@ -46,9 +46,6 @@ if (ENABLE_OPENMESH)
 
   ExternalProject_Add_StepTargets(OPENMESH_BLD install)
 
-  SetTargetFolder(OPENMESH_BLD "Third Party Libraries")
-  SetTargetFolder(openmesh "Third Party Libraries")
-
 endif (ENABLE_OPENMESH)
 
 mark_as_advanced(OPENMESH_INCLUDE_DIRS)

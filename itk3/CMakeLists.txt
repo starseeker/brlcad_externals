@@ -92,8 +92,6 @@ if (ENABLE_ITK)
 
   ExternalProject_Add_StepTargets(ITK_BLD install)
 
-  SetTargetFolder(ITK_BLD "Third Party Libraries")
-
 endif (ENABLE_ITK)
 
 mark_as_advanced(ITK_LIBRARY)
