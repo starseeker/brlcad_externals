@@ -24,8 +24,8 @@ if (ENABLE_QT)
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
       CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb --prefix=${CMAKE_INSTALL_PREFIX}
-      BUILD_COMMAND cmake --build . --parallel --config Release
-      INSTALL_COMMAND cmake --install .
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
+      INSTALL_COMMAND ${CMAKE_COMMAND} --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
@@ -38,8 +38,8 @@ if (ENABLE_QT)
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
       CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat --prefix=${CMAKE_INSTALL_PREFIX}
-      BUILD_COMMAND cmake --build . --parallel --config Release
-      INSTALL_COMMAND cmake --install .
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
+      INSTALL_COMMAND ${CMAKE_COMMAND} --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
