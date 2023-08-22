@@ -37,7 +37,7 @@ if (ENABLE_QT)
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat --prefix=${CMAKE_INSTALL_PREFIX}
+      CONFIGURE_COMMAND ${VCVARS_BAT} && ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat --prefix=${CMAKE_INSTALL_PREFIX}
       BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
       INSTALL_COMMAND ${CMAKE_COMMAND} --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
