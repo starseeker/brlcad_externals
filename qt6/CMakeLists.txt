@@ -34,12 +34,22 @@ if (ENABLE_QT)
 
   else (NOT MSVC)
 
+    # For some reason running these commands directly seems to be problematic
+    # with MSVC... wrapping them in CMake scripts, on the other hand, looks
+    # like it's working...  not 100% sure why this is needed, unless there's
+    # some bad interaction between the MSVC cmake and Visual Studio.
+    set(QT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/qt6-build")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat --prefix=${CMAKE_INSTALL_PREFIX} WORKING_DIRECTORY ${QT_BUILD_DIR})")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake "execute_process(COMMAND cmake --build . --parallel --config Release WORKING_DIRECTORY ${QT_BUILD_DIR})")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake "execute_process(COMMAND cmake --install . WORKING_DIRECTORY ${QT_BUILD_DIR})")
+
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
+      BINARY_DIR "${QT_BUILD_DIR}"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND ${VCVARS_BAT} && ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat --prefix=${CMAKE_INSTALL_PREFIX}
-      BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
-      INSTALL_COMMAND ${CMAKE_COMMAND} --install .
+      CONFIGURE_COMMAND ${VCVARS_BAT} && cmake -P ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake
+      BUILD_COMMAND ${VCVARS_BAT} && cmake -P ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake
+      INSTALL_COMMAND ${VCVARS_BAT} && cmake -P ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
@@ -59,6 +69,7 @@ if (ENABLE_QT)
     BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
     CMAKE_ARGS
     -DQt6_DIR=${CMAKE_INSTALL_PREFIX}
+    -DQt6_ROOT=${CMAKE_INSTALL_PREFIX}
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
