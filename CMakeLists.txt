@@ -28,10 +28,10 @@
 # already been processed and relevant variables have been set.
 #
 #-----------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.18)
 
 project(BDEPS)
 
-cmake_minimum_required(VERSION 3.18)
 if (POLICY CMP0114)
   cmake_policy(SET CMP0114 NEW)
 endif (POLICY CMP0114)
