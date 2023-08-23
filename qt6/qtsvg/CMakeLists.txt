@@ -13,6 +13,8 @@ project(QtSvg
 
 # Location of CMake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+set(ZLIB_ROOT "${CMAKE_INSTALL_PREFIX}")
+find_package(ZLIB)
 
 find_package(Qt6 ${PROJECT_VERSION} CONFIG REQUIRED COMPONENTS BuildInternals Core)
 find_package(Qt6 ${PROJECT_VERSION} QUIET CONFIG OPTIONAL_COMPONENTS Gui Widgets Xml)
