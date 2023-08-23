@@ -12,6 +12,8 @@ elseif(NOT TARGET WrapZLIB::WrapZLIB)
     qt_find_package(WrapZLIB PROVIDED_TARGETS WrapZLIB::WrapZLIB)
 endif()
 
+find_package(ZLIB)
+
 qt_internal_add_module(Svg
     SOURCES
         qsvgfont.cpp qsvgfont_p.h
@@ -32,6 +34,7 @@ qt_internal_add_module(Svg
     PUBLIC_LIBRARIES
         Qt::Core
         Qt::Gui
+		  ZLIB::ZLIB
     PRIVATE_MODULE_INTERFACE
         Qt::CorePrivate
         Qt::GuiPrivate
