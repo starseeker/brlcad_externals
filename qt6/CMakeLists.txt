@@ -18,22 +18,7 @@ set(ENABLE_QT "${ENABLE_QT}" CACHE BOOL "Enable Qt6 build")
 
 if (ENABLE_QT)
 
-  if (NOT MSVC)
-
-    ExternalProject_Add(Qt6_BLD
-      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
-      BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb --prefix=${CMAKE_INSTALL_PREFIX} --release
-      BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
-      INSTALL_COMMAND ${CMAKE_COMMAND} --install .
-      # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
-      LOG_BUILD ${EXT_BUILD_QUIET}
-      LOG_INSTALL ${EXT_BUILD_QUIET}
-      LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
-      )
-
-  else (NOT MSVC)
-
+  if (MSVC)
     # For some reason running these commands directly seems to be problematic
     # with MSVC... wrapping them in CMake scripts, on the other hand, looks
     # like it's working...  not 100% sure why this is needed, unless there's
@@ -56,7 +41,40 @@ if (ENABLE_QT)
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
       )
 
-  endif (NOT MSVC)
+
+  elseif (APPLE)
+
+    ExternalProject_Add(Qt6_BLD
+      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
+      BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure --prefix=${CMAKE_INSTALL_PREFIX} --release
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
+      INSTALL_COMMAND ${CMAKE_COMMAND} --install .
+      # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
+      LOG_BUILD ${EXT_BUILD_QUIET}
+      LOG_INSTALL ${EXT_BUILD_QUIET}
+      LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      )
+
+  else ()
+
+    # On platforms where we're supposed to build against X11, we want to try
+    # and make sure we fail if we don't have what's needed for a graphical Qt
+    # build.  In some cases it is possible to build a Qt installation with no
+    # viable graphical options, which doesn't help for BRL-CAD's use case...
+    ExternalProject_Add(Qt6_BLD
+      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
+      BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb --prefix=${CMAKE_INSTALL_PREFIX} --release
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
+      INSTALL_COMMAND ${CMAKE_COMMAND} --install .
+      # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
+      LOG_BUILD ${EXT_BUILD_QUIET}
+      LOG_INSTALL ${EXT_BUILD_QUIET}
+      LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      )
+
+  endif (MSVC)
 
   if (TARGET PATCH_BLD)
     ExternalProject_Add_StepDependencies(Qt6_BLD configure PATCH_BLD-install)
