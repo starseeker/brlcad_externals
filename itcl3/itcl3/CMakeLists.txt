@@ -56,6 +56,7 @@ endif (POLICY CMP0087)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
+set(CMAKE_FIND_FRAMEWORK NEVER)
 find_package(TCL)
 
 # version numbers
