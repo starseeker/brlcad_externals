@@ -29,7 +29,6 @@ qt_internal_add_module(Svg
     LIBRARIES
         Qt::CorePrivate
         Qt::GuiPrivate
-        ZLIB::ZLIB
     PUBLIC_LIBRARIES
         Qt::Core
         Qt::Gui
