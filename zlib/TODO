@@ -1,0 +1,5 @@
+REALLY need to test out https://github.com/zlib-ng/zlib-ng and see if
+its ZLIB_SYMBOL_PREFIX feature could make using our own "custom" zlib
+easier...  A lot of the reason we are patching zlib has to do with
+assigning a prefix so we can avoid conflicting with system zlibs getting
+pulled in by dependencies
