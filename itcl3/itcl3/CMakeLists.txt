@@ -39,11 +39,6 @@
 # Minimum required version of CMake
 cmake_minimum_required(VERSION 3.18)
 
-# Tcl is building with arm64e, but CMake doesn't appear
-# to be matching that default.  See if this will work...
-# https://discourse.cmake.org/t/how-to-determine-which-architectures-are-available-apple-m1/2401/7
-set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
-
 # set CMake project name
 project(ITCL)
 
