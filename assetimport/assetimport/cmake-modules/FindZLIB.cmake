@@ -1,123 +1,48 @@
-#.rst:
-# FindZLIB
-# --------
+#-------------------------------------------------------------------
+# This file is part of the CMake build system for OGRE
+#     (Object-oriented Graphics Rendering Engine)
+# For the latest info, see http://www.ogre3d.org/
 #
-# Find the native ZLIB includes and library.
-#
-# IMPORTED Targets
-# ^^^^^^^^^^^^^^^^
-#
-# This module defines :prop_tgt:`IMPORTED` target ``ZLIB::ZLIB``, if
-# ZLIB has been found.
-#
-# Result Variables
-# ^^^^^^^^^^^^^^^^
-#
-# This module defines the following variables:
-#
-# ::
-#
-#   ZLIB_INCLUDE_DIRS   - where to find zlib.h, etc.
-#   ZLIB_LIBRARIES      - List of libraries when using zlib.
-#   ZLIB_FOUND          - True if zlib found.
-#
-# ::
-#
-#   ZLIB_VERSION_STRING - The version of zlib found (x.y.z)
-#   ZLIB_VERSION_MAJOR  - The major version of zlib
-#   ZLIB_VERSION_MINOR  - The minor version of zlib
-#   ZLIB_VERSION_PATCH  - The patch version of zlib
-#   ZLIB_VERSION_TWEAK  - The tweak version of zlib
-#
-# Backward Compatibility
-# ^^^^^^^^^^^^^^^^^^^^^^
-#
-# The following variable are provided for backward compatibility
-#
-# ::
-#
-#   ZLIB_MAJOR_VERSION  - The major version of zlib
-#   ZLIB_MINOR_VERSION  - The minor version of zlib
-#   ZLIB_PATCH_VERSION  - The patch version of zlib
-#
-# Hints
-# ^^^^^
-#
-# A user may set ``ZLIB_ROOT`` to a zlib installation root to tell this
-# module where to look.
+# The contents of this file are placed in the public domain. Feel
+# free to make use of it in any way you like.
+#-------------------------------------------------------------------
 
-#=============================================================================
-# Copyright 2001-2011 Kitware, Inc.
+# - Try to find ZLIB
+# Once done, this will define
 #
-# Distributed under the OSI-approved BSD License (the "License");
-# see accompanying file Copyright.txt for details.
-#
-# This software is distributed WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the License for more information.
-#=============================================================================
-# (To distribute this file outside of CMake, substitute the full
-#  License text for the above reference.)
+#  ZLIB_FOUND - system has ZLIB
+#  ZLIB_INCLUDE_DIRS - the ZLIB include directories
+#  ZLIB_LIBRARIES - link these to use ZLIB
 
-set(_ZLIB_SEARCHES)
+include(FindPkgMacros)
+findpkg_begin(ZLIB)
 
-# Search ZLIB_ROOT first if it is set.
-if(ZLIB_ROOT)
-  set(_ZLIB_SEARCH_ROOT PATHS ${ZLIB_ROOT} NO_DEFAULT_PATH)
-  list(APPEND _ZLIB_SEARCHES _ZLIB_SEARCH_ROOT)
-endif()
+# Get path, convert backslashes as ${ENV_${var}}
+getenv_path(ZLIB_HOME)
 
-# Normal search.
-set(_ZLIB_SEARCH_NORMAL
-  PATHS "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Zlib;InstallPath]"
-        "$ENV{PROGRAMFILES}/zlib"
-  )
-list(APPEND _ZLIB_SEARCHES _ZLIB_SEARCH_NORMAL)
+# construct search paths
+set(ZLIB_PREFIX_PATH ${ZLIB_HOME} ${ENV_ZLIB_HOME})
+create_search_paths(ZLIB)
+# redo search if prefix path changed
+clear_if_changed(ZLIB_PREFIX_PATH
+  ZLIB_LIBRARY_FWK
+  ZLIB_LIBRARY_REL
+  ZLIB_LIBRARY_DBG
+  ZLIB_INCLUDE_DIR
+)
 
-set(ZLIB_NAMES z_brl z zlib zdll zlib1 zlibd zlibd1)
+set(ZLIB_LIBRARY_NAMES z zlib zdll)
+get_debug_names(ZLIB_LIBRARY_NAMES)
 
-# Try each search configuration.
-foreach(search ${_ZLIB_SEARCHES})
-  find_path(ZLIB_INCLUDE_DIR NAMES zlib.h        ${${search}} PATH_SUFFIXES include)
-  find_library(ZLIB_LIBRARY  NAMES ${ZLIB_NAMES} ${${search}} PATH_SUFFIXES lib)
-endforeach()
+use_pkgconfig(ZLIB_PKGC zzip-zlib-config)
 
-mark_as_advanced(ZLIB_LIBRARY ZLIB_INCLUDE_DIR)
+findpkg_framework(ZLIB)
 
-if(ZLIB_INCLUDE_DIR AND EXISTS "${ZLIB_INCLUDE_DIR}/zlib.h")
-    file(STRINGS "${ZLIB_INCLUDE_DIR}/zlib.h" ZLIB_H REGEX "^#define ZLIB_VERSION \"[^\"]*\"$")
+find_path(ZLIB_INCLUDE_DIR NAMES zlib.h HINTS ${ZLIB_INC_SEARCH_PATH} ${ZLIB_PKGC_INCLUDE_DIRS})
+find_library(ZLIB_LIBRARY_REL NAMES ${ZLIB_LIBRARY_NAMES} HINTS ${ZLIB_LIB_SEARCH_PATH} ${ZLIB_PKGC_LIBRARY_DIRS} PATH_SUFFIXES "" release relwithdebinfo minsizerel)
+find_library(ZLIB_LIBRARY_DBG NAMES ${ZLIB_LIBRARY_NAMES_DBG} HINTS ${ZLIB_LIB_SEARCH_PATH} ${ZLIB_PKGC_LIBRARY_DIRS} PATH_SUFFIXES "" debug)
 
-    string(REGEX REPLACE "^.*ZLIB_VERSION \"([0-9]+).*$" "\\1" ZLIB_VERSION_MAJOR "${ZLIB_H}")
-    string(REGEX REPLACE "^.*ZLIB_VERSION \"[0-9]+\\.([0-9]+).*$" "\\1" ZLIB_VERSION_MINOR  "${ZLIB_H}")
-    string(REGEX REPLACE "^.*ZLIB_VERSION \"[0-9]+\\.[0-9]+\\.([0-9]+).*$" "\\1" ZLIB_VERSION_PATCH "${ZLIB_H}")
-    set(ZLIB_VERSION_STRING "${ZLIB_VERSION_MAJOR}.${ZLIB_VERSION_MINOR}.${ZLIB_VERSION_PATCH}")
+make_library_set(ZLIB_LIBRARY)
 
-    # only append a TWEAK version if it exists:
-    set(ZLIB_VERSION_TWEAK "")
-    if( "${ZLIB_H}" MATCHES "ZLIB_VERSION \"[0-9]+\\.[0-9]+\\.[0-9]+\\.([0-9]+)")
-        set(ZLIB_VERSION_TWEAK "${CMAKE_MATCH_1}")
-        set(ZLIB_VERSION_STRING "${ZLIB_VERSION_STRING}.${ZLIB_VERSION_TWEAK}")
-    endif()
+findpkg_finish(ZLIB)
 
-    set(ZLIB_MAJOR_VERSION "${ZLIB_VERSION_MAJOR}")
-    set(ZLIB_MINOR_VERSION "${ZLIB_VERSION_MINOR}")
-    set(ZLIB_PATCH_VERSION "${ZLIB_VERSION_PATCH}")
-endif()
-
-# handle the QUIETLY and REQUIRED arguments and set ZLIB_FOUND to TRUE if
-# all listed variables are TRUE
-include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(ZLIB REQUIRED_VARS ZLIB_LIBRARY ZLIB_INCLUDE_DIR
-                                       VERSION_VAR ZLIB_VERSION_STRING)
-
-if(ZLIB_FOUND)
-    set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIR})
-    set(ZLIB_LIBRARIES ${ZLIB_LIBRARY})
-
-    if(NOT TARGET ZLIB::ZLIB)
-      add_library(ZLIB::ZLIB UNKNOWN IMPORTED)
-      set_target_properties(ZLIB::ZLIB PROPERTIES
-        IMPORTED_LOCATION "${ZLIB_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIRS}")
-    endif()
-endif()

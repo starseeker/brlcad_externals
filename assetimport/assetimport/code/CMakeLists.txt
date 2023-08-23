@@ -1242,7 +1242,6 @@ IF (ASSIMP_BUILD_NONFREE_C4D_IMPORTER)
   TARGET_LINK_LIBRARIES(assimp ${C4D_EXTRA_LIBRARIES})
 ENDIF ()
 
-if(0)
 if( MSVC )
   # in order to prevent DLL hell, each of the DLLs have to be suffixed with the major version and msvc prefix
   # CMake 3.12 added a variable for this
@@ -1289,12 +1288,11 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "WindowsStore")
     target_compile_definitions(assimp PUBLIC WindowsStore)
     TARGET_LINK_LIBRARIES(assimp advapi32)
 endif()
-endif(0)
 
 SET_TARGET_PROPERTIES( assimp PROPERTIES
   VERSION ${ASSIMP_VERSION}
   SOVERSION ${ASSIMP_SOVERSION} # use full version
-  #OUTPUT_NAME assimp${LIBRARY_SUFFIX}
+  OUTPUT_NAME assimp${LIBRARY_SUFFIX}
 )
 
 if (APPLE)
