@@ -107,6 +107,10 @@ if (ENABLE_QT)
   if (TARGET PATCH_BLD)
     ExternalProject_Add_StepDependencies(Qt6_BLD configure PATCH_BLD-install)
   endif (TARGET PATCH_BLD)
+  if (TARGET ZLIB_BLD)
+    ExternalProject_Add_StepDependencies(Qt6_BLD configure ZLIB_BLD-install)
+  endif (TARGET ZLIB_BLD)
+
   ExternalProject_Add_StepDependencies(Qt6Svg_BLD configure Qt6_BLD-install)
 
 

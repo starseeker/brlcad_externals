@@ -34,7 +34,7 @@ qt_internal_add_module(Svg
     PUBLIC_LIBRARIES
         Qt::Core
         Qt::Gui
-		  ZLIB::ZLIB
+        ${ZLIB_LIBRARY}
     PRIVATE_MODULE_INTERFACE
         Qt::CorePrivate
         Qt::GuiPrivate
