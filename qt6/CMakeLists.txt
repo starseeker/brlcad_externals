@@ -23,7 +23,7 @@ if (ENABLE_QT)
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb --prefix=${CMAKE_INSTALL_PREFIX}
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb --prefix=${CMAKE_INSTALL_PREFIX} --release
       BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
       INSTALL_COMMAND ${CMAKE_COMMAND} --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
@@ -39,7 +39,7 @@ if (ENABLE_QT)
     # like it's working...  not 100% sure why this is needed, unless there's
     # some bad interaction between the MSVC cmake and Visual Studio.
     set(QT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/qt6-build")
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat --prefix=${CMAKE_INSTALL_PREFIX} WORKING_DIRECTORY ${QT_BUILD_DIR})")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat --prefix=${CMAKE_INSTALL_PREFIX} --release WORKING_DIRECTORY ${QT_BUILD_DIR})")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake "execute_process(COMMAND cmake --build . --parallel --config Release WORKING_DIRECTORY ${QT_BUILD_DIR})")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake "execute_process(COMMAND cmake --install . WORKING_DIRECTORY ${QT_BUILD_DIR})")
 
