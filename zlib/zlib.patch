@@ -1,6 +1,6 @@
 diff -Naur zlib-1.2.13/CMakeLists.txt zlib/CMakeLists.txt
 --- zlib-1.2.13/CMakeLists.txt	2023-08-17 14:38:16.655712150 -0400
-+++ zlib/CMakeLists.txt	2023-08-22 20:27:55.878874140 -0400
++++ zlib/CMakeLists.txt	2023-08-23 14:00:02.265740905 -0400
 @@ -1,15 +1,33 @@
 -cmake_minimum_required(VERSION 2.4.4)
 +cmake_minimum_required(VERSION 3.12)
@@ -358,7 +358,7 @@ diff -Naur zlib-1.2.13/CMakeLists.txt zlib/CMakeLists.txt
 +# ex: shiftwidth=2 tabstop=8
 diff -Naur zlib-1.2.13/deflate.c zlib/deflate.c
 --- zlib-1.2.13/deflate.c	2023-08-17 14:38:16.655712150 -0400
-+++ zlib/deflate.c	2023-08-22 20:27:55.878874140 -0400
++++ zlib/deflate.c	2023-08-23 14:00:02.261741012 -0400
 @@ -52,7 +52,7 @@
  #include "deflate.h"
  
@@ -370,7 +370,7 @@ diff -Naur zlib-1.2.13/deflate.c zlib/deflate.c
    in the documentation of your product. If for some reason you cannot
 diff -Naur zlib-1.2.13/gzread.c zlib/gzread.c
 --- zlib-1.2.13/gzread.c	2023-08-17 14:38:16.655712150 -0400
-+++ zlib/gzread.c	2023-08-22 20:27:55.878874140 -0400
++++ zlib/gzread.c	2023-08-23 14:00:02.253741225 -0400
 @@ -437,9 +437,7 @@
  }
  
@@ -384,7 +384,7 @@ diff -Naur zlib-1.2.13/gzread.c zlib/gzread.c
  int ZEXPORT gzgetc(file)
 diff -Naur zlib-1.2.13/inftrees.c zlib/inftrees.c
 --- zlib-1.2.13/inftrees.c	2023-08-17 14:38:16.655712150 -0400
-+++ zlib/inftrees.c	2023-08-22 20:27:55.878874140 -0400
++++ zlib/inftrees.c	2023-08-23 14:00:02.261741012 -0400
 @@ -9,7 +9,7 @@
  #define MAXBITS 15
  
@@ -396,7 +396,7 @@ diff -Naur zlib-1.2.13/inftrees.c zlib/inftrees.c
    in the documentation of your product. If for some reason you cannot
 diff -Naur zlib-1.2.13/win32/zlib1.rc zlib/win32/zlib1.rc
 --- zlib-1.2.13/win32/zlib1.rc	2023-08-17 14:38:16.663712027 -0400
-+++ zlib/win32/zlib1.rc	2023-08-22 20:27:55.878874140 -0400
++++ zlib/win32/zlib1.rc	2023-08-23 14:00:02.265740905 -0400
 @@ -1,5 +1,5 @@
  #include <winver.h>
 -#include "../zlib.h"
@@ -957,7 +957,7 @@ diff -Naur zlib-1.2.13/zconf.h zlib/zconf.h
 -#endif /* ZCONF_H */
 diff -Naur zlib-1.2.13/zconf.h.in zlib/zconf.h.in
 --- zlib-1.2.13/zconf.h.in	2023-08-17 14:38:16.655712150 -0400
-+++ zlib/zconf.h.in	2023-08-22 20:27:55.878874140 -0400
++++ zlib/zconf.h.in	2023-08-23 14:00:02.265740905 -0400
 @@ -3,8 +3,6 @@
   * For conditions of distribution and use, see copyright notice in zlib.h
   */
@@ -3259,7 +3259,7 @@ diff -Naur zlib-1.2.13/zlib.h zlib/zlib.h
 -#endif /* ZLIB_H */
 diff -Naur zlib-1.2.13/zlib.h.in zlib/zlib.h.in
 --- zlib-1.2.13/zlib.h.in	1969-12-31 19:00:00.000000000 -0500
-+++ zlib/zlib.h.in	2023-08-22 20:27:55.882874073 -0400
++++ zlib/zlib.h.in	2023-08-23 14:00:02.261741012 -0400
 @@ -0,0 +1,1940 @@
 +/* zlib.h -- interface of the 'zlib' general purpose compression library
 +  version 1.2.13, October 13th, 2022
@@ -5200,4 +5200,4 @@ diff -Naur zlib-1.2.13/zlib.h.in zlib/zlib.h.in
 +}
 +#endif
 +
-/
++#endif /* ZLIB_H */
