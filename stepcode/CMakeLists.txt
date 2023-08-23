@@ -22,8 +22,8 @@ if (ENABLE_STEPCODE)
     set(PERPLEX_TARGET PERPLEX_BLD)
   endif (TARGET PERPLEX_BLD)
 
-  # For OSX, use the INSTALL_NAME_DIR target property
-  set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${LIB_DIR};@loader/../${LIB_DIR}")
+  # For OSX, we need CMAKE_INSTALL_NAME_DIR
+  set(CMAKE_INSTALL_NAME_DIR "@rpath")
 
   ExternalProject_Add(STEPCODE_BLD
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stepcode"
