@@ -272,7 +272,7 @@ QueryConfigObjCmd(
 	      int tpath_elements;
 	      Tcl_Obj *tlist = Tcl_FSSplitPath(tpath, &tpath_elements);
 	      Tcl_ListObjReplace(interp, tlist, tpath_elements-2, 2, 0, NULL);
-	      Tcl_Obj *tdir = Tcl_FSJoinPath(tlist, tpath_elements-1);
+	      Tcl_Obj *tdir = Tcl_FSJoinPath(tlist, tpath_elements-2);
 	      Tcl_DecrRefCount(tlist);
 
 	      const char *rpath_str = (const char *) Tcl_GetByteArrayFromObj(val, &n);
