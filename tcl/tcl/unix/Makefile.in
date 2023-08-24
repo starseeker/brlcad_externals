@@ -209,7 +209,7 @@ TCL_LIB_FLAG		= @TCL_LIB_FLAG@
 #TCL_LIB_FLAG		= -ltcl
 
 # support for embedded libraries on Darwin / Mac OS X
-DYLIB_INSTALL_DIR	= $(libdir)
+DYLIB_INSTALL_DIR	= @rpath
 
 #--------------------------------------------------------------------------
 # The information below is modified by the configure script when Makefile is
