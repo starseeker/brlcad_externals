@@ -52,6 +52,7 @@ if (ENABLE_TCL)
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      STEP_TARGETS install
       )
 
     set(TCL_APPINIT tclAppInit.c)
@@ -71,6 +72,7 @@ if (ENABLE_TCL)
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      STEP_TARGETS install
       )
     set(TCL_APPINIT)
 
@@ -83,8 +85,6 @@ if (ENABLE_TCL)
   if (TARGET ZLIB_BLD)
     ExternalProject_Add_StepDependencies(TCL_BLD configure ZLIB_BLD-install)
   endif (TARGET ZLIB_BLD)
-
-  ExternalProject_Add_StepTargets(TCL_BLD install)
 
   # Scripts expect a non-versioned tclsh program, but the Tcl build doesn't provide one,
   # we must provide it ourselves

@@ -172,6 +172,7 @@ if (ENABLE_GDAL)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   if (TARGET PATCH_BLD)
@@ -193,8 +194,6 @@ if (ENABLE_GDAL)
   if (TARGET SQLITE3_BLD)
     ExternalProject_Add_StepDependencies(GDAL_BLD configure SQLITE3_BLD-install)
   endif (TARGET SQLITE3_BLD)
-
-  ExternalProject_Add_StepTargets(GDAL_BLD install)
 
 endif (ENABLE_GDAL)
 

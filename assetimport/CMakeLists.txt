@@ -46,6 +46,7 @@ if (ENABLE_ASSETIMPORT)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   if (TARGET PATCH_BLD)
@@ -56,7 +57,6 @@ if (ENABLE_ASSETIMPORT)
     ExternalProject_Add_StepDependencies(ASSETIMPORT_BLD configure ZLIB_BLD-install)
   endif (TARGET ZLIB_BLD)
 
-  ExternalProject_Add_StepTargets(ASSETIMPORT_BLD install)
 
 endif (ENABLE_ASSETIMPORT)
 

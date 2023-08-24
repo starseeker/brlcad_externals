@@ -33,9 +33,8 @@ if (ENABLE_PATCH)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
-
-  ExternalProject_Add_StepTargets(PATCH_BLD install)
 
   set(PATCH_EXECUTABLE ${CMAKE_NOINSTALL_PREFIX}/${BIN_DIR}/sb_patch${CMAKE_EXECUTABLE_SUFFIX} CACHE STRING "Patch executable" FORCE)
   set(PATCH_OPTIONS "--ignore-whitespace;--newline-output;preserve" CACHE STRING "Command line options to use when patching" FORCE)

@@ -52,6 +52,7 @@ if (ENABLE_PNG)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   if (TARGET PATCH_BLD)
@@ -61,8 +62,6 @@ if (ENABLE_PNG)
   if (TARGET ZLIB_BLD)
     ExternalProject_Add_StepDependencies(PNG_BLD configure ZLIB_BLD-install)
   endif (TARGET ZLIB_BLD)
-
-  ExternalProject_Add_StepTargets(PNG_BLD install)
 
 endif (ENABLE_PNG)
 

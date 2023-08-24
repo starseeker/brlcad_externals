@@ -44,6 +44,7 @@ if (TK_DO_BUILD)
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      STEP_TARGETS install
       )
 
     set(TK_APPINIT tkAppInit.c)
@@ -61,6 +62,7 @@ if (TK_DO_BUILD)
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      STEP_TARGETS install
       )
 
     set(TK_APPINIT)
@@ -85,8 +87,6 @@ if (TK_DO_BUILD)
   if (TARGET TCL_BLD)
     ExternalProject_Add_StepDependencies(TK_BLD configure TCL_BLD-install)
   endif (TARGET TCL_BLD)
-
-  ExternalProject_Add_StepTargets(TK_BLD install)
 
 endif (TK_DO_BUILD)
 

@@ -70,6 +70,7 @@ if (ENABLE_ITK)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   ExternalProject_Add_StepTargets(ITK_BLD install)
@@ -89,8 +90,6 @@ if (ENABLE_ITK)
   if (TARGET ITCL_BLD)
     ExternalProject_Add_StepDependencies(ITK_BLD configure ITCL_BLD-install)
   endif (TARGET ITCL_BLD)
-
-  ExternalProject_Add_StepTargets(ITK_BLD install)
 
 endif (ENABLE_ITK)
 

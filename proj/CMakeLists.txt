@@ -47,6 +47,7 @@ if (ENABLE_PROJ)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   if (TARGET PATCH_BLD)
@@ -56,8 +57,6 @@ if (ENABLE_PROJ)
   if (TARGET SQLITE3_BLD)
     ExternalProject_Add_StepDependencies(PROJ_BLD configure SQLITE3_BLD-install)
   endif (TARGET SQLITE3_BLD)
-
-  ExternalProject_Add_StepTargets(PROJ_BLD install)
 
 endif (ENABLE_PROJ)
 

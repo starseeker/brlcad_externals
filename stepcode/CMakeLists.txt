@@ -52,6 +52,7 @@ if (ENABLE_STEPCODE)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   if (TARGET PATCH_BLD)
@@ -61,8 +62,6 @@ if (ENABLE_STEPCODE)
   if (TARGET PERPLEX_BLD)
     ExternalProject_Add_StepDependencies(STEPCODE_BLD configure PERPLEX_BLD-install)
   endif (TARGET PERPLEX_BLD)
-
-  ExternalProject_Add_StepTargets(STEPCODE_BLD install)
 
 endif(ENABLE_STEPCODE)
 

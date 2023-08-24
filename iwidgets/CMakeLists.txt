@@ -27,6 +27,7 @@ if (ENABLE_IWIDGETS)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   if (TARGET PATCH_BLD)
@@ -48,8 +49,6 @@ if (ENABLE_IWIDGETS)
   if (TARGET ITK_BLD)
     ExternalProject_Add_StepDependencies(IWIDGETS_BLD configure ITK_BLD-install)
   endif (TARGET ITK_BLD)
-
-  ExternalProject_Add_StepTargets(IWIDGETS_BLD install)
 
 endif (ENABLE_IWIDGETS)
 

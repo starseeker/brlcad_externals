@@ -33,13 +33,12 @@ if (ENABLE_ASTYLE)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   if (TARGET PATCH_BLD)
     ExternalProject_Add_StepDependencies(ASTYLE_BLD configure PATCH_BLD-install)
   endif (TARGET PATCH_BLD)
-
-  ExternalProject_Add_StepTargets(ASTYLE_BLD install)
 
 endif (ENABLE_ASTYLE)
 

@@ -39,6 +39,7 @@ if (ENABLE_QT)
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      STEP_TARGETS install
       )
 
 
@@ -54,6 +55,7 @@ if (ENABLE_QT)
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      STEP_TARGETS install
       )
 
   else ()
@@ -72,6 +74,7 @@ if (ENABLE_QT)
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+      STEP_TARGETS install
       )
 
   endif (MSVC)
@@ -79,8 +82,6 @@ if (ENABLE_QT)
   if (TARGET PATCH_BLD)
     ExternalProject_Add_StepDependencies(Qt6_BLD configure PATCH_BLD-install)
   endif (TARGET PATCH_BLD)
-
-  ExternalProject_Add_StepTargets(Qt6_BLD install)
 
   if (TARGET ZLIB_BLD)
     set(ZLIB_TARGET ZLIB_BLD)
@@ -103,6 +104,7 @@ if (ENABLE_QT)
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
     )
 
   if (TARGET PATCH_BLD)
@@ -113,9 +115,6 @@ if (ENABLE_QT)
   endif (TARGET ZLIB_BLD)
 
   ExternalProject_Add_StepDependencies(Qt6Svg_BLD configure Qt6_BLD-install)
-
-
-  ExternalProject_Add_StepTargets(Qt6Svg_BLD install)
 
 endif (ENABLE_QT)
 
