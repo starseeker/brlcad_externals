@@ -25,8 +25,8 @@ CFLAGS = $(CFLAGS)
 CPPFLAGS = -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET) $(CPPFLAGS)
 FRAMEWORK_INSTALL_PATH = /Library/Frameworks
 INCLUDEDIR = $(PREFIX)/include
-LIBDIR = $(PREFIX)/lib
-MANDIR = $(PREFIX)/man
+LIBDIR = lib
+MANDIR = man
 PER_ARCH_CFLAGS_ppc = -mcpu=G3 -mtune=G4 $(PER_ARCH_CFLAGS_ppc)
 PER_ARCH_CFLAGS_ppc64 = -mcpu=G5 -mpowerpc64 $(PER_ARCH_CFLAGS_ppc64)
 PREFIX = /usr/local

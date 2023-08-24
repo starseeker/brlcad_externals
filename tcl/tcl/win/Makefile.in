@@ -35,7 +35,7 @@ INSTALL_ROOT	=
 # Directory from which applications will reference the library of Tcl scripts
 # (note: you can set the TCL_LIBRARY environment variable at run-time to
 # override this value):
-TCL_LIBRARY	= $(prefix)/lib/tcl$(VERSION)
+TCL_LIBRARY	= lib/tcl$(VERSION)
 
 # Path to use at runtime to refer to LIB_INSTALL_DIR:
 LIB_RUNTIME_DIR		= $(libdir)
