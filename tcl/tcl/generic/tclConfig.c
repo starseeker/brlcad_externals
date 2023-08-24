@@ -261,13 +261,37 @@ QueryConfigObjCmd(
 	 * Value is stored as-is in a byte array, see Bug [9b2e636361],
 	 * so we have to decode it first.
 	 */
-	/* TODO - need to store the *path*,runtime values as relative paths
-	 * and use https://github.com/gpakosz/whereami to make Tcl relocatable
-	 * Right now, these are hard coded in the library using full path CFG_RUNTIME_*
-	 * defines, which is no good...
-	 * We can check for the cases we need to do that with using Tcl_GetString(objv[2])
-	 * and matching the CFG_RUNTIME lookup patterns..., as well as confirming that
-	 * the objv[0] is ::tcl::pkgconfig... */
+	/* We're storing the CFG_RUNTIME and CFG_INSTALL values as relative paths
+	 * to make Tcl relocatable - hard coded paths will be invalid if the Tcl
+	 * install is moved. */
+	if (Tcl_StringMatch(Tcl_GetString(objv[0]), "::tcl::pkgconfig")) {
+	   if (Tcl_StringMatch(Tcl_GetString(objv[2]), "*,runtime") || Tcl_StringMatch(Tcl_GetString(objv[2]), "*,install")) {
+	      const char *texec = Tcl_GetNameOfExecutable();
+	      Tcl_Obj *tpath = Tcl_NewStringObj(texec, strlen(texec)+1);
+	      Tcl_FSConvertToPathType(interp, tpath);
+	      int tpath_elements;
+	      Tcl_Obj *tlist = Tcl_FSSplitPath(tpath, &tpath_elements);
+	      Tcl_ListObjReplace(interp, tlist, tpath_elements-1, 1, 0, NULL);
+	      Tcl_Obj *tdir = Tcl_FSJoinPath(tlist, tpath_elements-1);
+	      Tcl_DecrRefCount(tlist);
+
+	      const char *rpath_str = (const char *) Tcl_GetByteArrayFromObj(val, &n);
+	      Tcl_Obj *dict_rpath = Tcl_NewStringObj(rpath_str, n);
+	      Tcl_FSConvertToPathType(interp, dict_rpath);
+	      Tcl_Obj *cpaths[2] = {NULL};
+	      cpaths[0] = dict_rpath;
+	      Tcl_Obj *comb_path = Tcl_FSJoinToPath(tdir, 1, cpaths);
+
+	      int pn;
+	      const char *jpath = (const char *) Tcl_GetByteArrayFromObj(comb_path, &pn);
+	      Tcl_DecrRefCount(comb_path);
+	      jpath = Tcl_ExternalToUtfDString(venc, jpath, pn, &conv);
+	      Tcl_SetObjResult(interp, Tcl_NewStringObj(jpath, Tcl_DStringLength(&conv)));
+	      Tcl_DStringFree(&conv);
+	      return TCL_OK;
+	   }
+	}
+
 	value = (const char *) Tcl_GetByteArrayFromObj(val, &n);
 	value = Tcl_ExternalToUtfDString(venc, value, n, &conv);
 	Tcl_SetObjResult(interp, Tcl_NewStringObj(value,
