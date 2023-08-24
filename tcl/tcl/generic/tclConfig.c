@@ -271,7 +271,7 @@ QueryConfigObjCmd(
 	      Tcl_FSConvertToPathType(interp, tpath);
 	      int tpath_elements;
 	      Tcl_Obj *tlist = Tcl_FSSplitPath(tpath, &tpath_elements);
-	      Tcl_ListObjReplace(interp, tlist, tpath_elements-1, 1, 0, NULL);
+	      Tcl_ListObjReplace(interp, tlist, tpath_elements-2, 2, 0, NULL);
 	      Tcl_Obj *tdir = Tcl_FSJoinPath(tlist, tpath_elements-1);
 	      Tcl_DecrRefCount(tlist);
 

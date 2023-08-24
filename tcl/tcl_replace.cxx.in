@@ -38,56 +38,6 @@ int main(int argc, const char **argv)
     std::string tcllib2_new  = std::string("= \"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(LIB_DIR) + std::string("\";");
     strings.push_back(tcllib2_new);
 
-    std::regex run_libdir_regex("CFG_RUNTIME_LIBDIR");
-    regexes.push_back(run_libdir_regex);
-    std::string run_libdir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(LIB_DIR) + std::string("\"");
-    strings.push_back(run_libdir_new);
-
-    std::regex run_bindir_regex("CFG_RUNTIME_BINDIR");
-    regexes.push_back(run_bindir_regex);
-    std::string run_bindir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(BIN_DIR) + std::string("\"");
-    strings.push_back(run_bindir_new);
-
-    std::regex run_srcdir_regex("CFG_RUNTIME_SCRDIR");
-    regexes.push_back(run_srcdir_regex);
-    std::string run_srcdir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(LIB_DIR) + std::string(sep) + std::string(PKG_DIR) + std::string("\"");
-    strings.push_back(run_srcdir_new);
-
-    std::regex run_incdir_regex("CFG_RUNTIME_INCDIR");
-    regexes.push_back(run_incdir_regex);
-    std::string run_incdir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(INCLUDE_DIR) + std::string("\"");
-    strings.push_back(run_incdir_new);
-
-    std::regex run_mandir_regex("CFG_RUNTIME_DOCDIR");
-    regexes.push_back(run_mandir_regex);
-    std::string run_mandir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(MAN_DIR) + std::string("\"");
-    strings.push_back(run_mandir_new);
-
-    std::regex inst_libdir_regex("CFG_INSTALL_LIBDIR");
-    regexes.push_back(inst_libdir_regex);
-    std::string inst_libdir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(LIB_DIR) + std::string("\"");
-    strings.push_back(inst_libdir_new);
-
-    std::regex inst_bindir_regex("CFG_INSTALL_BINDIR");
-    regexes.push_back(inst_bindir_regex);
-    std::string inst_bindir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(BIN_DIR) + std::string("\"");
-    strings.push_back(inst_bindir_new);
-
-    std::regex inst_srcdir_regex("CFG_INSTALL_SCRDIR");
-    regexes.push_back(inst_srcdir_regex);
-    std::string inst_srcdir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(LIB_DIR) + std::string(sep) + std::string(PKG_DIR) + std::string("\"");
-    strings.push_back(inst_srcdir_new);
-
-    std::regex inst_incdir_regex("CFG_INSTALL_INCDIR");
-    regexes.push_back(inst_incdir_regex);
-    std::string inst_incdir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(INCLUDE_DIR) + std::string("\"");
-    strings.push_back(inst_incdir_new);
-
-    std::regex inst_mandir_regex("CFG_INSTALL_DOCDIR");
-    regexes.push_back(inst_mandir_regex);
-    std::string inst_mandir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(MAN_DIR) + std::string("\"");
-    strings.push_back(inst_mandir_new);
-
     std::regex tbl_runtimedir_regex("TBL_RUNTIME_DIR");
     regexes.push_back(tbl_runtimedir_regex);
     std::string tbl_runtimedir_new  = std::string("\"") + std::string(CMAKE_INSTALL_PREFIX) + std::string(sep) + std::string(LIB_DIR) + std::string(TKTABLE_RUNTIME_DIR) + std::string("\"");
