@@ -1,0 +1,10 @@
+This is a stripped down subset of the libxml2/libxslt libraries, with the sole
+purpose of building xsltproc and xmllint to support Docbook building.
+
+Really should see if the more modern vanilla builds can do what we need now.
+IIRC one of the concerns was turning off enough pieces to avoid any unnecessary
+dependencies - we only need the basic core of the functionality here...
+
+https://download.gnome.org/sources/libxslt
+https://download.gnome.org/sources/libxml2
+
