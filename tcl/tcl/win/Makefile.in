@@ -35,7 +35,7 @@ INSTALL_ROOT	=
 # Directory from which applications will reference the library of Tcl scripts
 # (note: you can set the TCL_LIBRARY environment variable at run-time to
 # override this value):
-TCL_LIBRARY	= lib/tcl$(VERSION)
+TCL_LIBRARY	= $(prefix)/lib/tcl$(VERSION)
 
 # Path to use at runtime to refer to LIB_INSTALL_DIR:
 LIB_RUNTIME_DIR		= $(libdir)
@@ -567,17 +567,17 @@ tclMainW.${OBJEXT}: tclMain.c
 
 tclPkgConfig.${OBJEXT}: tclPkgConfig.c
 	$(CC)	-c $(CC_SWITCHES)			\
-		-DCFG_INSTALL_LIBDIR="\"lib\"" \
-		-DCFG_INSTALL_BINDIR="\"bin\"" \
-		-DCFG_INSTALL_SCRDIR="\"lib/tcl8.6\"" \
-		-DCFG_INSTALL_INCDIR="\"include\"" \
-		-DCFG_INSTALL_DOCDIR="\"man\"" \
+		-DCFG_INSTALL_LIBDIR="\"$(LIB_INSTALL_DIR_NATIVE)\"" \
+		-DCFG_INSTALL_BINDIR="\"$(BIN_INSTALL_DIR_NATIVE)\"" \
+		-DCFG_INSTALL_SCRDIR="\"$(SCRIPT_INSTALL_DIR_NATIVE)\"" \
+		-DCFG_INSTALL_INCDIR="\"$(INCLUDE_INSTALL_DIR_NATIVE)\"" \
+		-DCFG_INSTALL_DOCDIR="\"$(MAN_INSTALL_DIR_NATIVE)\"" \
 		\
-		-DCFG_RUNTIME_LIBDIR="\"lib\"" \
-		-DCFG_RUNTIME_BINDIR="\"bin\"" \
-		-DCFG_RUNTIME_SCRDIR="\"lib/tcl8.6\"" \
-		-DCFG_RUNTIME_INCDIR="\"include\"" \
-		-DCFG_RUNTIME_DOCDIR="\"man\"" \
+		-DCFG_RUNTIME_LIBDIR="\"$(libdir_native)\"" \
+		-DCFG_RUNTIME_BINDIR="\"$(bindir_native)\"" \
+		-DCFG_RUNTIME_SCRDIR="\"$(TCL_LIBRARY_NATIVE)\"" \
+		-DCFG_RUNTIME_INCDIR="\"$(includedir_native)\"" \
+		-DCFG_RUNTIME_DOCDIR="\"$(mandir_native)\"" \
 		-DBUILD_tcl \
 		@DEPARG@ $(CC_OBJNAME)
 

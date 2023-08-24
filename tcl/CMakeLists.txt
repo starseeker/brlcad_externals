@@ -25,26 +25,10 @@ if (ENABLE_TCL)
 
   set(TCL_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/TCL_BLD-prefix/src/TCL_BLD")
 
-  # In addition to the usual target dependencies, we need to adjust for the
-  # non-standard BRL-CAD zlib name, if we are using our bundled version.  Set a
-  # variable here so the tcl_replace utility will know the right value.
   if (TARGET ZLIB_BLD)
     set(ZLIB_TARGET ZLIB_BLD)
-    set(ZLIB_NAME z_brl)
-    set(DEFLATE_NAME brl_deflateSetHeader)
-  else (TARGET ZLIB_BLD)
-    set(ZLIB_NAME z)
-    set(DEFLATE_NAME deflateSetHeader)
+    set(ZLIB_PATCH_CMD ${PATCH_EXECUTABLE};-E;-p1;${PATCH_OPTIONS};-i;${CMAKE_CURRENT_SOURCE_DIR}/tcl-z_brl.patch)
   endif (TARGET ZLIB_BLD)
-
-  # We need to set internal Tcl variables to the final install paths, not the intermediate install paths that
-  # Tcl's own build will think are the final paths.  Rather than attempt build system trickery we simply
-  # hard set the values in the source files by rewriting them.
-  if (NOT TARGET tcl_replace)
-    configure_file(tcl_replace.cxx.in ${CMAKE_CURRENT_BINARY_DIR}/tcl_replace.cxx @ONLY)
-    add_executable(tcl_replace ${CMAKE_CURRENT_BINARY_DIR}/tcl_replace.cxx)
-    set_target_properties(tcl_replace PROPERTIES FOLDER "Compilation Utilities")
-  endif (NOT TARGET tcl_replace)
 
   if (NOT MSVC)
 
@@ -57,26 +41,15 @@ if (ENABLE_TCL)
       message(FATAL_ERROR "Bundled Tcl enabled, but the path \"${CMAKE_CURRENT_BINARY_DIR}\" contains spaces.  On this platform, Tcl uses autotools to build; paths with spaces are not supported.  To continue you must select a build directory with a path that does not use spaces.")
     endif ("${CMAKE_CURRENT_BINARY_DIR}" MATCHES ".* .*")
 
-    set(TCL_REWORK_FILES
-      "${TCL_SRC_DIR}/unix/configure"
-      "${TCL_SRC_DIR}/macosx/configure"
-      "${TCL_SRC_DIR}/unix/tcl.m4"
-      "${TCL_SRC_DIR}/unix/tclUnixInit.c"
-      "${TCL_SRC_DIR}/generic/tclPkgConfig.c"
-      )
-
-    if (TARGET ZLIB_BLD)
-      set(PCOMMAND "tcl_replace;${TCL_REWORK_FILES}")
-    endif (TARGET ZLIB_BLD)
-
     ExternalProject_Add(TCL_BLD
       URL "${CMAKE_CURRENT_SOURCE_DIR}/tcl"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      PATCH_COMMAND ${PCOMMAND}
+      PATCH_COMMAND ${PATCH_EXECUTABLE};-E;-p1;${PATCH_OPTIONS};-i;${CMAKE_CURRENT_SOURCE_DIR}/tcl.patch
+      COMMAND ${ZLIB_PATCH_CMD}
       CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR} TCL_SHLIB_LD_EXTRAS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR} ${TCL_SRC_DIR}/unix/configure --prefix=${CMAKE_INSTALL_PREFIX}
       BUILD_COMMAND make -j${pcnt}
       INSTALL_COMMAND make install
-      DEPENDS ${ZLIB_TARGET} tcl_replace
+      DEPENDS ${ZLIB_TARGET}
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
@@ -91,11 +64,12 @@ if (ENABLE_TCL)
     ExternalProject_Add(TCL_BLD
       URL "${CMAKE_CURRENT_SOURCE_DIR}/tcl"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+      PATCH_COMMAND ${PATCH_EXECUTABLE};-E;-p1;${PATCH_OPTIONS};-i;${CMAKE_CURRENT_SOURCE_DIR}/tcl.patch
       CONFIGURE_COMMAND ""
       BINARY_DIR ${TCL_SRC_DIR}/win
       BUILD_COMMAND ${VCVARS_BAT} && nmake -f makefile.vc INSTALLDIR=${CMAKE_INSTALL_PREFIX} SUFX=
       INSTALL_COMMAND ${VCVARS_BAT} && nmake -f makefile.vc install INSTALLDIR=${CMAKE_INSTALL_PREFIX} SUFX=
-      DEPENDS ${ZLIB_TARGET} tcl_replace
+      DEPENDS ${ZLIB_TARGET}
       LOG_BUILD ${EXT_BUILD_QUIET}
       LOG_INSTALL ${EXT_BUILD_QUIET}
       LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}

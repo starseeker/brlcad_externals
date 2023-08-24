@@ -209,7 +209,7 @@ TCL_LIB_FLAG		= @TCL_LIB_FLAG@
 #TCL_LIB_FLAG		= -ltcl
 
 # support for embedded libraries on Darwin / Mac OS X
-DYLIB_INSTALL_DIR	= @rpath
+DYLIB_INSTALL_DIR	= $(libdir)
 
 #--------------------------------------------------------------------------
 # The information below is modified by the configure script when Makefile is
@@ -1365,16 +1365,16 @@ tclPkg.o: $(GENERIC_DIR)/tclPkg.c
 
 tclPkgConfig.o: $(GENERIC_DIR)/tclPkgConfig.c
 	$(CC) -c $(CC_SWITCHES) \
-		-DCFG_INSTALL_LIBDIR="\"lib\"" \
-		-DCFG_INSTALL_BINDIR="\"bin\"" \
-		-DCFG_INSTALL_SCRDIR="\"lib/tcl8.6\"" \
-		-DCFG_INSTALL_INCDIR="\"include\"" \
-		-DCFG_INSTALL_DOCDIR="\"man\"" \
-		-DCFG_RUNTIME_LIBDIR="\"lib\"" \
-		-DCFG_RUNTIME_BINDIR="\"bin\"" \
-		-DCFG_RUNTIME_SCRDIR="\"lib/tcl8.6\"" \
-		-DCFG_RUNTIME_INCDIR="\"include\"" \
-		-DCFG_RUNTIME_DOCDIR="\"man\"" \
+		-DCFG_INSTALL_LIBDIR="\"$(LIB_INSTALL_DIR)\"" \
+		-DCFG_INSTALL_BINDIR="\"$(BIN_INSTALL_DIR)\"" \
+		-DCFG_INSTALL_SCRDIR="\"$(SCRIPT_INSTALL_DIR)\"" \
+		-DCFG_INSTALL_INCDIR="\"$(INCLUDE_INSTALL_DIR)\"" \
+		-DCFG_INSTALL_DOCDIR="\"$(MAN_INSTALL_DIR)\"" \
+		-DCFG_RUNTIME_LIBDIR="\"$(libdir)\"" \
+		-DCFG_RUNTIME_BINDIR="\"$(bindir)\"" \
+		-DCFG_RUNTIME_SCRDIR="\"$(TCL_LIBRARY)\"" \
+		-DCFG_RUNTIME_INCDIR="\"$(includedir)\"" \
+		-DCFG_RUNTIME_DOCDIR="\"$(mandir)\"" \
 		-DCFG_RUNTIME_DLLFILE="\"$(TCL_LIB_FILE)\"" \
 		$(GENERIC_DIR)/tclPkgConfig.c
 
