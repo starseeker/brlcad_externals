@@ -261,6 +261,13 @@ QueryConfigObjCmd(
 	 * Value is stored as-is in a byte array, see Bug [9b2e636361],
 	 * so we have to decode it first.
 	 */
+	/* TODO - need to store the *path*,runtime values as relative paths
+	 * and use https://github.com/gpakosz/whereami to make Tcl relocatable
+	 * Right now, these are hard coded in the library using full path CFG_RUNTIME_*
+	 * defines, which is no good...
+	 * We can check for the cases we need to do that with using Tcl_GetString(objv[2])
+	 * and matching the CFG_RUNTIME lookup patterns..., as well as confirming that
+	 * the objv[0] is ::tcl::pkgconfig... */
 	value = (const char *) Tcl_GetByteArrayFromObj(val, &n);
 	value = Tcl_ExternalToUtfDString(venc, value, n, &conv);
 	Tcl_SetObjResult(interp, Tcl_NewStringObj(value,
