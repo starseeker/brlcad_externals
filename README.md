@@ -6,7 +6,7 @@ This repository holds local copies of dependencies used by the [BRL-CAD](https:/
 
 * Clone this repository
 ```sh
-git clone https://github.com/starseeker/brlcad_externals
+git clone https://github.com/BRL-CAD/brlcad_externals
 ```
 * Make a build directory
 ```sh
