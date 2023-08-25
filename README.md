@@ -41,3 +41,13 @@ example, libpng's use of zlib) - when a bundled component that is a dependency
 of other bundled projects is enabled, the expectation is that the other bundled
 components will use our copy rather than system copies of those libraries.
 
+# BRL-CAD Compilation Tools
+
+Although most of the components here are intended for bundling with BRL-CAD,
+there are a few exceptions to that rule.  A few of the projects (astyle, patch,
+patchelf, etc.) target a different installation folder and are used only for
+BRL-CAD compilation (and/or support for building this externals repository.)
+They can be identified by looking for a CMAKE_NOINSTALL_PREFIX target being
+used by their top level CMakeLists.txt file managing the ExternalProject_Add
+build definition.
+
