@@ -43,6 +43,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Location of CMake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
+# If we're not multiconfig and the user hasn't specified something,
+# go with Release mode.  We're generally looking to bundle these
+# as if they were system libraries, so that's usually going to
+# mean release configuration.
+if (NOT CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif (NOT CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE)
+
 # Define some variables
 if(NOT DEFINED BIN_DIR)
   set(BIN_DIR bin)
