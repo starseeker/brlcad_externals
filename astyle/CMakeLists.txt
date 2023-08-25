@@ -1,8 +1,9 @@
-# For the astyle tool, unless the user specifically requests it be built, only
-# enable it if we can't find a system version - astyle is not bundled with
-# BRL-CAD, so a system version is fine if available.  We set up ENABLE_ASTYLE
-# this way so it will show as an option in the CMake GUI even without a
-# default value set.
+# Astyle is not bundled with BRL-CAD - it is a source code formatting tool,
+# optionally used during compilation to validate our style guidelines.
+if (ENABLE_ALL AND NOT DEFINED ENABLE_ASTYLE)
+  set(ENABLE_ASTYLE ON)
+endif (ENABLE_ALL AND NOT DEFINED ENABLE_ASTYLE)
+
 if (NOT ENABLE_ASTYLE)
 
   find_program(ASTYLE_EXECUTABLE astyle)

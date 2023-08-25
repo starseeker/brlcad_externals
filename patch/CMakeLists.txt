@@ -1,9 +1,17 @@
-# For the patch tool, unless the user specifically requests it be built, only
-# enable it if we can't find a system version - patch is not bundled with
-# BRL-CAD, so a system version is fine if available.  We set up ENABLE_PATCH
-# this way so it will show as an option in the CMake GUI even without a
-# default value set.
+# This implementation of patch comes from https://github.com/shannonbooth/patch
+# and supports most of the capabilities users of the standard Unix-type patch
+# tools are familiar with.  We include it here to support applying patches
+# during the build process even on platforms that don't normally supply this
+# tool by default.
+if (ENABLE_ALL AND NOT DEFINED ENABLE_PATCH)
+  set(ENABLE_PATCH ON)
+endif (ENABLE_ALL AND NOT DEFINED ENABLE_PATCH)
+
+# Although individual projects may need their own patching options, there are
+# some common settings that will be used for most/all cases.  We define those
+# here for uniformity.
 set(PATCH_OPTIONS "--ignore-whitespace" CACHE STRING "Command line options to use when patching" FORCE)
+
 if (NOT ENABLE_PATCH)
 
   find_program(PATCH_EXECUTABLE patch)
@@ -37,7 +45,9 @@ if (ENABLE_PATCH)
     )
 
   set(PATCH_EXECUTABLE ${CMAKE_NOINSTALL_PREFIX}/${BIN_DIR}/sb_patch${CMAKE_EXECUTABLE_SUFFIX} CACHE STRING "Patch executable" FORCE)
-  set(PATCH_OPTIONS "--ignore-whitespace;--newline-output;preserve" CACHE STRING "Command line options to use when patching" FORCE)
+ 
+  # If we're using sb_patch, add the newline-output option
+  set(PATCH_OPTIONS "${PATCH_OPTIONS};--newline-output;preserve" CACHE STRING "Command line options to use when patching" FORCE)
 
 endif (ENABLE_PATCH)
 

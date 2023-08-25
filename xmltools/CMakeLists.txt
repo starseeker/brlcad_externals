@@ -1,6 +1,8 @@
-# xmltools provides the xsltproc and xmllint tools If both of those are
-# present on the system we can forego building this - otherwise, we need
-# it.
+# xmltools provides the xsltproc and xmllint tools for Docbook processing
+if (ENABLE_ALL AND NOT DEFINED ENABLE_XMLTOOLS)
+  set(ENABLE_XMLTOOLS ON)
+endif (ENABLE_ALL AND NOT DEFINED ENABLE_XMLTOOLS)
+
 if (NOT ENABLE_XMLTOOLS)
 
   find_program(XSLTPROC_EXECUTABLE xsltproc)

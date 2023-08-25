@@ -2,11 +2,15 @@
 # to build it everywhere
 if (NOT MSVC AND NOT APPLE)
 
-  # Unless the user specifically requests it be built, only enable it if we
-  # can't find a system version - patchelf is not bundled with BRL-CAD, so
-  # a system version is fine if available.  We set up ENABLE_PATCHELF this
-  # way so it will show as an option in the CMake GUI even without a
-  # default value set.
+  # patchelf is used to rewrite RPATH settings on the third party binaries
+  # after compilation - it is quite useful when it comes to making binary
+  # bundles that can run successfully from locations other than their final
+  # CMAKE_INSTALL_PREFIX target.
+
+  if (ENABLE_ALL AND NOT DEFINED ENABLE_PATCHELF)
+    set(ENABLE_PATCHELF ON)
+  endif (ENABLE_ALL AND NOT DEFINED ENABLE_PATCHELF)
+
   if (NOT ENABLE_PATCHELF)
 
     find_program(PATCHELF_EXECUTABLE patchelf)
