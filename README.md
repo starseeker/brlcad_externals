@@ -2,6 +2,27 @@
 
 This repository holds local copies of dependencies used by the [BRL-CAD](https://github.com/BRL-CAD/brlcad) computer aided design system.
 
+# Quick start
+
+* Clone the repository
+```sh
+git clone https://github.com/starseeker/brlcad_externals
+```
+* Make a build directory
+```sh
+mkdir brlcad_externals_build && cd brlcad_externals_build
+```
+* Configure with CMake.  Individual components can be enabled or disabled, but the ENABLE_ALL flag is used to automatically turn on all the projects targeted for BRL-CAD bundling.
+```sh
+cmake ../brlcad_externals -DENABLE_ALL=ON
+```
+* Run the build process.  (Parallel building is supported and should succeed.)
+```sh
+cmake --build . --parallel
+```
+
+# About This Repository
+
 Projects in this repository are distinct from those stored directly in
 BRL-CAD's src/other repository. The latter generally satisfy one of the
 following conditions:
