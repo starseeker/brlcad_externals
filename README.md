@@ -4,7 +4,7 @@ This repository holds local copies of dependencies used by the [BRL-CAD](https:/
 
 # Quick start
 
-* Clone the repository
+* Clone this repository
 ```sh
 git clone https://github.com/starseeker/brlcad_externals
 ```
@@ -20,6 +20,38 @@ cmake ../brlcad_externals -DENABLE_ALL=ON
 ```sh
 cmake --build . --parallel
 ```
+
+# Using the Build Outputs with BRL-CAD
+
+At the moment this repository and BRL-CAD's support of it are still experimental.
+To test it, the steps are as follows:
+
+* Clone the BRL-CAD repository
+```sh
+git clone https://github.com/BRL-CAD/brlcad
+```
+* Remove the internal ext directories (be sure NOT to accidentally commit this change to the repository...)
+```sh
+cd brlcad && rm -rf misc/tools/ext src/other/ext
+```
+* Make a build directory
+```sh
+cd .. && mkdir brlcad_exttest_build && cd brlcad_exttest_build
+```
+* Configure with CMake, specifying the location of the build directory of this repository with BRLCAD_EXT_DIR.  If you also wish to test with Qt, you must currently enable that support in BRL-CAD as well.  Note that the configure process is responsible for staging the BRLCAD_EXT_DIR contents, so it can take some time to complete...
+```sh
+cmake ../brlcad -DBRLCAD_EXT_DIR=<your_root>/brlcad_externals_build -DBRLCAD_ENABLE_QT=ON
+```
+* Run the build process.  (Parallel building is supported and should succeed.)
+```sh
+cmake --build . --parallel
+cmake --build . --parallel --target package
+```
+
+If all goes well, the final result should be a relocatable BRL-CAD archive
+including both the main BRL-CAD outputs and the products of this external
+dependencies repository.
+
 
 # About This Repository
 
