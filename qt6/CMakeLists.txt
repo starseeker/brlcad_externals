@@ -24,7 +24,7 @@ if (ENABLE_QT)
     # like it's working...  not 100% sure why this is needed, unless there's
     # some bad interaction between the MSVC cmake and Visual Studio.
     set(QT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/qt6-build")
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat -release --prefix=${CMAKE_INSTALL_PREFIX} --release WORKING_DIRECTORY ${QT_BUILD_DIR})")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat -release --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX} --release WORKING_DIRECTORY ${QT_BUILD_DIR})")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake "execute_process(COMMAND cmake --build . --parallel --config Release WORKING_DIRECTORY ${QT_BUILD_DIR})")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake "execute_process(COMMAND cmake --install . WORKING_DIRECTORY ${QT_BUILD_DIR})")
 
@@ -48,7 +48,7 @@ if (ENABLE_QT)
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -release --prefix=${CMAKE_INSTALL_PREFIX} --release
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -release --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX} --release
       BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
       INSTALL_COMMAND ${CMAKE_COMMAND} --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
@@ -67,7 +67,7 @@ if (ENABLE_QT)
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb -release --prefix=${CMAKE_INSTALL_PREFIX} --release
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb -release --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX} --release
       BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
       INSTALL_COMMAND ${CMAKE_COMMAND} --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
@@ -92,14 +92,14 @@ if (ENABLE_QT)
     BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
     PATCH_COMMAND ${PATCH_EXECUTABLE};-E;-p1;${PATCH_OPTIONS};-i;${CMAKE_CURRENT_SOURCE_DIR}/qtsvg.patch
     CMAKE_ARGS
-    -DQt6_DIR=${CMAKE_INSTALL_PREFIX}
-    -DQt6_ROOT=${CMAKE_INSTALL_PREFIX}
+    -DQt6_DIR=${CMAKE_BUNDLE_INSTALL_PREFIX}
+    -DQt6_ROOT=${CMAKE_BUNDLE_INSTALL_PREFIX}
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_BUNDLE_INSTALL_PREFIX}
     $<$<BOOL:${ZLIB_TARGET}>:-DZ_PREFIX=ON>
     $<$<BOOL:${ZLIB_TARGET}>:-DZ_PREFIX_STR=${Z_PREFIX_STR}>
-    -DZLIB_ROOT=$<$<BOOL:${ZLIB_TARGET}>:${CMAKE_INSTALL_PREFIX}>
+    -DZLIB_ROOT=$<$<BOOL:${ZLIB_TARGET}>:${CMAKE_BUNDLE_INSTALL_PREFIX}>
     LOG_CONFIGURE ${EXT_BUILD_QUIET}
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
@@ -122,12 +122,14 @@ mark_as_advanced(Qt6_INCLUDE_DIRS)
 mark_as_advanced(Qt6_LIBRARIES)
 mark_as_advanced(Qt6_VERSION)
 
-# Copy the license info into position in CMAKE_INSTALL_PREFIX
-file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
-file(COPY qtbase/LICENSES DESTINATION ${CMAKE_INSTALL_PREFIX}/doc/legal/other/)
-file(RENAME ${CMAKE_INSTALL_PREFIX}/doc/legal/other/LICENSES ${CMAKE_INSTALL_PREFIX}/doc/legal/other/qtbase)
-file(COPY qtsvg/LICENSES DESTINATION ${CMAKE_INSTALL_PREFIX}/doc/legal/other/)
-file(RENAME ${CMAKE_INSTALL_PREFIX}/doc/legal/other/LICENSES ${CMAKE_INSTALL_PREFIX}/doc/legal/other/qtsvg)
+# Copy the license info into position in CMAKE_BUNDLE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other)
+execute_process(COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/qtbase)
+file(COPY qtbase/LICENSES DESTINATION ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/)
+file(RENAME ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/LICENSES ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/qtbase)
+execute_process(COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/qtsvg)
+file(COPY qtsvg/LICENSES DESTINATION ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/)
+file(RENAME ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/LICENSES ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/qtsvg)
 
 # Local Variables:
 # tab-width: 8

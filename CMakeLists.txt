@@ -68,8 +68,14 @@ endif(NOT DEFINED DATA_DIR)
 # extinstall is the target for projects that will be incorporated into BRL-CAD
 # bundles.  For tools like astyle and plief that are build tools only, we
 # instead place them in extnoinstall.
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/brlcad_ext/extinstall" CACHE PATH "Outputs for BRL-CAD bundling" FORCE)
-set(CMAKE_NOINSTALL_PREFIX "${CMAKE_BINARY_DIR}/brlcad_ext/extnoinstall" CACHE PATH "Build tools NOT bundled with BRL-CAD" FORCE)
+if (NOT DEFINED ${CMAKE_INSTALL_PREFIX})
+  set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
+endif (NOT DEFINED ${CMAKE_INSTALL_PREFIX})
+set(BDEPS_ROOT brlcad_ext)
+set(CMAKE_BUNDLE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/${BDEPS_ROOT}/extinstall" CACHE PATH "Outputs for BRL-CAD bundling" FORCE)
+set(CMAKE_NOBUNDLE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/${BDEPS_ROOT}/extnoinstall" CACHE PATH "Build tools NOT bundled with BRL-CAD" FORCE)
+file(MAKE_DIRECTORY "${CMAKE_BUNDLE_INSTALL_PREFIX}")
+file(MAKE_DIRECTORY "${CMAKE_NOBUNDLE_INSTALL_PREFIX}")
 
 #---------------------------------------------------------------------
 # By default, changes in src/other/ext files won't trigger a rebuild.  Setting
@@ -152,8 +158,8 @@ endif(MSVC)
 # to allow interested CMake builds to be aware of potential changes, even if
 # all that happens is to add files - otherwise, add-only operations won't trigger
 # a CMake reconfigure even if the client build is watching the extinstall files.
-file(MAKE_DIRECTORY ${CMAKE_NOINSTALL_PREFIX})
-add_custom_target(BuildStamp ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_NOINSTALL_PREFIX}/build-stamp)
+file(MAKE_DIRECTORY ${CMAKE_NOBUNDLE_INSTALL_PREFIX})
+add_custom_target(BuildStamp ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_NOBUNDLE_INSTALL_PREFIX}/build-stamp)
 
 ###############################################################################
 # Applying patch files cross platform is a challenging problem due to the

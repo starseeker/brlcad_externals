@@ -34,7 +34,7 @@ if (ENABLE_XMLTOOLS)
     -DBUILD_STATIC_LIBS=${BUILD_STATIC_LIBS}
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_INSTALL_PREFIX=${CMAKE_NOINSTALL_PREFIX}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_NOBUNDLE_INSTALL_PREFIX}
     LOG_CONFIGURE ${EXT_BUILD_QUIET}
     LOG_BUILD ${EXT_BUILD_QUIET}
     LOG_INSTALL ${EXT_BUILD_QUIET}
@@ -47,24 +47,6 @@ if (ENABLE_XMLTOOLS)
   endif (TARGET PATCH_BLD)
 
 endif (ENABLE_XMLTOOLS)
-
-# Copy the license into position in CMAKE_INSTALL_PREFIX
-file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/xmltools/libxslt/Copyright
-  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/xslt.txt
-  COPYONLY
-  )
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/xmltools/libexslt/Copyright
-  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/exslt.txt
-  COPYONLY
-  )
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/xmltools/libxml/Copyright
-  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/xml.txt
-  COPYONLY
-  )
 
 # Local Variables:
 # tab-width: 8
