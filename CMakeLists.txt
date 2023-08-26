@@ -168,9 +168,7 @@ add_custom_target(BuildStamp ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_NOBUN
 # this.  We need to address the patch build tool first thing, since any of the
 # other ExternalProject_Add builds that follow may depend on it.
 #
-# Like the other build tools below, patch will default to a system install
-# of patch unless ENABLE_PATCH is explicitly set by the user.  The patch
-# bundled here is from https://github.com/shannonbooth/patch
+# The patch bundled here is from https://github.com/shannonbooth/patch
 ###############################################################################
 add_subdirectory(patch)
 
@@ -178,10 +176,7 @@ add_subdirectory(patch)
 # Build tools are used during compilation, but are not bundled or distributed
 # with BRL-CAD proper.  We group these tools here for convenience.  Unlike the
 # build targets intended for distribution with BRL-CAD, these outputs are all
-# targeted to extnoinstall.  These builds ignore the ENABLE_ALL flag used by
-# the bundling targets and by default defer to a system version if one is
-# present.  The tool-specific ENABLE_* flags may be used to explicitly override
-# system detection.
+# targeted to extnoinstall.
 ###############################################################################
 add_subdirectory(astyle)
 add_subdirectory(lief)
@@ -200,10 +195,6 @@ add_subdirectory(xmltools)
 
 # zlib compression/decompression library
 # https://zlib.net
-#
-# Note - our copy is modified from Vanilla upstream to support specifying a
-# custom prefix - until a similar feature is available in upstream zlib, we
-# need this to reliably avoid conflicts between bundled and system zlib.
 add_subdirectory(zlib)
 
 # libregex regular expression matching
@@ -226,26 +217,18 @@ add_subdirectory(png)
 
 # STEPcode - support for reading and writing STEP files
 # https://github.com/stepcode/stepcode
-#
-# Note - We are heavily involved with the stepcode effort and in the past our
-# stepcode copy has been extensively modified, but we are working to get our
-# copy and a released upstream copy synced - in anticipation of that, stepcode
-# lives in ext.
 add_subdirectory(stepcode)
 
 # SQLITE3 - embeddable database
+# https://www.sqlite.org
 add_subdirectory(sqlite3)
 
-# PROJ - generic coordinate transformation - https://proj.org
+# PROJ - generic coordinate transformation
+# https://proj.org
 add_subdirectory(proj)
 
 # GDAL -  translator library for raster and vector geospatial data formats
 # https://gdal.org
-#
-# Note - the original inclusion of GDAL in BRL-CAD required a custom CMake
-# build and source mods.  Upstream changes have largely eliminated the need for
-# this, and work is pending to migrate our code to using vanilla upstream GDAL
-# - hence, despite the mods, GDAL lives in ext in anticipation of that change.
 add_subdirectory(gdal)
 
 # Open Asset Import Library - library for supporting I/O for a number of
@@ -259,6 +242,7 @@ add_subdirectory(openmesh)
 
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.
+# https://www.tcl.tk
 set(TCL_ENABLE_TK ON CACHE BOOL "enable tk")
 add_subdirectory(tcl)
 add_subdirectory(tk)
