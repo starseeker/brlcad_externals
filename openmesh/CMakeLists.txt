@@ -63,6 +63,16 @@ mark_as_advanced(OPENMESH_TOOLS_SUBDIVIDER_DIR)
 mark_as_advanced(OPENMESH_TOOLS_UTILS_DIR)
 mark_as_advanced(OPENMESH_TOOLS_VDPM_DIR)
 
+# Copy the license into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/openmesh/LICENSE
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/openmesh.txt
+  COPYONLY
+  )
+
+
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

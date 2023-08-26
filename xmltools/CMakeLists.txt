@@ -48,6 +48,24 @@ if (ENABLE_XMLTOOLS)
 
 endif (ENABLE_XMLTOOLS)
 
+# Copy the license into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/xmltools/libxslt/Copyright
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/xslt.txt
+  COPYONLY
+  )
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/xmltools/libexslt/Copyright
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/exslt.txt
+  COPYONLY
+  )
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/xmltools/libxml/Copyright
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/xml.txt
+  COPYONLY
+  )
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

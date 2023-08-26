@@ -46,6 +46,14 @@ if (ENABLE_ZLIB)
 
 endif (ENABLE_ZLIB)
 
+# Copy the license into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/zlib/LICENSE
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/zlib.txt
+  COPYONLY
+  )
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

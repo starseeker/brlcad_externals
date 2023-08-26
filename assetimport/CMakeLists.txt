@@ -60,6 +60,14 @@ if (ENABLE_ASSETIMPORT)
 
 endif (ENABLE_ASSETIMPORT)
 
+# Copy the license into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/assetimport/LICENSE
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/assetimport.txt
+  COPYONLY
+  )
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

@@ -1,18 +1,3 @@
-Improve BRL-CAD parent build's copying logic - should be fairly straightforward
-using the newer CMake features to only erase, copy and re-process files that have
-been added/removed/changed and leave already successfully staged files alone...
-
-Need to add a extnoinstall file that is touched via custom target every time
-this repository is built, so the parent CMake build will have something to
-trigger on for re-configure even if all the updated build does otherwise is
-add new files - right now, only adding files isn't something that will trigger
-a re-configure in the parent build.
-
-Need to prepare a replacement for the BRL-CAD parent build's doc/legal/other
-setup where ext licenses are concerned - Qt has a bunch and warrants a subdirectory,
-and ideally for the others we'll have a rule grabbing the license directly out
-of the source repo and staging it somewhere in extinstall/doc/legal/...
-
 Rather than having to link both extinstall and extnoinstall into home for
 automatic detection in the parent build, maybe have it look for a single
 brlcad_ext directory that contains both... should be a minor adjustment of the
@@ -20,9 +5,6 @@ target directories in both builds.  A "make install" target to copy everything
 to $HOME might be in order as well... probably should also correct the paths
 if we do that so the copy will work in-place, even though that's not the normal
 expected use case...
-
-Use LIEF to make a patchelf command line compatible replacement executable:
-https://github.com/lief-project/LIEF/issues/364
 
 Update custom rules in parent BRL-CAD build to suppress warnings/messages by default
 

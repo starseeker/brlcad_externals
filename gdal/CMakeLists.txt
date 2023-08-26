@@ -197,6 +197,14 @@ if (ENABLE_GDAL)
 
 endif (ENABLE_GDAL)
 
+# Copy the license into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/gdal/LICENSE.TXT
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/gdal.txt
+  COPYONLY
+  )
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

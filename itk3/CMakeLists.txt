@@ -97,6 +97,14 @@ mark_as_advanced(ITK_LIBRARY)
 mark_as_advanced(ITK_LIBRARIES)
 mark_as_advanced(ITK_VERSION)
 
+# Copy the license into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/itk3/license.terms
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/itk3.txt
+  COPYONLY
+  )
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

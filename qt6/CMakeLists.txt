@@ -122,6 +122,13 @@ mark_as_advanced(Qt6_INCLUDE_DIRS)
 mark_as_advanced(Qt6_LIBRARIES)
 mark_as_advanced(Qt6_VERSION)
 
+# Copy the license info into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+file(COPY qtbase/LICENSES DESTINATION ${CMAKE_INSTALL_PREFIX}/doc/legal/other/)
+file(RENAME ${CMAKE_INSTALL_PREFIX}/doc/legal/other/LICENSES ${CMAKE_INSTALL_PREFIX}/doc/legal/other/qtbase)
+file(COPY qtsvg/LICENSES DESTINATION ${CMAKE_INSTALL_PREFIX}/doc/legal/other/)
+file(RENAME ${CMAKE_INSTALL_PREFIX}/doc/legal/other/LICENSES ${CMAKE_INSTALL_PREFIX}/doc/legal/other/qtsvg)
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

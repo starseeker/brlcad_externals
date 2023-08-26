@@ -98,6 +98,16 @@ mark_as_advanced(TK_LIBRARIES)
 mark_as_advanced(TK_X11_GRAPHICS)
 mark_as_advanced(HAVE_TK)
 
+# Copy the license into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/tk/license.terms
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/tk.txt
+  COPYONLY
+  )
+
+
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

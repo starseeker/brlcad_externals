@@ -41,6 +41,14 @@ if (ENABLE_SQLite3)
 
 endif (ENABLE_SQLite3)
 
+# Copy the license into position in CMAKE_INSTALL_PREFIX
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/doc/legal/other)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
+  ${CMAKE_INSTALL_PREFIX}/doc/legal/other/sqlite3.txt
+  COPYONLY
+  )
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake
