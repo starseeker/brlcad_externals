@@ -43,30 +43,29 @@
 #include <vector>
 #include "cxxopts.hpp"
 #include "LIEF/ELF.hpp"
-#include "LIEF/LIEF.h"
 
 int
 main(int argc, const char *argv[])
 {
-    bool dump_mode = false;
     bool clear_mode = false;
-    bool verbose = false;
+    bool print_rpath = false;
+    bool force_rpath = false; // To manipulate DT_RPATH rather than DT_RUNPATH
     std::string new_rpath;
+    std::vector<std::string> nonopts;
 
     cxxopts::Options options(argv[0], "A program to clear or replace rpaths in binaries\n");
-
-    std::vector<std::string> nonopts;
 
     try
     {
 	options
 	    .set_width(70)
+	    .custom_help("[OPTIONS...] binary_file")
 	    .add_options()
-	    ("D,dump",       "Print rpath/runpath", cxxopts::value<bool>(dump_mode))
-	    ("remove-rpath", "Remove the binary's rpath", cxxopts::value<bool>(clear_mode))
-	    ("add-rpath",    "Add the specified rpath to the binary", cxxopts::value<std::string>(new_rpath))
-	    ("v,verbose",  "Verbose reporting during processing", cxxopts::value<bool>(verbose))
-	    ("h,help",     "Print help")
+	    ("a,add-rpath",    "Add the specified rpath to DT_RUNPATH", cxxopts::value<std::string>(new_rpath))
+	    ("c,remove-rpath", "Clear the binary's DT_RUNPATH settings", cxxopts::value<bool>(clear_mode))
+	    ("force-rpath",    "Report/process the obsolete DT_RPATH property, not DT_RUNPATH", cxxopts::value<bool>(force_rpath))
+	    ("print-rpath",    "Print the value of DT_RPATH (not DT_RUNPATH)", cxxopts::value<bool>(print_rpath))
+	    ("h,help",         "Print help")
 	    ;
 	auto result = options.parse(argc, argv);
 
@@ -74,14 +73,16 @@ main(int argc, const char *argv[])
 
 	if (result.count("help")) {
 	    std::cout << options.help({""}) << std::endl;
+	    std::cout << "\n";
+	    std::cout << "Default no-options behavior is to print DT_RUNPATH." << "\n\n";
+	    std::cout << "Returns -1 if unable to parse the supplied file." << "\n\n";
+	    std::cout << "If both modification and printing options are supplied, values reported" << "\n";
+	    std::cout << "will represent post-processing values.  If both a clear and an add are" << "\n";
+	    std::cout << "specified, the clear will be performed first." << "\n";
 	    return 0;
 	}
-
-	if (new_rpath.length() && clear_mode) {
-	    std::cerr << "Error:  need to specify either addition or removal of rpath, not both\n";
-	    return -1;
-	}
     }
+
     catch (const cxxopts::exceptions::exception& e)
     {
 	std::cerr << "error parsing options: " << e.what() << std::endl;
@@ -93,37 +94,70 @@ main(int argc, const char *argv[])
 	return -1;
     }
 
+    bool bin_mod = false;
     std::unique_ptr<LIEF::ELF::Binary> binfo = std::unique_ptr<LIEF::ELF::Binary>{LIEF::ELF::Parser::parse(nonopts[0])};
-
-    if (dump_mode) {
-	// Thanks to the C api example for the hint on how to unpack this...
-	LIEF::ELF::DynamicEntry *rue = binfo->get(LIEF::ELF::DYNAMIC_TAGS::DT_RUNPATH);
-	if (rue) {
-	    std::cout << reinterpret_cast<LIEF::ELF::DynamicEntryRunPath*>(rue)->name() << '\n';
-	    return 0;
-	}
-	LIEF::ELF::DynamicEntry *rpe = binfo->get(LIEF::ELF::DYNAMIC_TAGS::DT_RPATH);
-	if (rpe)
-	    std::cout << reinterpret_cast<LIEF::ELF::DynamicEntryRpath*>(rpe)->name() << " (DT_RPATH)" << '\n';
-	return 0;
+    if (!binfo) {
+	std::cerr << "Not an ELF file\n";
+	return -1;
     }
 
     if (clear_mode) {
-	binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RPATH);
-	binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RUNPATH);
-	binfo->write(nonopts[0]);
-	return 0;
+	if (force_rpath) {
+	    binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RPATH);
+	} else {
+	    binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RUNPATH);
+	}
+	bin_mod = true;
     }
+
 
     if (new_rpath.length()) {
-	LIEF::ELF::DynamicEntryRunPath npe(new_rpath);
-	binfo->add(npe);
-	binfo->write(nonopts[0]);
-	return 0;
+
+	// Adding a path is not destructive to existing RUNPATH values, so we have
+	// to generate a composite if previous data exists.
+	std::string opath;
+	LIEF::ELF::DynamicEntry *rp = (force_rpath) ?  binfo->get(LIEF::ELF::DYNAMIC_TAGS::DT_RPATH) : binfo->get(LIEF::ELF::DYNAMIC_TAGS::DT_RUNPATH);
+	if (rp) {
+	    if (force_rpath) {
+		opath.append(reinterpret_cast<LIEF::ELF::DynamicEntryRpath*>(rp)->name());
+	    } else {
+		opath.append(reinterpret_cast<LIEF::ELF::DynamicEntryRunPath*>(rp)->name());
+	    }
+	}
+	if (opath.length())
+	    opath.append(std::string(":"));
+	opath.append(new_rpath);
+
+	// Clear any old path objects and add the new
+	if (force_rpath) {
+	    binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RPATH);
+	    LIEF::ELF::DynamicEntryRpath npe(opath);
+	    binfo->add(npe);
+	} else {
+	    binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RUNPATH);
+	    LIEF::ELF::DynamicEntryRunPath npe(opath);
+	    binfo->add(npe);
+	}
+
+	bin_mod = true;
+
     }
 
-    std::cout << options.help({""}) << std::endl;
-    return -1;
+    // Write out the new version of the binary
+    if (bin_mod)
+	binfo->write(nonopts[0]);
+
+    if (!bin_mod || print_rpath) {
+	// Doing the lookup here to make sure we have the current, valid binfo
+	// entries for printing
+	LIEF::ELF::DynamicEntry *rp = (force_rpath) ?  binfo->get(LIEF::ELF::DYNAMIC_TAGS::DT_RPATH) : binfo->get(LIEF::ELF::DYNAMIC_TAGS::DT_RUNPATH);
+	if (!force_rpath && rp)
+	    std::cout << reinterpret_cast<LIEF::ELF::DynamicEntryRunPath*>(rp)->name() << '\n';
+	if (force_rpath && rp)
+	    std::cout << reinterpret_cast<LIEF::ELF::DynamicEntryRpath*>(rp)->name() << '\n';
+    }
+
+    return 0;
 }
 
 // Local Variables:
