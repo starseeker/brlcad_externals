@@ -1,11 +1,3 @@
-Rather than having to link both extinstall and extnoinstall into home for
-automatic detection in the parent build, maybe have it look for a single
-brlcad_ext directory that contains both... should be a minor adjustment of the
-target directories in both builds.  A "make install" target to copy everything
-to $HOME might be in order as well... probably should also correct the paths
-if we do that so the copy will work in-place, even though that's not the normal
-expected use case...
-
 Update custom rules in parent BRL-CAD build to suppress warnings/messages by default
 
 Figure out what makes sense from a CI perspective...  parent build will have to

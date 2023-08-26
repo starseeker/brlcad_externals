@@ -68,8 +68,8 @@ endif(NOT DEFINED DATA_DIR)
 # extinstall is the target for projects that will be incorporated into BRL-CAD
 # bundles.  For tools like astyle and plief that are build tools only, we
 # instead place them in extnoinstall.
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/extinstall" CACHE PATH "Outputs for BRL-CAD bundling" FORCE)
-set(CMAKE_NOINSTALL_PREFIX "${CMAKE_BINARY_DIR}/extnoinstall" CACHE PATH "Build tools NOT bundled with BRL-CAD" FORCE)
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/brlcad_ext/extinstall" CACHE PATH "Outputs for BRL-CAD bundling" FORCE)
+set(CMAKE_NOINSTALL_PREFIX "${CMAKE_BINARY_DIR}/brlcad_ext/extnoinstall" CACHE PATH "Build tools NOT bundled with BRL-CAD" FORCE)
 
 #---------------------------------------------------------------------
 # By default, changes in src/other/ext files won't trigger a rebuild.  Setting
