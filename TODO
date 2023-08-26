@@ -1,5 +1,3 @@
-Update custom rules in parent BRL-CAD build to suppress warnings/messages by default
-
 Figure out what makes sense from a CI perspective...  parent build will have to
 clone and build the minimum (which will be pretty much everything on Windows and
 OSX) - will it make sense to also CI test this repository separately?

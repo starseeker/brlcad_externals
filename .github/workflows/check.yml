@@ -1,0 +1,92 @@
+# This file defines Continuous Integration (CI) tests for the BRL-CAD externals
+# repository using the Github Actions framework.  Currently it defines
+# configurations for Windows, Linux and OSX.
+#
+# For more information about available platforms for testing, see:
+#
+# https://docs.github.com/en/free-pro-team@latest/actions/reference/specifications-for-github-hosted-runners
+
+name: BRL-CAD
+
+on: [push]
+
+jobs:
+  windows:
+    name: Windows Latest MSVC - Standard Tools
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Setup - CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Add github workspace to path
+        # https://github.community/t/deprecated-add-path/136621
+        run: echo "$ENV{GITHUB_WORKSPACE}" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+
+      - name: Configure
+        run: |
+          cmake -S . -B build -DENABLE_ALL=ON
+
+      - name: Build
+        run: |
+          cmake --build build --config Release
+
+  linux:
+    name: Ubuntu Latest GCC
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Setup - CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Setup - System
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update
+          # https://doc.qt.io/qt-6/linux-requirements.html
+          sudo apt-get install xserver-xorg-dev libx11-dev libxi-dev libxext-dev libglu1-mesa-dev libfontconfig1-dev libfreetype6-dev libx11-xcb-dev libxfixes-dev libxrender-dev libxcb1-dev libxcb-cursor-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-util-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev
+          sudo apt-get clean
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure
+        run: |
+          export PATH=$ENV{GITHUB_WORKSPACE}:$PATH
+          cmake -S . -G Ninja -DCMAKE_BUILD_TYPE=Release -B build -DENABLE_ALL=ON
+
+      - name: Build
+        run: |
+          export PATH=$ENV{GITHUB_WORKSPACE}:$PATH
+          cmake --build build
+
+  osx:
+    name: macOS Latest Clang
+    runs-on: macos-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Setup - CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure
+        run: |
+          export PATH=$ENV{GITHUB_WORKSPACE}:$PATH
+          export CC=clang
+          export CXX=clang++
+          cmake -S . -G Ninja -B build -DENABLE_ALL=ON -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: |
+          export PATH=$ENV{GITHUB_WORKSPACE}:$PATH
+          cd build && ninja -j1 && ninja -j1
+
