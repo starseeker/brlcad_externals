@@ -148,6 +148,13 @@ if(MSVC)
 
 endif(MSVC)
 
+# Add a target that will run every time we build and touch a file in extnoinstall
+# to allow interested CMake builds to be aware of potential changes, even if
+# all that happens is to add files - otherwise, add-only operations won't trigger
+# a CMake reconfigure even if the client build is watching the extinstall files.
+file(MAKE_DIRECTORY ${CMAKE_NOINSTALL_PREFIX})
+add_custom_target(BuildStamp ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_NOINSTALL_PREFIX}/build-stamp)
+
 ###############################################################################
 # Applying patch files cross platform is a challenging problem due to the
 # shortage of portable tools and issues with LF vs CRLF files - see
