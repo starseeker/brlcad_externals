@@ -1,7 +1,7 @@
-/*                  S T R C L E A R . C P P
+/*                     P L I E F . C P P
  * BRL-CAD
  *
- * Copyright (c) 2018-2023 United States Government as represented by
+ * Copyright (c) 2023 United States Government as represented by
  * the U.S. Army Research Laboratory.
  *
  * Redistribution and use in source and binary forms, with or without
