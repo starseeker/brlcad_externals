@@ -43,6 +43,7 @@
 #include <vector>
 #include "cxxopts.hpp"
 #include "LIEF/ELF.hpp"
+#include "LIEF/logging.hpp"
 
 int
 main(int argc, const char *argv[])
@@ -50,7 +51,9 @@ main(int argc, const char *argv[])
     bool clear_mode = false;
     bool print_rpath = false;
     bool force_rpath = false; // To manipulate DT_RPATH rather than DT_RUNPATH
-    std::string new_rpath;
+    size_t verbose = 0;
+    std::string add_rpath_val;
+    std::string set_rpath_val;
     std::vector<std::string> nonopts;
 
     cxxopts::Options options(argv[0], "A program to clear or replace rpaths in binaries\n");
@@ -61,10 +64,12 @@ main(int argc, const char *argv[])
 	    .set_width(70)
 	    .custom_help("[OPTIONS...] binary_file")
 	    .add_options()
-	    ("a,add-rpath",    "Add the specified rpath to DT_RUNPATH", cxxopts::value<std::string>(new_rpath))
+	    ("a,add-rpath",    "Add the specified rpath to DT_RUNPATH", cxxopts::value<std::string>(add_rpath_val))
 	    ("c,remove-rpath", "Clear the binary's DT_RUNPATH settings", cxxopts::value<bool>(clear_mode))
 	    ("force-rpath",    "Report/process the obsolete DT_RPATH property, not DT_RUNPATH", cxxopts::value<bool>(force_rpath))
 	    ("print-rpath",    "Print the value of DT_RPATH (not DT_RUNPATH)", cxxopts::value<bool>(print_rpath))
+	    ("s,set-rpath",    "Set DT_RUNPATH to the specified rpath, clearing existing values", cxxopts::value<std::string>(set_rpath_val))
+	    ("v,verbose",      "Enable verbose reporting during processing.  Multiple specifications of -v increase reporting level, up to a maximum of 5.")
 	    ("h,help",         "Print help")
 	    ;
 	auto result = options.parse(argc, argv);
@@ -81,6 +86,15 @@ main(int argc, const char *argv[])
 	    std::cout << "specified, the clear will be performed first." << "\n";
 	    return 0;
 	}
+
+	if (add_rpath_val.length() && set_rpath_val.length()) {
+	    std::cerr << "Both add-rpath and set-rpath supplied as arguments.\n";
+	    return -2;
+	}
+
+	// Multiple verbosity settings increase output levels
+	verbose = result.count("verbose");
+
     }
 
     catch (const cxxopts::exceptions::exception& e)
@@ -95,6 +109,27 @@ main(int argc, const char *argv[])
     }
 
     bool bin_mod = false;
+    LIEF::logging::set_level(LIEF::logging::LOGGING_LEVEL::LOG_CRITICAL);
+    switch (verbose) {
+	case 1:
+	    LIEF::logging::set_level(LIEF::logging::LOGGING_LEVEL::LOG_ERR);
+	    break;
+	case 2:
+	    LIEF::logging::set_level(LIEF::logging::LOGGING_LEVEL::LOG_WARN);
+	    break;
+	case 3:
+	    LIEF::logging::set_level(LIEF::logging::LOGGING_LEVEL::LOG_INFO);
+	    break;
+	case 4:
+	    LIEF::logging::set_level(LIEF::logging::LOGGING_LEVEL::LOG_DEBUG);
+	    break;
+	case 5:
+	    LIEF::logging::set_level(LIEF::logging::LOGGING_LEVEL::LOG_TRACE);
+	    break;
+	default:
+	    LIEF::logging::set_level(LIEF::logging::LOGGING_LEVEL::LOG_CRITICAL);
+    };
+
     std::unique_ptr<LIEF::ELF::Binary> binfo = std::unique_ptr<LIEF::ELF::Binary>{LIEF::ELF::Parser::parse(nonopts[0])};
     if (!binfo) {
 	std::cerr << "Not an ELF file\n";
@@ -111,7 +146,7 @@ main(int argc, const char *argv[])
     }
 
 
-    if (new_rpath.length()) {
+    if (add_rpath_val.length()) {
 
 	// Adding a path is not destructive to existing RUNPATH values, so we have
 	// to generate a composite if previous data exists.
@@ -126,7 +161,7 @@ main(int argc, const char *argv[])
 	}
 	if (opath.length())
 	    opath.append(std::string(":"));
-	opath.append(new_rpath);
+	opath.append(add_rpath_val);
 
 	// Clear any old path objects and add the new
 	if (force_rpath) {
@@ -136,6 +171,23 @@ main(int argc, const char *argv[])
 	} else {
 	    binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RUNPATH);
 	    LIEF::ELF::DynamicEntryRunPath npe(opath);
+	    binfo->add(npe);
+	}
+
+	bin_mod = true;
+
+    }
+
+    if (set_rpath_val.length()) {
+
+	// set-rpath is destructive - clear the old value and add the new
+	if (force_rpath) {
+	    binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RPATH);
+	    LIEF::ELF::DynamicEntryRpath npe(set_rpath_val);
+	    binfo->add(npe);
+	} else {
+	    binfo->remove(LIEF::ELF::DYNAMIC_TAGS::DT_RUNPATH);
+	    LIEF::ELF::DynamicEntryRunPath npe(set_rpath_val);
 	    binfo->add(npe);
 	}
 
