@@ -65,9 +65,9 @@ if(NOT DEFINED DATA_DIR)
   set(DATA_DIR share)
 endif(NOT DEFINED DATA_DIR)
 
-# extinstall is the target for projects that will be incorporated into
-# BRL-CAD bundles.  For tools like astyle and patchelf that are build
-# tools only, we instead place them in extnoinstall.
+# extinstall is the target for projects that will be incorporated into BRL-CAD
+# bundles.  For tools like astyle and plief that are build tools only, we
+# instead place them in extnoinstall.
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/extinstall" CACHE PATH "Outputs for BRL-CAD bundling" FORCE)
 set(CMAKE_NOINSTALL_PREFIX "${CMAKE_BINARY_DIR}/extnoinstall" CACHE PATH "Build tools NOT bundled with BRL-CAD" FORCE)
 
@@ -172,7 +172,6 @@ add_subdirectory(patch)
 ###############################################################################
 add_subdirectory(astyle)
 add_subdirectory(lief)
-add_subdirectory(patchelf)
 add_subdirectory(perplex)
 add_subdirectory(plief)
 add_subdirectory(strclear)
