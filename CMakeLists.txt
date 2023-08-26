@@ -171,8 +171,10 @@ add_subdirectory(patch)
 # system detection.
 ###############################################################################
 add_subdirectory(astyle)
+add_subdirectory(lief)
 add_subdirectory(patchelf)
 add_subdirectory(perplex)
+add_subdirectory(plief)
 add_subdirectory(strclear)
 add_subdirectory(xmltools)
 

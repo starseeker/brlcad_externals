@@ -1,0 +1,125 @@
+name: 'macOS'
+on: push
+
+jobs:
+  osx-sdk:
+    runs-on: macos-11.0
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10', '3.11.0']
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install system dependencies
+        run: |
+          brew install cmake ninja ccache
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "::set-output name=date::$(/bin/date -u "+%Y-%m-%d-%H;%M;%S")"
+        shell: bash
+      - name: Setup cache dir
+        shell: bash
+        run: |
+          mkdir -p ~/.ccache
+      - name: ccache cache files
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: osx-${{ runner.os }}-${{ steps.get-date.outputs.date }}
+          restore-keys: |
+              osx-${{ runner.os }}-
+      - name: Upgrade pip
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip setuptools
+      #
+      # Run LIEF tests on Python 3.8 (only)
+      # ========================================
+      - name: Build Python ${{ matrix.python-version }} wheel & test
+        shell: bash
+        if: matrix.python-version == '3.8'
+        env:
+          LIEF_SAMPLES_DIR: "/tmp/samples"
+          MACOSX_DEPLOYMENT_TARGET: "10.14"
+          CCACHE_DIR: ~/.ccache
+          CCACHE_MAXSIZE: 10.0G
+          CCACHE_CPP2: 1
+          CCACHE_COMPRESS: 1
+        run: |
+          python -m pip install pytest requests
+          python tests/dl_samples.py ${LIEF_SAMPLES_DIR}
+          python -m pip -vv wheel --wheel-dir=dist/ api/python
+          python -m pip -vv install api/python
+          python ./tests/run_pytest.py
+          cmake -S . -B ./api/python/build/temp.macosx-10.15-x86_64-cpython-38 -DLIEF_TESTS=on
+          ninja -C ./api/python/build/temp.macosx-10.15-x86_64-cpython-38
+          python ./tests/run_tools_check.py ./api/python/build/temp.macosx-10.15-x86_64-cpython-38
+          ctest --output-on-failure --test-dir ./api/python/build/temp.macosx-10.15-x86_64-cpython-38
+      - name: Build Python ${{ matrix.python-version }} wheel (x86-64)
+        shell: bash
+        if: matrix.python-version != '3.8'
+        env:
+          MACOSX_DEPLOYMENT_TARGET: "10.14"
+          CCACHE_DIR: ~/.ccache
+          CCACHE_MAXSIZE: 10.0G
+          CCACHE_CPP2: 1
+          CCACHE_COMPRESS: 1
+        run: |
+          python -m pip wheel --wheel-dir=dist/ api/python
+      #
+      # cross-compile for Apple M1 for Python >= 3.9
+      # ============================================
+      - name: Build Python ${{ matrix.python-version }} wheel (arm64)
+        shell: bash
+        if: matrix.python-version != '3.8'
+        env:
+          MACOSX_DEPLOYMENT_TARGET: "11.0"
+          CCACHE_DIR: ~/.ccache
+          CCACHE_MAXSIZE: 10.0G
+          CCACHE_CPP2: 1
+          CCACHE_COMPRESS: 1
+        run: |
+          PYLIEF_CONF="$(pwd)/scripts/osx/config-xcompile-arm64.toml" \
+          python -m pip -vv wheel --wheel-dir=dist/ api/python
+      #
+      # Build the SDK while running with Python 3.9 (only once)
+      # =======================================================
+      - name: Build SDK
+        shell: bash
+        if: matrix.python-version == '3.9' # Build the SDD only with Python 3.9
+        env:
+          MACOSX_DEPLOYMENT_TARGET: "10.14"
+          CCACHE_DIR: ~/.ccache
+          CCACHE_MAXSIZE: 10.0G
+          CCACHE_CPP2: 1
+          CCACHE_COMPRESS: 1
+        run: |
+          bash scripts/osx/package_sdk.sh
+      - name: 'Upload SDK Artifact'
+        if: matrix.python-version == '3.9' # Build the SDk only with Python 3.9
+        uses: actions/upload-artifact@v3
+        with:
+          name: osx-sdk
+          path: build/*.tar.gz
+          retention-days: 3
+      - name: 'Upload Python Wheel Artifact - ${{ matrix.python-version }}'
+        uses: actions/upload-artifact@v3
+        with:
+          name: osx-wheel-${{ matrix.python-version }}
+          path: dist/*.whl
+          retention-days: 3
+      - name: Deploy
+        env:
+          LIEF_S3_KEY: ${{ secrets.LIEF_S3_KEY }}
+          LIEF_S3_SECRET: ${{ secrets.LIEF_S3_SECRET }}
+        shell: bash
+        run: |
+          python -m pip install --upgrade requests mako boto3
+          python .github/deploy.py
