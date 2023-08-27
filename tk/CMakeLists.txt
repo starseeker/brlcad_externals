@@ -75,13 +75,13 @@ if (TK_DO_BUILD)
   # The library file permissions end up a bit strange - fix them
   find_program(CHMOD_EXECUTABLE chmod)
   mark_as_advanced(CHMOD_EXECUTABLE)
-  if (CHMOD_EXECUTABLE)
+  if (CHMOD_EXECUTABLE AND NOT MSVC)
     add_custom_target(tk_permissionsfix ALL
       COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}/libtk${TCL_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
       COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}/libtkstub${TCL_VERSION}${CMAKE_STATIC_LIBRARY_SUFFIX}
       DEPENDS TK_BLD-install
       )
-  endif (CHMOD_EXECUTABLE)
+  endif (CHMOD_EXECUTABLE AND NOT MSVC)
 
   if (TARGET PATCH_BLD)
     ExternalProject_Add_StepDependencies(TK_BLD configure PATCH_BLD-install)
