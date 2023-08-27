@@ -77,13 +77,16 @@ if (TK_DO_BUILD)
   mark_as_advanced(CHMOD_EXECUTABLE)
   if (CHMOD_EXECUTABLE)
     if (MSVC)
+      set(LIB_PREFIX)
       set(SHARED_DIR ${BIN_DIR})
+      set(TCL_VERSION 86)
     else (MSVC)
+      set(LIB_PREFIX "lib")
       set(SHARED_DIR ${LIB_DIR})
     endif (MSVC)
     add_custom_target(tk_permissionsfix ALL
-      COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_BUNDLE_INSTALL_PREFIX}/${SHARED_DIR}/libtk${TCL_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
-      COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_BUNDLE_INSTALL_PREFIX}/${SHARED_DIR}/libtkstub${TCL_VERSION}${CMAKE_STATIC_LIBRARY_SUFFIX}
+      COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_BUNDLE_INSTALL_PREFIX}/${SHARED_DIR}/${LIB_PREFIX}tk${TCL_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
+      COMMAND ${CHMOD_EXECUTABLE} a-x,u+w ${CMAKE_BUNDLE_INSTALL_PREFIX}/${SHARED_DIR}/${LIB_PREFIX}tkstub${TCL_VERSION}${CMAKE_STATIC_LIBRARY_SUFFIX}
       DEPENDS TK_BLD-install
       )
   endif (CHMOD_EXECUTABLE)
@@ -110,8 +113,6 @@ configure_file(
   ${CMAKE_BUNDLE_INSTALL_PREFIX}/doc/legal/other/tk.txt
   COPYONLY
   )
-
-
 
 # Local Variables:
 # tab-width: 8
