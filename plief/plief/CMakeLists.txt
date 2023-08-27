@@ -59,9 +59,6 @@ check_cxx_compiler_flag(-O3 O3_COMPILER_FLAG)
 # Find LIEF. If LIEF was not installed into a default system directory then
 # specify the following option during CMake configuration:
 # -DLIEF_DIR=<LIEF install prefix>/share/LIEF/cmake
-if (TARGET LIEF_BLD)
-  set(LIEF_DIR ${CMAKE_BINARY_DIR}/extnoinstall/share/lief/cmake)
-endif (TARGET LIEF_BLD)
 find_package(LIEF REQUIRED COMPONENTS STATIC) # COMPONENTS: <SHARED | STATIC> - Default: STATIC
 
 add_executable(plief plief.cpp)
