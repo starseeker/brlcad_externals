@@ -109,7 +109,7 @@ if (ENABLE_TCL)
     if (MSVC)
       set(LIB_PREFIX)
       set(SHARED_DIR ${BIN_DIR})
-      set(TCL_VERSION "86"}
+      set(TCL_VERSION "86")
     else (MSVC)
       set(LIB_PREFIX "lib")
       set(SHARED_DIR ${LIB_DIR})
