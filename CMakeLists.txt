@@ -86,6 +86,9 @@ if (NOT CMAKE_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}")
 endif (NOT CMAKE_INSTALL_PREFIX)
 
+# Having decided on the path, make sure subsequent configures stick with it
+set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Calculated or specified install prefix" FORCE)
+
 set(BDEPS_ROOT brlcad_ext)
 set(CMAKE_BUNDLE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/${BDEPS_ROOT}/extinstall" CACHE PATH "Outputs for BRL-CAD bundling" FORCE)
 set(CMAKE_NOBUNDLE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/${BDEPS_ROOT}/extnoinstall" CACHE PATH "Build tools NOT bundled with BRL-CAD" FORCE)
@@ -254,6 +257,9 @@ add_subdirectory(assetimport)
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
 add_subdirectory(openmesh)
+
+# OpenCV - Open Source Computer Vision Library: http://opencv.org
+add_subdirectory(opencv)
 
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.
