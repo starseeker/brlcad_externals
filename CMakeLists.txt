@@ -77,9 +77,9 @@ endif (NOT ENV_HOME)
 
 # If we're not being forced to a specific location
 # and we know where home is, use it
-if (NOT DEFINED ${CMAKE_INSTALL_PREFIX})
+if (NOT DEFINED CMAKE_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX "${ENV_HOME}")
-endif (NOT DEFINED ${CMAKE_INSTALL_PREFIX})
+endif (NOT DEFINED CMAKE_INSTALL_PREFIX)
 
 # If home didn't work, fall back on the build directory
 if (NOT CMAKE_INSTALL_PREFIX)
