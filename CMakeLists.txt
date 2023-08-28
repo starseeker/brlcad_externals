@@ -28,7 +28,7 @@
 # already been processed and relevant variables have been set.
 #
 #-----------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.19)
 
 project(BDEPS)
 

@@ -12,7 +12,7 @@ if (NOT ENABLE_TCL)
 
   set(TCL_ENABLE_TK ON CACHE BOOL "enable tk")
   set(CMAKE_FIND_FRAMEWORK NEVER)
-  find_package(TCL)
+  find_package(TCL "8.6...<9.0")
 
   if (NOT TCL_FOUND AND NOT DEFINED ENABLE_TCL)
     set(ENABLE_TCL "ON" CACHE BOOL "Enable tcl build")
