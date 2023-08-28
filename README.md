@@ -38,9 +38,9 @@ cd brlcad && rm -rf misc/tools/ext src/other/ext
 ```sh
 cd .. && mkdir brlcad_exttest_build && cd brlcad_exttest_build
 ```
-* Configure with CMake, specifying the location of the build directory of this repository with BRLCAD_EXT_DIR.  If you also wish to test with Qt, you must currently enable that support in BRL-CAD as well.  Note that the configure process is responsible for staging the BRLCAD_EXT_DIR contents, so it can take some time to complete...
+* Configure with CMake.  If no custom CMAKE_INSTALL_PREFIX was supplied to the brlcad_externals build, BRL-CAD will know to look for the folder it needs in the user's home directory. If a custom location was used, specify the path holding the brlcad_ext output directory using knitr::inline_expr(-DBRLCAD_EXT_DIR=<your_root>) (brlcad_ext should in turn contain the extinstall and extnoinstall folders.)  If you also wish to test with Qt, you must currently enable that support in BRL-CAD as well.  (Note that the BRL-CAD configure process is responsible for staging the BRLCAD_EXT_DIR contents into the build directory, so it can take some time to complete...)
 ```sh
-cmake ../brlcad -DBRLCAD_EXT_DIR=<your_root>/brlcad_externals_build -DBRLCAD_ENABLE_QT=ON
+cmake ../brlcad -DBRLCAD_ENABLE_QT=ON
 ```
 * Run the build process.  (Parallel building is supported and should succeed.)
 ```sh
