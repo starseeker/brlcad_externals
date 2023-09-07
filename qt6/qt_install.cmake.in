@@ -1,8 +1,8 @@
-if (MSVC)
-	execute_process(COMMAND "@VCVARS_BAT@" && cmake --install . WORKING_DIRECTORY @QT_BUILD_DIR@)
-else (MSVC)
-	execute_process(COMMAND cmake --install . WORKING_DIRECTORY @QT_BUILD_DIR@)
-endif (MSVC)
+if (WIN32)
+  execute_process(COMMAND "@VCVARS_BAT@" && cmake --install . WORKING_DIRECTORY @QT_BUILD_DIR@)
+else (WIN32)
+  execute_process(COMMAND cmake --install . WORKING_DIRECTORY @QT_BUILD_DIR@)
+endif (WIN32)
 
 # Local Variables:
 # tab-width: 8
