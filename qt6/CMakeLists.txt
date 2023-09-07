@@ -17,77 +17,31 @@ endif (NOT ENABLE_QT)
 set(ENABLE_QT "${ENABLE_QT}" CACHE BOOL "Enable Qt6 build")
 
 if (ENABLE_QT)
+  if (isMultiConfig)
+    set(CBT $<CONFIG>)
+  else (isMultiConfig)
+    set(CBT ${CMAKE_BUILD_TYPE})
+  endif (isMultiConfig)
 
-  if ("${CMAKE_BUILD_TYPE}" STREQUAL "" OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    set(QT_CONFIG_OPTS "-debug")
-    set(QT_CMAKE_OPTS "--config Debug --parallel 8")
-  elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-    set(QT_CONFIG_OPTS "-release")
-    set(QT_CMAKE_OPTS "--config Release --parallel 8")
-  else ()
-    message(WARNING "Unexpected CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} preparing Qt6")
-  endif ("${CMAKE_BUILD_TYPE}" STREQUAL "" OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+  set(QT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/qt6-build")
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qt_config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake @ONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qt_build.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake @ONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qt_install.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake @ONLY)
 
-  if (MSVC)
-    # For some reason running these commands directly seems to be problematic
-    # with MSVC... wrapping them in CMake scripts, on the other hand, looks
-    # like it's working...  not 100% sure why this is needed, unless there's
-    # some bad interaction between the MSVC cmake and Visual Studio.
-    set(QT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/qt6-build")
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat ${QT_CONFIG_OPTS} --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX} WORKING_DIRECTORY ${QT_BUILD_DIR})")
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake "execute_process(COMMAND cmake --build . ${QT_CMAKE_OPTS} WORKING_DIRECTORY ${QT_BUILD_DIR})")
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake "execute_process(COMMAND cmake --install . WORKING_DIRECTORY ${QT_BUILD_DIR})")
+  ExternalProject_Add(Qt6_BLD
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
+    BINARY_DIR "${QT_BUILD_DIR}"
+    BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+    CONFIGURE_COMMAND cmake -DCMAKE_BUILD_TYPE=${CBT} -P ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake
+    BUILD_COMMAND cmake  -DCMAKE_BUILD_TYPE=${CBT} -P ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake
+    INSTALL_COMMAND cmake -P ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake
+    # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
+    LOG_BUILD ${EXT_BUILD_QUIET}
+    LOG_INSTALL ${EXT_BUILD_QUIET}
+    LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
+    STEP_TARGETS install
+    )
 
-    ExternalProject_Add(Qt6_BLD
-      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
-      BINARY_DIR "${QT_BUILD_DIR}"
-      BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND ${VCVARS_BAT} && cmake -P ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake
-      BUILD_COMMAND ${VCVARS_BAT} && cmake -P ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake
-      INSTALL_COMMAND ${VCVARS_BAT} && cmake -P ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake
-      # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
-      LOG_BUILD ${EXT_BUILD_QUIET}
-      LOG_INSTALL ${EXT_BUILD_QUIET}
-      LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
-      STEP_TARGETS install
-      )
-
-
-  elseif (APPLE)
-
-    ExternalProject_Add(Qt6_BLD
-      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
-      BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure ${QT_CONFIG_OPTS} --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX}
-      BUILD_COMMAND ${CMAKE_COMMAND} --build . ${QT_CMAKE_OPTS}
-      INSTALL_COMMAND ${CMAKE_COMMAND} --install .
-      # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
-      LOG_BUILD ${EXT_BUILD_QUIET}
-      LOG_INSTALL ${EXT_BUILD_QUIET}
-      LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
-      STEP_TARGETS install
-      )
-
-  else ()
-
-    # On platforms where we're supposed to build against X11, we want to try
-    # and make sure we fail if we don't have what's needed for a graphical Qt
-    # build.  In some cases it is possible to build a Qt installation with no
-    # viable graphical options, which doesn't help for BRL-CAD's use case...
-    ExternalProject_Add(Qt6_BLD
-      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
-      BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb ${QT_CONFIG_OPTS} --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX}
-      BUILD_COMMAND ${CMAKE_COMMAND} --build . ${QT_CMAKE_OPTS}
-      INSTALL_COMMAND ${CMAKE_COMMAND} --install .
-      # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
-      LOG_BUILD ${EXT_BUILD_QUIET}
-      LOG_INSTALL ${EXT_BUILD_QUIET}
-      LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
-      STEP_TARGETS install
-      )
-
-  endif (MSVC)
 
   if (TARGET PATCH_BLD)
     ExternalProject_Add_StepDependencies(Qt6_BLD configure PATCH_BLD-install)
