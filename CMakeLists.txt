@@ -145,6 +145,15 @@ if (NOT pcnt)
   set(pcnt 1)
 endif (NOT pcnt)
 
+# We want to pass the build type option to CMake builds if we're not using a
+# multiconfig generator - define a variable that will either be empty or define
+# the desired CMake line based on GENERATOR_IS_MULTI_CONFIG (see
+# https://gitlab.kitware.com/cmake/cmake/-/issues/20921)
+get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+set(BUILD_TYPE_SPECIFIER)
+if (NOT isMultiConfig)
+  set(BUILD_TYPE_SPECIFIER "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+endif (NOT isMultiConfig)
 
 # With MSVC, some of the non-CMake subbuilds are going to need the vcvars bat
 # file to set up the environment.
