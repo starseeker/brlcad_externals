@@ -18,14 +18,24 @@ set(ENABLE_QT "${ENABLE_QT}" CACHE BOOL "Enable Qt6 build")
 
 if (ENABLE_QT)
 
+  if ("${CMAKE_BUILD_TYPE}" STREQUAL "" OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    set(QT_CONFIG_OPTS "-debug")
+    set(QT_CMAKE_OPTS "--config Debug --parallel 8")
+  elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+    set(QT_CONFIG_OPTS "-release")
+    set(QT_CMAKE_OPTS "--config Release --parallel 8")
+  else ()
+    message(WARNING "Unexpected CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} preparing Qt6")
+  endif ("${CMAKE_BUILD_TYPE}" STREQUAL "" OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+
   if (MSVC)
     # For some reason running these commands directly seems to be problematic
     # with MSVC... wrapping them in CMake scripts, on the other hand, looks
     # like it's working...  not 100% sure why this is needed, unless there's
     # some bad interaction between the MSVC cmake and Visual Studio.
     set(QT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/qt6-build")
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat -release --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX} --release WORKING_DIRECTORY ${QT_BUILD_DIR})")
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake "execute_process(COMMAND cmake --build . --parallel --config Release WORKING_DIRECTORY ${QT_BUILD_DIR})")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_config.cmake "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure.bat ${QT_CONFIG_OPTS} --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX} WORKING_DIRECTORY ${QT_BUILD_DIR})")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_build.cmake "execute_process(COMMAND cmake --build . ${QT_CMAKE_OPTS} WORKING_DIRECTORY ${QT_BUILD_DIR})")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_install.cmake "execute_process(COMMAND cmake --install . WORKING_DIRECTORY ${QT_BUILD_DIR})")
 
     ExternalProject_Add(Qt6_BLD
@@ -48,8 +58,8 @@ if (ENABLE_QT)
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -release --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX} --release
-      BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure ${QT_CONFIG_OPTS} --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX}
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . ${QT_CMAKE_OPTS}
       INSTALL_COMMAND ${CMAKE_COMMAND} --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
       LOG_BUILD ${EXT_BUILD_QUIET}
@@ -67,8 +77,8 @@ if (ENABLE_QT)
     ExternalProject_Add(Qt6_BLD
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/qtbase"
       BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
-      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb -release --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX} --release
-      BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel --config Release
+      CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/qtbase/configure -xcb ${QT_CONFIG_OPTS} --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX}
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . ${QT_CMAKE_OPTS}
       INSTALL_COMMAND ${CMAKE_COMMAND} --install .
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
       LOG_BUILD ${EXT_BUILD_QUIET}
