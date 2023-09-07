@@ -16,9 +16,9 @@ mkdir brlcad_externals_build && cd brlcad_externals_build
 ```sh
 cmake ../brlcad_externals -DENABLE_ALL=ON
 ```
-* Run the build process.  (Parallel building is supported and should succeed.)
+* Run the build process.
 ```sh
-cmake --build . --config Release
+cmake --build . --config Release --parallel 8
 ```
 
 # Using the Build Outputs with BRL-CAD
@@ -42,10 +42,10 @@ cd .. && mkdir brlcad_exttest_build && cd brlcad_exttest_build
 ```sh
 cmake ../brlcad -DBRLCAD_ENABLE_QT=ON
 ```
-* Run the build process.  (Parallel building is supported and should succeed.)
+* Run the build process.
 ```sh
-cmake --build . --config Release
-cmake --build . --target package
+cmake --build . --config Release --parallel 8
+cmake --build . --target package --parallel 8
 ```
 
 If all goes well, the final result should be a relocatable BRL-CAD archive
