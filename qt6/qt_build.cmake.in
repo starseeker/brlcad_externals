@@ -7,7 +7,7 @@ else ()
 endif ("${CMAKE_BUILD_TYPE}" STREQUAL "" OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 if (MSVC)
-	execute_process(COMMAND @VCVARS_BAT@ && cmake --build . ${QT_CMAKE_OPTS} WORKING_DIRECTORY @QT_BUILD_DIR@)
+	execute_process(COMMAND "@VCVARS_BAT@" && cmake --build . ${QT_CMAKE_OPTS} WORKING_DIRECTORY @QT_BUILD_DIR@)
 else (MSVC)
 	execute_process(COMMAND cmake --build . ${QT_CMAKE_OPTS} WORKING_DIRECTORY @QT_BUILD_DIR@)
 endif (MSVC)
