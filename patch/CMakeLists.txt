@@ -10,7 +10,13 @@ endif (ENABLE_ALL AND NOT DEFINED ENABLE_PATCH)
 # Although individual projects may need their own patching options, there are
 # some common settings that will be used for most/all cases.  We define those
 # here for uniformity.
-set(PATCH_OPTIONS "--ignore-whitespace" CACHE STRING "Command line options to use when patching" FORCE)
+#
+# We ignore whitespace for portability and flexibility when applying patches
+#
+# -f is added because prompting for input during a build means hanging the
+# build.  If the patch isn't working as expected, we need to see the failure
+# instead of trying to interactive course correct.
+set(PATCH_OPTIONS "--ignore-whitespace;-f" CACHE STRING "Command line options to use when patching" FORCE)
 
 if (NOT ENABLE_PATCH)
 
