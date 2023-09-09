@@ -1,0 +1,8 @@
+As there isn't an active upstream for utahrle, we have a copy at
+https://github.com/BRL-CAD/utahrle - we may end up making the utahrle directory
+here a submodule, but for now it's just a copy.
+
+In principle, if a system version of libutahrle were available we could use it.
+Hence we treat it as a brlcad_external, even though in practice finding it from
+a distribution repository is unlikely.
+

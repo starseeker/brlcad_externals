@@ -270,6 +270,9 @@ add_subdirectory(openmesh)
 # OpenCV - Open Source Computer Vision Library: http://opencv.org
 add_subdirectory(opencv)
 
+# UtahRLE - Raster Image library
+add_subdirectory(utahrle)
+
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.
 # https://www.tcl.tk
