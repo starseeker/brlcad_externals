@@ -1,0 +1,9 @@
+openNURBS Toolkit consists of C++ source code for a library that will read and
+write openNURBS 3D model files (.3dm) as well as a number of basic lower level
+NURBS routines.
+
+https://github.com/mcneel/opennurbs
+
+Currently using openNURBS v7.11.21285.13001
++ many patches, some of which do have behavior modification implications.
+

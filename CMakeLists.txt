@@ -267,6 +267,10 @@ add_subdirectory(assetimport)
 # https://www.graphics.rwth-aachen.de/software/openmesh/
 add_subdirectory(openmesh)
 
+# openNURBS - Non-Uniform Rational BSpline library
+# https://github.com/mcneel/opennurbs
+add_subdirectory(opennurbs)
+
 # OpenCV - Open Source Computer Vision Library: http://opencv.org
 add_subdirectory(opencv)
 
