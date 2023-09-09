@@ -21,6 +21,7 @@ set(ENABLE_PNG "${ENABLE_PNG}" CACHE BOOL "Enable png build")
 if (ENABLE_PNG)
 
   if (TARGET ZLIB_BLD)
+    set(Z_PREFIX_STR "brl_")
     set(ZLIB_TARGET ZLIB_BLD)
   endif (TARGET ZLIB_BLD)
 

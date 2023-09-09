@@ -48,6 +48,7 @@ if (ENABLE_QT)
   endif (TARGET PATCH_BLD)
 
   if (TARGET ZLIB_BLD)
+    set(Z_PREFIX_STR "brl_")
     set(ZLIB_TARGET ZLIB_BLD)
   endif (TARGET ZLIB_BLD)
 

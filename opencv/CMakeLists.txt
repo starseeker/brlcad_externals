@@ -18,6 +18,7 @@ set(ENABLE_OPENCV "${ENABLE_OPENCV}" CACHE BOOL "Enable OpenCV build")
 if (ENABLE_OPENCV)
 
   if (TARGET ZLIB_BLD)
+    set(Z_PREFIX_STR "brl_")
     set(ZLIB_TARGET ZLIB_BLD)
   endif (TARGET ZLIB_BLD)
 
