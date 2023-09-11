@@ -242,6 +242,10 @@ add_subdirectory(netpbm)
 # http://www.libpng.org/pub/png/libpng.html
 add_subdirectory(png)
 
+# Lightning Memory-Mapped Database
+# https://github.com/LMDB/lmdb
+add_subdirectory(lmdb)
+
 # STEPcode - support for reading and writing STEP files
 # https://github.com/stepcode/stepcode
 add_subdirectory(stepcode)
