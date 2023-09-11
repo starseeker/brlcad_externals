@@ -242,6 +242,10 @@ add_subdirectory(netpbm)
 # http://www.libpng.org/pub/png/libpng.html
 add_subdirectory(png)
 
+# Linenoise - line editing library
+# https://github.com/msteveb/linenoise
+add_subdirectory(linenoise)
+
 # Lightning Memory-Mapped Database
 # https://github.com/LMDB/lmdb
 add_subdirectory(lmdb)
