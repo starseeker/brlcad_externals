@@ -55,19 +55,19 @@ dependencies repository.
 
 # About This Repository
 
-Projects in this repository are distinct from those stored directly in
-BRL-CAD's src/other repository. The latter generally satisfy one of the
-following conditions:
+There are, broadly speaking, three categories of project repositories
+included here:
 
-* Has modifications from upstream that are a) not of interest to the upstream
-  and b) required for correct functioning in BRL-CAD.
-* Has no active upstream to provide support.
+* Build tools used for compiling this repository and/or BRL-CAD proper, that
+  are not distributed with it.
 
-Unlike those cases, BRL-CAD CAN (in principle) work correctly with system
-installed versions of the libraries and utilities stored here.  Because not all
-platforms and environments can provide all of these dependencies, this
-repository serves as a "one stop shop" supplying developers with a way to build
-the components they need from source code.
+* Bundled versions of 3rd party dependencies intended to be distributed with
+  BRL-CAD, but that are not modded to exhibit behavior different that that
+  which would be found in a system installed version.
+
+* Third party libraries that have modifications from upstream that are a) not
+  of interest to the upstream and b) required for correct functioning in
+  BRL-CAD.  Sometimes there is also no active upstream to provide support.
 
 Although it is possible to install the products of these builds to system
 locations and have BRL-CAD detect them there, the intended approach is for
@@ -76,6 +76,16 @@ own installers.  This allows (for example) Windows installations of BRL-CAD to
 be far more self contained - users on such platforms generally expect to be
 able to download and use a software package immediately, regardless of what is
 or is not already present on the operating system.
+
+The presence of the first and third categories basically implies that BRL-CAD's
+main build will, at some level, require elements of this repository to build
+even if a full set of system dependencies is present - there will be cases such
+as openNURBS where we have deliberately modified the behavior of the library.
+The advantages of managing those dependencies in this fashion none the less is
+two fold: 1) for those dependencies with active upstreams, it simplifies
+merging in new versions to our build and 2) once compiled, this repository's
+build outputs can be reused for many BRL-CAD compile/debug cycles without
+having to repeat the full src/other build process.
 
 The main BRL-CAD repository manages the bundling process - this repository's
 responsibility is to prepare suitable inputs and manage the 3rd party building
@@ -100,7 +110,11 @@ Although most of the components here are intended for bundling with BRL-CAD,
 there are a few exceptions to that rule.  A few of the projects (AStyle, patch,
 LIEF, etc.) target a different installation folder and are used only for
 BRL-CAD compilation (and/or support for building this externals repository.)
-They can be identified by checking for a CMAKE_NOBUNDLE_INSTALL_PREFIX target
-being used by their top level CMakeLists.txt file managing the
-ExternalProject_Add build definition.
+
+There are also header-only "libraries" such as Eigen that are needed only
+for BRL-CAD compilation, and do not need to be distributed with our packages.
+
+To figure out which projects are in these categories, check for a
+CMAKE_NOBUNDLE_INSTALL_PREFIX target being used by their top level
+CMakeLists.txt file managing the ExternalProject_Add build definition.
 
