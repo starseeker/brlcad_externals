@@ -48,18 +48,11 @@ if(LMDB_ROOT)
   list(APPEND _LMDB_SEARCHES _LMDB_SEARCH_ROOT)
 endif()
 
-# Normal search.
-set(_LMDB_SEARCH_NORMAL
-  PATHS "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Zlib;InstallPath]"
-        "$ENV{PROGRAMFILES}/lmdb"
-  )
-list(APPEND _LMDB_SEARCHES _LMDB_SEARCH_NORMAL)
-
-set(LMDB_NAMES z_brl z lmdb zdll lmdb1 lmdbd lmdbd1)
+set(LMDB_NAMES lmdb lmdbd)
 
 # Try each search configuration.
 foreach(search ${_LMDB_SEARCHES})
-  find_path(LMDB_INCLUDE_DIR NAMES lmdb.h        ${${search}} PATH_SUFFIXES include)
+  find_path(LMDB_INCLUDE_DIR NAMES lmdb.h        ${${search}} PATH_SUFFIXES include include/lmdb)
   find_library(LMDB_LIBRARY  NAMES ${LMDB_NAMES} ${${search}} PATH_SUFFIXES lib)
 endforeach()
 
