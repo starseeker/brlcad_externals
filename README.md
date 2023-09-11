@@ -32,7 +32,7 @@ git clone https://github.com/BRL-CAD/brlcad
 ```
 * Remove the internal ext directories (be sure NOT to accidentally commit this change to the repository...)
 ```sh
-cd brlcad && rm -rf misc/tools/ext src/other/ext
+cd brlcad && rm -rf misc/tools/ext src/other/ext src/other/libutahrle src/other/openNURBS
 ```
 * Make a build directory
 ```sh
