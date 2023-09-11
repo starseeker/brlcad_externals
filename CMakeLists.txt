@@ -267,6 +267,9 @@ add_subdirectory(gdal)
 # https://github.com/assimp/assimp
 add_subdirectory(assetimport)
 
+# OpenCV - Open Source Computer Vision Library: http://opencv.org
+add_subdirectory(opencv)
+
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
 add_subdirectory(openmesh)
@@ -275,8 +278,8 @@ add_subdirectory(openmesh)
 # https://github.com/mcneel/opennurbs
 add_subdirectory(opennurbs)
 
-# OpenCV - Open Source Computer Vision Library: http://opencv.org
-add_subdirectory(opencv)
+# OSMesa - Off Screen Mesa Rendering Library
+add_subdirectory(osmesa)
 
 # UtahRLE - Raster Image library
 add_subdirectory(utahrle)
