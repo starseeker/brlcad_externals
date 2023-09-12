@@ -250,6 +250,9 @@ add_subdirectory(linenoise)
 # https://github.com/LMDB/lmdb
 add_subdirectory(lmdb)
 
+# Eigen - linear algebra library
+add_subdirectory(eigen)
+
 # STEPcode - support for reading and writing STEP files
 # https://github.com/stepcode/stepcode
 add_subdirectory(stepcode)
