@@ -297,6 +297,8 @@ add_subdirectory(tk)
 add_subdirectory(itcl3)
 add_subdirectory(itk3)
 add_subdirectory(iwidgets)
+add_subdirectory(tkhtml)
+add_subdirectory(tktable)
 
 # Qt - cross-platform user interface/application development toolkit
 # https://download.qt.io/archive/qt
