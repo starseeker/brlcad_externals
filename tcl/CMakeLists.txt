@@ -33,7 +33,7 @@ if (ENABLE_TCL)
   # For OSX, we need to adjust the rpath of tclsh in order for tkhtml's build to
   # succeed
   if (APPLE)
-    set(RPATH_CMD "COMMAND;install_name_tool;-add_rpath;@executable_path/../${LIB_DIR};${CMAKE_BUNDLE_INSTALL_PREFIX}/${BIN_DIR}/tclsh")
+    set(RPATH_CMD "COMMAND;install_name_tool;-add_rpath;@executable_path/../${LIB_DIR};${CMAKE_BUNDLE_INSTALL_PREFIX}/${BIN_DIR}/tclsh${TCL_VERSION}${CMAKE_EXECUTABLE_SUFFIX}")
   endif (APPLE)
 
   if (NOT MSVC)
