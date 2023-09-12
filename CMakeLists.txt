@@ -288,6 +288,9 @@ add_subdirectory(opennurbs)
 # OSMesa - Off Screen Mesa Rendering Library
 add_subdirectory(osmesa)
 
+# Poly2Tri - constrained Delaunay triangulation
+add_subdirectory(poly2tri)
+
 # UtahRLE - Raster Image library
 add_subdirectory(utahrle)
 
