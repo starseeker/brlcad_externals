@@ -30,6 +30,12 @@ if (ENABLE_TCL)
     set(ZLIB_PATCH_CMD ${PATCH_EXECUTABLE};-E;-p1;${PATCH_OPTIONS};-i;${CMAKE_CURRENT_SOURCE_DIR}/tcl-z_brl.patch)
   endif (TARGET ZLIB_BLD)
 
+  # For OSX, we need to adjust the rpath of tclsh in order for tkhtml's build to
+  # succeed
+  if (APPLE)
+    set(RPATH_CMD "COMMAND;install_name_tool;-add_rpath;@executable_path/../${LIB_DIR};${CMAKE_BUNDLE_INSTALL_PREFIX}/${BIN_DIR}/tclsh")
+  endif (APPLE)
+
   if (NOT MSVC)
 
     # Check for spaces in the source and build directories - those won't work
@@ -49,6 +55,7 @@ if (ENABLE_TCL)
       CONFIGURE_COMMAND LD_LIBRARY_PATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} CPPFLAGS=-I${CMAKE_BUNDLE_INSTALL_PREFIX}/${INCLUDE_DIR} LDFLAGS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} TCL_SHLIB_LD_EXTRAS=-L${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR} ${TCL_SRC_DIR}/unix/configure --prefix=${CMAKE_BUNDLE_INSTALL_PREFIX}
       BUILD_COMMAND make -j${pcnt}
       INSTALL_COMMAND make install
+      ${RPATH_CMD}
       DEPENDS ${ZLIB_TARGET}
       # Note - LOG_CONFIGURE doesn't seem to be compatible with complex CONFIGURE_COMMAND setups
       LOG_BUILD ${EXT_BUILD_QUIET}
