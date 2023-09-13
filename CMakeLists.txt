@@ -246,6 +246,11 @@ add_subdirectory(jpeg)
 # http://www.libpng.org/pub/png/libpng.html
 add_subdirectory(png)
 
+# libtiff - Tag Image File Format (TIFF) support
+# https://libtiff.gitlab.io/libtiff/
+# https://gitlab.com/libtiff/libtiff
+add_subdirectory(tiff)
+
 # Linenoise - line editing library
 # https://github.com/msteveb/linenoise
 add_subdirectory(linenoise)
