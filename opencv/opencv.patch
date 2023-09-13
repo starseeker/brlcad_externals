@@ -1,6 +1,6 @@
 diff -Naur opencv-4.8.0/cmake/FindPNG.cmake opencv/cmake/FindPNG.cmake
 --- opencv-4.8.0/cmake/FindPNG.cmake	1969-12-31 19:00:00.000000000 -0500
-+++ opencv/cmake/FindPNG.cmake	2023-08-28 15:30:58.477724533 -0400
++++ opencv/cmake/FindPNG.cmake	2023-09-12 22:04:34.866689153 -0400
 @@ -0,0 +1,161 @@
 +# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
 +# file Copyright.txt or https://cmake.org/licensing for details.
@@ -165,7 +165,7 @@ diff -Naur opencv-4.8.0/cmake/FindPNG.cmake opencv/cmake/FindPNG.cmake
 +                                  VERSION_VAR PNG_VERSION_STRING)
 diff -Naur opencv-4.8.0/cmake/FindZLIB.cmake opencv/cmake/FindZLIB.cmake
 --- opencv-4.8.0/cmake/FindZLIB.cmake	1969-12-31 19:00:00.000000000 -0500
-+++ opencv/cmake/FindZLIB.cmake	2023-08-28 15:30:55.201780408 -0400
++++ opencv/cmake/FindZLIB.cmake	2023-09-12 22:04:34.866689153 -0400
 @@ -0,0 +1,123 @@
 +#.rst:
 +# FindZLIB
@@ -291,8 +291,8 @@ diff -Naur opencv-4.8.0/cmake/FindZLIB.cmake opencv/cmake/FindZLIB.cmake
 +    endif()
 +endif()
 diff -Naur opencv-4.8.0/CMakeLists.txt opencv/CMakeLists.txt
---- opencv-4.8.0/CMakeLists.txt	2023-06-28 07:53:33.000000000 -0400
-+++ opencv/CMakeLists.txt	2023-08-28 15:34:03.274575378 -0400
+--- opencv-4.8.0/CMakeLists.txt	2023-09-12 22:01:25.641957862 -0400
++++ opencv/CMakeLists.txt	2023-09-12 22:03:41.499609177 -0400
 @@ -14,6 +14,7 @@
  ")
  endif()
@@ -312,3 +312,12 @@ diff -Naur opencv-4.8.0/CMakeLists.txt opencv/CMakeLists.txt
  if(POLICY CMP0075)
    cmake_policy(SET CMP0075 NEW)  # CMake 3.12+: Include file check macros honor `CMAKE_REQUIRED_LIBRARIES`
  endif()
+@@ -1049,7 +1054,7 @@
+ if(ANDROID OR NOT UNIX)
+   install(FILES ${OPENCV_LICENSE_FILE}
+         PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+-        DESTINATION ./ COMPONENT libs)
++        DESTINATION doc/legal/other/opencv COMPONENT libs)
+   if(OPENCV_README_FILE)
+     install(FILES ${OPENCV_README_FILE}
+             PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
