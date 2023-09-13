@@ -61,7 +61,7 @@ if (ENABLE_OPENCV)
     -DBUILD_PERF_TESTS=OFF
     -DBUILD_TIFF=ON
     -DBUILD_TESTS=OFF
-    CMakeVars.txt:BUILD_opencv_apps=ON
+    -DBUILD_opencv_apps=ON
     -DBUILD_opencv_calib3d=OFF
     -DBUILD_opencv_core=ON
     -DBUILD_opencv_dnn=ON
