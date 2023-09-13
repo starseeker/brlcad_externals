@@ -224,6 +224,10 @@ add_subdirectory(xmltools)
 # https://zlib.net
 add_subdirectory(zlib)
 
+# LZ4 - lossless compression algorithm
+# https://github.com/lz4/lz4
+add_subdirectory(lz4)
+
 # libregex regular expression matching
 add_subdirectory(regex)
 
