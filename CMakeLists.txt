@@ -291,6 +291,10 @@ add_subdirectory(gdal)
 # https://github.com/assimp/assimp
 add_subdirectory(assetimport)
 
+# OpenEXR - EXR image storage format
+# https://openexr.com/
+add_subdirectory(openexr)
+
 # OpenCV - Open Source Computer Vision Library: http://opencv.org
 add_subdirectory(opencv)
 
