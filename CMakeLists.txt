@@ -238,6 +238,10 @@ add_subdirectory(regex)
 # modify these sources to our needs from a functional perspective.
 add_subdirectory(netpbm)
 
+# libjpeg-turbo - JPEG image codec
+# https://github.com/libjpeg-turbo/libjpeg-turbo
+add_subdirectory(jpeg)
+
 # libpng - Portable Network Graphics image file support
 # http://www.libpng.org/pub/png/libpng.html
 add_subdirectory(png)
