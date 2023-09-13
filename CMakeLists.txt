@@ -228,6 +228,10 @@ add_subdirectory(zlib)
 # https://github.com/lz4/lz4
 add_subdirectory(lz4)
 
+# libdeflate fast, whole-buffer DEFLATE-based compression
+# https://github.com/ebiggers/libdeflate
+add_subdirectory(deflate)
+
 # libregex regular expression matching
 add_subdirectory(regex)
 
