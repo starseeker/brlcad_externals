@@ -188,6 +188,25 @@ endif(MSVC)
 file(MAKE_DIRECTORY ${CMAKE_NOBUNDLE_INSTALL_PREFIX})
 add_custom_target(BuildStamp ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_NOBUNDLE_INSTALL_PREFIX}/build-stamp)
 
+# It is common for more complex targets to need to key build settings off of
+# whether or not their dependencies are being built locally.  These macros are
+# used to cut down on boilerplate code
+macro(TargetVars roots)
+  foreach(root ${${roots}})
+    if (TARGET ${root}_BLD)
+      set(${root}_TARGET ${root}_BLD)
+    endif (TARGET ${root}_BLD)
+  endforeach(root ${${roots}})
+endmacro(TargetVars root)
+
+macro(TargetInstallDeps croot roots)
+  foreach(root ${${roots}})
+    if (TARGET ${root}_BLD)
+      ExternalProject_Add_stepdependencies(${croot}_BLD configure ${root}_BLD-install)
+    endif (TARGET ${root}_BLD)
+  endforeach(root ${${root}})
+endmacro(TargetInstallDeps root)
+
 ###############################################################################
 # Applying patch files cross platform is a challenging problem due to the
 # shortage of portable tools and issues with LF vs CRLF files - see
