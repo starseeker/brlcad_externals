@@ -304,7 +304,7 @@ add_subdirectory(openexr)
 
 # OpenImageIO - reading and writing images, aimed at VFX studios
 # https://github.com/OpenImageIO/oiio
-#add_subdirectory(openimageio)
+add_subdirectory(openimageio)
 
 # OpenColorIO - color management
 # https://opencolorio.org
