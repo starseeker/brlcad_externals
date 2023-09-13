@@ -232,6 +232,9 @@ add_subdirectory(lz4)
 # https://github.com/ebiggers/libdeflate
 add_subdirectory(deflate)
 
+# fmt  - formatting library providing an alternative to C++ iostreams
+add_subdirectory(fmt)
+
 # libregex regular expression matching
 add_subdirectory(regex)
 
