@@ -270,6 +270,10 @@ add_subdirectory(lmdb)
 # Eigen - linear algebra library
 add_subdirectory(eigen)
 
+# Boost - C++ libraries
+# https://www.boost.org/
+add_subdirectory(boost)
+
 # STEPcode - support for reading and writing STEP files
 # https://github.com/stepcode/stepcode
 add_subdirectory(stepcode)
@@ -294,6 +298,14 @@ add_subdirectory(assetimport)
 # OpenEXR - EXR image storage format
 # https://openexr.com/
 add_subdirectory(openexr)
+
+# OpenImageIO - reading and writing images, aimed at VFX studios
+# https://github.com/OpenImageIO/oiio
+#add_subdirectory(openimageio)
+
+# OpenColorIO - color management
+# https://opencolorio.org
+#add_subdirectory(opencolorio)
 
 # OpenCV - Open Source Computer Vision Library: http://opencv.org
 add_subdirectory(opencv)

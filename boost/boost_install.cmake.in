@@ -1,0 +1,13 @@
+if (WIN32)
+  execute_process(COMMAND "@VCVARS_BAT@" && b2 install WORKING_DIRECTORY @BOOST_SOURCE_DIR@)
+else (WIN32)
+  execute_process(COMMAND ./b2 install WORKING_DIRECTORY @BOOST_SOURCE_DIR@)
+endif (WIN32)
+
+# Local Variables:
+# tab-width: 8
+# mode: cmake
+# indent-tabs-mode: t
+# End:
+# ex: shiftwidth=2 tabstop=8
+
