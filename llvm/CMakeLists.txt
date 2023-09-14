@@ -28,6 +28,9 @@ if (ENABLE_LLVM)
     endif (NOT CMAKE_BUILD_TYPE)
   endif (NOT isMultiConfig)
 
+  # TODO - llvm needs zlib - need to do the magic to get it using ours.
+  # shows up when trying to compile ispc
+
   ExternalProject_Add(LLVM_BLD
     URL "${CMAKE_CURRENT_SOURCE_DIR}/llvm"
     SOURCE_SUBDIR llvm
