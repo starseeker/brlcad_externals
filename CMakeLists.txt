@@ -279,6 +279,10 @@ add_subdirectory(expat)
 # https://pugixml.org/
 add_subdirectory(pugixml)
 
+# Xerces-C++ - a validating XML parser
+# https://xerces.apache.org/xerces-c/
+add_subdirectory(xerces-c)
+
 # netpbm library - support for pnm,ppm,pbm, etc. image files
 # http://netpbm.sourceforge.net/
 #
