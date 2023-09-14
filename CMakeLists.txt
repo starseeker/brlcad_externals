@@ -251,10 +251,6 @@ add_subdirectory(minizip-ng)
 # https://github.com/lz4/lz4
 add_subdirectory(lz4)
 
-# XZ - data compression software
-# https://tukaani.org/xz/
-#add_subdirectory(lzma)
-
 # libdeflate fast, whole-buffer DEFLATE-based compression
 # https://github.com/ebiggers/libdeflate
 add_subdirectory(deflate)
@@ -368,7 +364,7 @@ add_subdirectory(openimageio)
 
 # Open Shading Language (OSL) - language for programmable shading
 # https://github.com/AcademySoftwareFoundation/OpenShadingLanguage
-#add_subdirectory(openshadinglanguage)
+add_subdirectory(openshadinglanguage)
 
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
