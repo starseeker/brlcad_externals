@@ -373,6 +373,12 @@ add_subdirectory(openimageio)
 # work for Windows for OSL's usage of flex/bison...
 add_subdirectory(openshadinglanguage)
 
+# Embree raytracing kernel
+# https://github.com/embree/embree
+# NOTE - initially adding for experimentation with Appleseed building -
+# we may not need this in the end since we'll be using BRL-CAD...
+add_subdirectory(embree)
+
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
 add_subdirectory(openmesh)
