@@ -364,6 +364,9 @@ add_subdirectory(openimageio)
 
 # Open Shading Language (OSL) - language for programmable shading
 # https://github.com/AcademySoftwareFoundation/OpenShadingLanguage
+#
+# TODO - need to check if https://github.com/lexxmark/winflexbison will
+# work for Windows for OSL's usage of flex/bison...
 add_subdirectory(openshadinglanguage)
 
 # OpenMesh Library - library for representing and manipulating polygonal meshes
