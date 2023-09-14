@@ -313,6 +313,10 @@ add_subdirectory(eigen)
 # https://github.com/oneapi-src/oneTBB
 add_subdirectory(oneTBB)
 
+# LLVM - code generation support
+# https://llvm.org/
+add_subdirectory(llvm)
+
 # Boost - C++ libraries
 # https://www.boost.org/
 add_subdirectory(boost)
