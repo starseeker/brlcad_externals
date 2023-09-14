@@ -194,7 +194,7 @@ add_custom_target(BuildStamp ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_NOBUN
 macro(TargetVars roots)
   foreach(root ${${roots}})
     if (TARGET ${root}_BLD)
-      set(${root}_TARGET ${root}_BLD)
+      set(${root}_TARGET 1)
     endif (TARGET ${root}_BLD)
   endforeach(root ${${roots}})
 endmacro(TargetVars root)
@@ -326,6 +326,10 @@ add_subdirectory(oneTBB)
 # LLVM - code generation support
 # https://llvm.org/
 add_subdirectory(llvm)
+
+# ISPC - Implicit SPMD Program Compiler
+# https://ispc.github.io/
+add_subdirectory(ispc)
 
 # Boost - C++ libraries
 # https://www.boost.org/
