@@ -28,15 +28,25 @@ if (ENABLE_LLVM)
     endif (NOT CMAKE_BUILD_TYPE)
   endif (NOT isMultiConfig)
 
-  # TODO - llvm needs zlib - need to do the magic to get it using ours.
+  # llvm needs zlib - need to do the magic to get it using ours.
   # shows up when trying to compile ispc
+  set(LLVM_DEPENDS ZLIB)
+  TargetVars(LLVM_DEPENDS)
+  if (TARGET ZLIB_BLD)
+    set(Z_PREFIX_STR "brl_")
+    set(Z_BRL_PATCH_CMD "PATCH_COMMAND;${PATCH_EXECUTABLE};-E;-p1;${PATCH_OPTIONS};-i;${CMAKE_CURRENT_SOURCE_DIR}/llvm_z_brl.patch")
+  endif (TARGET ZLIB_BLD)
 
   ExternalProject_Add(LLVM_BLD
     URL "${CMAKE_CURRENT_SOURCE_DIR}/llvm"
     SOURCE_SUBDIR llvm
     BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
+    ${Z_BRL_PATCH_CMD}
     CMAKE_ARGS
     ${BUILD_TYPE_SPECIFIER}
+    $<$<BOOL:${ZLIB_TARGET}>:-DZ_PREFIX=ON>
+    $<$<BOOL:${ZLIB_TARGET}>:-DZ_PREFIX_STR=${Z_PREFIX_STR}>
+    -DZLIB_ROOT=$<$<BOOL:${ZLIB_TARGET}>:${CMAKE_BUNDLE_INSTALL_PREFIX}>
     -DLLVM_ENABLE_LIBEDIT=OFF
     -DLLVM_ENABLE_PROJECTS=clang
     -DBIN_DIR=${BIN_DIR}
@@ -45,6 +55,7 @@ if (ENABLE_LLVM)
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_BUNDLE_INSTALL_PREFIX}
+    -DCMAKE_INSTALL_RPATH=${CMAKE_BUNDLE_INSTALL_PREFIX}/${LIB_DIR}
     -DZ_PREFIX_STR=${Z_PREFIX_STR}
     LOG_CONFIGURE ${EXT_BUILD_QUIET}
     LOG_BUILD ${EXT_BUILD_QUIET}
@@ -52,6 +63,8 @@ if (ENABLE_LLVM)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     STEP_TARGETS install
     )
+
+  TargetInstallDeps(LLVM LLVM_DEPENDS)
 
   if (TARGET PATCH_BLD)
     ExternalProject_Add_StepDependencies(LLVM_BLD configure PATCH_BLD-install)
