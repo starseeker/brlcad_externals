@@ -361,6 +361,9 @@ add_subdirectory(opencv)
 
 # OpenColorIO - color management
 # https://opencolorio.org
+# Note - the VFX Reference Platform (https://vfxplatform.com/)
+# is a useful reference for what versions to expect elements
+# of the rendering pipeline software stack to use/require
 add_subdirectory(opencolorio)
 
 # OpenImageIO - reading and writing images, aimed at VFX studios
