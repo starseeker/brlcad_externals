@@ -9,10 +9,10 @@ endif (ENABLE_ALL AND NOT DEFINED ENABLE_BISON)
 
 if (WIN32)
   # With winflexbison do all or nothing
-  if (ENABLE_FLEX OR ENABLE BISON)
+  if (ENABLE_FLEX OR ENABLE_BISON)
     set(ENABLE_FLEX ON)
     set(ENABLE_BISON ON)
-  endif (ENABLE_FLEX OR ENABLE BISON)
+  endif (ENABLE_FLEX OR ENABLE_BISON)
 endif (WIN32)
 
 
