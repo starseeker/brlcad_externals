@@ -251,6 +251,10 @@ add_subdirectory(minizip-ng)
 # https://github.com/lz4/lz4
 add_subdirectory(lz4)
 
+# XZ - data compression software
+# https://tukaani.org/xz/
+#add_subdirectory(lzma)
+
 # libdeflate fast, whole-buffer DEFLATE-based compression
 # https://github.com/ebiggers/libdeflate
 add_subdirectory(deflate)
@@ -272,7 +276,12 @@ add_subdirectory(pystring)
 add_subdirectory(regex)
 
 # expat - library for parsing XML 1.0 Fourth Edition
+# https://github.com/libexpat/libexpat
 add_subdirectory(expat)
+
+# pugixml - a light-weight C++ XML processing library
+# https://pugixml.org/
+add_subdirectory(pugixml)
 
 # netpbm library - support for pnm,ppm,pbm, etc. image files
 # http://netpbm.sourceforge.net/
@@ -346,6 +355,9 @@ add_subdirectory(assetimport)
 # https://openexr.com/
 add_subdirectory(openexr)
 
+# OpenCV - Open Source Computer Vision Library: http://opencv.org
+add_subdirectory(opencv)
+
 # OpenColorIO - color management
 # https://opencolorio.org
 add_subdirectory(opencolorio)
@@ -354,8 +366,9 @@ add_subdirectory(opencolorio)
 # https://github.com/OpenImageIO/oiio
 add_subdirectory(openimageio)
 
-# OpenCV - Open Source Computer Vision Library: http://opencv.org
-add_subdirectory(opencv)
+# Open Shading Language (OSL) - language for programmable shading
+# https://github.com/AcademySoftwareFoundation/OpenShadingLanguage
+#add_subdirectory(openshadinglanguage)
 
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
