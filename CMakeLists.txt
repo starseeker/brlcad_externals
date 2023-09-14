@@ -309,6 +309,10 @@ add_subdirectory(lmdb)
 # Eigen - linear algebra library
 add_subdirectory(eigen)
 
+# oneTBB - Threading Building Blocks
+# https://github.com/oneapi-src/oneTBB
+add_subdirectory(oneTBB)
+
 # Boost - C++ libraries
 # https://www.boost.org/
 add_subdirectory(boost)
