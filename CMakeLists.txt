@@ -243,6 +243,10 @@ add_subdirectory(xmltools)
 # https://zlib.net
 add_subdirectory(zlib)
 
+# minizip-ng - zip manipulation library written in C
+# https://github.com/zlib-ng/minizip-ng
+add_subdirectory(minizip-ng)
+
 # LZ4 - lossless compression algorithm
 # https://github.com/lz4/lz4
 add_subdirectory(lz4)
@@ -252,10 +256,23 @@ add_subdirectory(lz4)
 add_subdirectory(deflate)
 
 # fmt  - formatting library providing an alternative to C++ iostreams
+# https://github.com/fmtlib/fmt
 add_subdirectory(fmt)
+
+# yaml-cpp - YAML parser and emitter in C++ matching the YAML 1.2 spec
+# https://github.com/jbeder/yaml-cpp
+add_subdirectory(yaml-cpp)
+
+# pystring - collection of C++ functions which match the interface and behavior
+# of python's string class methods
+# https://github.com/imageworks/pystring
+add_subdirectory(pystring)
 
 # libregex regular expression matching
 add_subdirectory(regex)
+
+# expat - library for parsing XML 1.0 Fourth Edition
+add_subdirectory(expat)
 
 # netpbm library - support for pnm,ppm,pbm, etc. image files
 # http://netpbm.sourceforge.net/
@@ -321,13 +338,13 @@ add_subdirectory(assetimport)
 # https://openexr.com/
 add_subdirectory(openexr)
 
+# OpenColorIO - color management
+# https://opencolorio.org
+add_subdirectory(opencolorio)
+
 # OpenImageIO - reading and writing images, aimed at VFX studios
 # https://github.com/OpenImageIO/oiio
 add_subdirectory(openimageio)
-
-# OpenColorIO - color management
-# https://opencolorio.org
-#add_subdirectory(opencolorio)
 
 # OpenCV - Open Source Computer Vision Library: http://opencv.org
 add_subdirectory(opencv)
