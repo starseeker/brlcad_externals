@@ -225,7 +225,7 @@ endmacro(TargetInstallDeps root)
 option(USE_APPLESEED "Appleseed rendering system support" ON)
 option(USE_BRLCAD    "Basic components of BRL-CAD build" ON)
 option(USE_GDAL      "GDAL terrain support" ON)
-option(USE_OSPRAY    "OSPray rendering system support" ON)
+option(USE_OSPRAY    "OSPray rendering system support" OFF)
 option(USE_QT        "Qt graphical toolkit support" ON)
 option(USE_TCL       "Tcl/Tk support" ON)
 
