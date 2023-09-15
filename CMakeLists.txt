@@ -345,6 +345,10 @@ add_project(png GROUPS "APPLESEED;BRLCAD")
 # https://gitlab.com/libtiff/libtiff
 add_project(tiff GROUPS "APPLESEED")
 
+# ncurses - text-based user interfaces library
+# https://invisible-island.net/ncurses/
+add_project(ncurses GROUPS "OSPRAY")
+
 # Linenoise - line editing library
 # https://github.com/msteveb/linenoise
 add_project(linenoise GROUPS "BRLCAD")
