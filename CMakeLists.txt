@@ -378,7 +378,7 @@ add_project(ispc GROUPS "OSPRAY")
 
 # Boost - C++ libraries
 # https://www.boost.org/
-add_subdirectory(boost GROUPS "APPLESEED")
+add_project(boost GROUPS "APPLESEED")
 
 # STEPcode - support for reading and writing STEP files
 # https://github.com/stepcode/stepcode
