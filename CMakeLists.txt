@@ -216,10 +216,18 @@ endmacro(TargetInstallDeps root)
 # if a particular high level feature is not of interest) we create options used
 # as "tags" that control adding packages.  If at least one of the tags for a
 # given package is set, that package will be built.
+#
+# We list BRL-CAD here, even though the primary purpose of this repository
+# is to supply BRL-CAD dependencies, in order to allow devs to "turn off"
+# components not needed when testing some of the larger compilation stacks
+# such as Appleseed and OSPray.
 ###############################################################################
-option(USE_GDAL "GDAL terrain support" ON)
-option(USE_QT   "Qt graphical toolkit support" ON)
-option(USE_TCL  "Tcl/Tk support" ON)
+option(USE_APPLESEED "Appleseed rendering system support" ON)
+option(USE_BRLCAD    "Basic components of BRL-CAD build" ON)
+option(USE_GDAL      "GDAL terrain support" ON)
+option(USE_OSPRAY    "OSPray rendering system support" ON)
+option(USE_QT        "Qt graphical toolkit support" ON)
+option(USE_TCL       "Tcl/Tk support" ON)
 
 function(add_project pname)
   cmake_parse_arguments(A "" "GROUPS" "" ${ARGN})
@@ -253,13 +261,13 @@ add_subdirectory(patch)
 # build targets intended for distribution with BRL-CAD, these outputs are all
 # targeted to extnoinstall.
 ###############################################################################
-add_subdirectory(astyle)
-add_subdirectory(flexbison)
-add_subdirectory(lief)
-add_subdirectory(perplex)
-add_subdirectory(plief)
-add_subdirectory(strclear)
-add_subdirectory(xmltools)
+add_project(astyle GROUPS "BRLCAD")
+add_project(flexbison GROUPS "APPLESEED;OSPRAY")
+add_project(lief GROUPS "BRLCAD")
+add_project(perplex GROUPS "BRLCAD")
+add_project(plief GROUPS "BRLCAD")
+add_project(strclear GROUPS "BRLCAD")
+add_project(xmltools GROUPS "BRLCAD")  # Used for Docbook building
 
 ###############################################################################
 # Build logic is broken out per-library, but the ordering is important.  Some
@@ -271,47 +279,47 @@ add_subdirectory(xmltools)
 
 # zlib compression/decompression library
 # https://zlib.net
-add_project(zlib)
+add_project(zlib GROUPS "APPLESEED;BRLCAD;OSPRAY")
 
 # minizip-ng - zip manipulation library written in C
 # https://github.com/zlib-ng/minizip-ng
-add_subdirectory(minizip-ng)
+add_project(minizip-ng GROUPS "APPLESEED")
 
 # LZ4 - lossless compression algorithm
 # https://github.com/lz4/lz4
-add_subdirectory(lz4)
+add_project(lz4 GROUPS "APPLESEED")
 
 # libdeflate fast, whole-buffer DEFLATE-based compression
 # https://github.com/ebiggers/libdeflate
-add_subdirectory(deflate)
+add_project(deflate GROUPS "APPLESEED")
 
 # fmt  - formatting library providing an alternative to C++ iostreams
 # https://github.com/fmtlib/fmt
-add_subdirectory(fmt)
+add_project(fmt GROUPS "APPLESEED")
 
 # yaml-cpp - YAML parser and emitter in C++ matching the YAML 1.2 spec
 # https://github.com/jbeder/yaml-cpp
-add_subdirectory(yaml-cpp)
+add_project(yaml-cpp GROUPS "APPLESEED")
 
 # pystring - collection of C++ functions which match the interface and behavior
 # of python's string class methods
 # https://github.com/imageworks/pystring
-add_subdirectory(pystring)
+add_project(pystring GROUPS "APPLESEED")
 
 # libregex regular expression matching
-add_project(regex)
+add_project(regex GROUPS "BRLCAD")
 
 # expat - library for parsing XML 1.0 Fourth Edition
 # https://github.com/libexpat/libexpat
-add_subdirectory(expat)
+add_project(expat GROUPS "APPLESEED")
 
 # pugixml - a light-weight C++ XML processing library
 # https://pugixml.org/
-add_subdirectory(pugixml)
+add_project(pugixml GROUPS "APPLESEED")
 
 # Xerces-C++ - a validating XML parser
 # https://xerces.apache.org/xerces-c/
-add_subdirectory(xerces-c)
+add_project(xerces-c GROUPS "APPLESEED")
 
 # netpbm library - support for pnm,ppm,pbm, etc. image files
 # http://netpbm.sourceforge.net/
@@ -322,51 +330,59 @@ add_subdirectory(xerces-c)
 # form our netpbm copy isn't really a good fit for ext, but it is kept here
 # because a) there is an active upstream and b) we are unlikely to need to
 # modify these sources to our needs from a functional perspective.
-add_project(netpbm)
+add_project(netpbm GROUPS "BRLCAD")
 
 # libjpeg-turbo - JPEG image codec
 # https://github.com/libjpeg-turbo/libjpeg-turbo
-add_subdirectory(jpeg)
+add_project(jpeg GROUPS "APPLESEED")
 
 # libpng - Portable Network Graphics image file support
 # http://www.libpng.org/pub/png/libpng.html
-add_project(png)
+add_project(png GROUPS "APPLESEED;BRLCAD")
 
 # libtiff - Tag Image File Format (TIFF) support
 # https://libtiff.gitlab.io/libtiff/
 # https://gitlab.com/libtiff/libtiff
-add_subdirectory(tiff)
+add_project(tiff GROUPS "APPLESEED")
 
 # Linenoise - line editing library
 # https://github.com/msteveb/linenoise
-add_project(linenoise)
+add_project(linenoise GROUPS "BRLCAD")
 
 # Lightning Memory-Mapped Database
 # https://github.com/LMDB/lmdb
-add_project(lmdb)
+add_project(lmdb GROUPS "BRLCAD")
 
 # Eigen - linear algebra library
-add_project(eigen)
+add_project(eigen GROUPS "BRLCAD")
 
 # oneTBB - Threading Building Blocks
 # https://github.com/oneapi-src/oneTBB
-add_subdirectory(oneTBB)
+add_project(oneTBB GROUPS "APPLESEED;OSPRAY")
 
 # LLVM - code generation support
 # https://llvm.org/
-add_subdirectory(llvm)
+add_project(llvm GROUPS "APPLESEED;OSPRAY")
 
 # ISPC - Implicit SPMD Program Compiler
 # https://ispc.github.io/
-add_subdirectory(ispc)
+
+# TODO - m4 is going to be a problem - it's a hard
+# dependency of ISPC, but the upstream only uses
+# GNU m4 (I tried OpenBSD's and it doesn't handle
+# their inputs - confirmed ISPC isn't interested in
+# making their m4 more compatible.)  Probably will
+# need to tackle building GNU m4 on Windows, but
+# that's going to be a job...
+add_project(ispc GROUPS "OSPRAY")
 
 # Boost - C++ libraries
 # https://www.boost.org/
-add_subdirectory(boost)
+add_subdirectory(boost GROUPS "APPLESEED")
 
 # STEPcode - support for reading and writing STEP files
 # https://github.com/stepcode/stepcode
-add_project(stepcode)
+add_project(stepcode GROUPS "BRLCAD")
 
 # SQLITE3 - embeddable database
 # https://www.sqlite.org
@@ -383,53 +399,53 @@ add_project(gdal GROUPS "GDAL")
 # Open Asset Import Library - library for supporting I/O for a number of
 # Geometry file formats
 # https://github.com/assimp/assimp
-add_project(assetimport)
+add_project(assetimport GROUPS "BRLCAD")
 
 # OpenEXR - EXR image storage format
 # https://openexr.com/
-add_subdirectory(openexr)
+add_project(openexr GROUPS "APPLESEED")
 
 # OpenCV - Open Source Computer Vision Library: http://opencv.org
-add_project(opencv)
+add_project(opencv GROUPS "BRLCAD")
 
 # OpenColorIO - color management
 # https://opencolorio.org
 # Note - the VFX Reference Platform (https://vfxplatform.com/)
 # is a useful reference for what versions to expect elements
 # of the rendering pipeline software stack to use/require
-add_subdirectory(opencolorio)
+add_project(opencolorio GROUPS "APPLESEED")
 
 # OpenImageIO - reading and writing images, aimed at VFX studios
 # https://github.com/OpenImageIO/oiio
-add_subdirectory(openimageio)
+add_project(openimageio GROUPS "APPLESEED")
 
 # Open Shading Language (OSL) - language for programmable shading
 # https://github.com/AcademySoftwareFoundation/OpenShadingLanguage
 #
 # TODO - need to check if https://github.com/lexxmark/winflexbison will
 # work for Windows for OSL's usage of flex/bison...
-add_subdirectory(openshadinglanguage)
+add_project(openshadinglanguage GROUPS "APPLESEED")
 
 # Embree raytracing kernel
 # https://github.com/embree/embree
-add_subdirectory(embree)
+add_project(embree GROUPS "APPLESEED;OSPRAY")
 
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
-add_project(openmesh)
+add_project(openmesh GROUPS "BRLCAD")
 
 # openNURBS - Non-Uniform Rational BSpline library
 # https://github.com/mcneel/opennurbs
-add_project(opennurbs)
+add_project(opennurbs GROUPS "BRLCAD")
 
 # OSMesa - Off Screen Mesa Rendering Library
-add_project(osmesa)
+add_project(osmesa GROUPS "BRLCAD")
 
 # Poly2Tri - constrained Delaunay triangulation
-add_project(poly2tri)
+add_project(poly2tri GROUPS "BRLCAD")
 
 # UtahRLE - Raster Image library
-add_project(utahrle)
+add_project(utahrle GROUPS "BRLCAD")
 
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.

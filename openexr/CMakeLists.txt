@@ -17,6 +17,9 @@ set(ENABLE_OPENEXR "${ENABLE_OPENEXR}" CACHE BOOL "Enable openexr build")
 
 if (ENABLE_OPENEXR)
 
+  set(OPENEXR_DEPENDS DEFLATE)
+  TargetVars(OPENEXR_DEPENDS)
+
   ExternalProject_Add(OPENEXR_BLD
     URL "${CMAKE_CURRENT_SOURCE_DIR}/openexr"
     BUILD_ALWAYS ${EXT_BUILD_ALWAYS} ${LOG_OPTS}
@@ -36,6 +39,8 @@ if (ENABLE_OPENEXR)
     LOG_OUTPUT_ON_FAILURE ${EXT_BUILD_QUIET}
     STEP_TARGETS install
     )
+
+  TargetInstallDeps(OPENEXR OPENEXR_DEPENDS)
 
   if (TARGET PATCH_BLD)
     ExternalProject_Add_StepDependencies(OPENEXR_BLD configure PATCH_BLD-install)
