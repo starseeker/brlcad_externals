@@ -243,6 +243,13 @@ function(add_project pname)
   endforeach(grp ${A_GROUPS})
 endfunction(add_project pname)
 
+if (USE_OSPRAY)
+  # For the moment, we can't bootstrap these two readily, and ISPC needs
+  # both of them.
+  find_program(M4_EXECUTABLE m4 REQUIRED)
+  find_package(Python3 REQUIRED)
+endif (USE_OSPRAY)
+
 
 ###############################################################################
 # Applying patch files cross platform is a challenging problem due to the
@@ -364,6 +371,10 @@ add_project(eigen GROUPS "BRLCAD")
 # https://github.com/oneapi-src/oneTBB
 add_project(oneTBB GROUPS "APPLESEED;OSPRAY")
 
+# rkcommon -  C++ infrastructure and CMake utilities
+# https://github.com/ospray/rkcommon
+add_project(rkcommon GROUPS "OSPRAY")
+
 # LLVM - code generation support
 # https://llvm.org/
 add_project(llvm GROUPS "APPLESEED;OSPRAY")
@@ -466,6 +477,9 @@ add_project(tktable GROUPS "TCL")
 # Qt - cross-platform user interface/application development toolkit
 # https://download.qt.io/archive/qt
 add_project(qt6 GROUPS "QT")
+
+# OSPRay - ray tracing engine
+add_project(ospray GROUPS "OSPRAY")
 
 # Local Variables:
 # tab-width: 8
