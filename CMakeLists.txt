@@ -188,6 +188,35 @@ endif(MSVC)
 file(MAKE_DIRECTORY ${CMAKE_NOBUNDLE_INSTALL_PREFIX})
 add_custom_target(BuildStamp ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_NOBUNDLE_INSTALL_PREFIX}/build-stamp)
 
+
+###############################################################################
+# There are a large number of external packages that may need to be built -
+# some of these are "dependencies of dependencies" which may be needed only if
+# specific high level capabilities are sought.  In order to try to make clear
+# *why* various packages are present (and make it easier to skip building them
+# if a particular high level feature is not of interest) we create options used
+# as "tags" that control adding packages.  If at least one of the tags for a
+# given package is set, that package will be built.
+###############################################################################
+option(USE_GDAL "GDAL terrain support" ON)
+option(USE_QT   "Qt graphical toolkit support" ON)
+option(USE_TCL  "Tcl/Tk support" ON)
+
+function(add_project pname)
+  cmake_parse_arguments(A "" "GROUPS" "" ${ARGN})
+  if (NOT A_GROUPS)
+    add_subdirectory(${pname})
+    return()
+  endif (NOT A_GROUPS)
+  foreach(grp ${A_GROUPS})
+    if (USE_${grp})
+      add_subdirectory(${pname})
+      return()
+    endif (USE_${grp})
+  endforeach(grp ${A_GROUPS})
+endfunction(add_project pname)
+
+
 ###############################################################################
 # Applying patch files cross platform is a challenging problem due to the
 # shortage of portable tools and issues with LF vs CRLF files - see
@@ -222,10 +251,10 @@ add_subdirectory(xmltools)
 
 # zlib compression/decompression library
 # https://zlib.net
-add_subdirectory(zlib)
+add_project(zlib)
 
 # libregex regular expression matching
-add_subdirectory(regex)
+add_project(regex)
 
 # netpbm library - support for pnm,ppm,pbm, etc. image files
 # http://netpbm.sourceforge.net/
@@ -236,79 +265,79 @@ add_subdirectory(regex)
 # form our netpbm copy isn't really a good fit for ext, but it is kept here
 # because a) there is an active upstream and b) we are unlikely to need to
 # modify these sources to our needs from a functional perspective.
-add_subdirectory(netpbm)
+add_project(netpbm)
 
 # libpng - Portable Network Graphics image file support
 # http://www.libpng.org/pub/png/libpng.html
-add_subdirectory(png)
+add_project(png)
 
 # Linenoise - line editing library
 # https://github.com/msteveb/linenoise
-add_subdirectory(linenoise)
+add_project(linenoise)
 
 # Lightning Memory-Mapped Database
 # https://github.com/LMDB/lmdb
-add_subdirectory(lmdb)
+add_project(lmdb)
 
 # Eigen - linear algebra library
-add_subdirectory(eigen)
+add_project(eigen)
 
 # STEPcode - support for reading and writing STEP files
 # https://github.com/stepcode/stepcode
-add_subdirectory(stepcode)
+add_project(stepcode)
 
 # SQLITE3 - embeddable database
 # https://www.sqlite.org
-add_subdirectory(sqlite3)
+add_project(sqlite3 GROUPS "GDAL")
 
 # PROJ - generic coordinate transformation
 # https://proj.org
-add_subdirectory(proj)
+add_project(proj GROUPS "GDAL")
 
 # GDAL -  translator library for raster and vector geospatial data formats
 # https://gdal.org
-add_subdirectory(gdal)
+add_project(gdal GROUPS "GDAL")
 
 # Open Asset Import Library - library for supporting I/O for a number of
 # Geometry file formats
 # https://github.com/assimp/assimp
-add_subdirectory(assetimport)
+add_project(assetimport)
 
 # OpenCV - Open Source Computer Vision Library: http://opencv.org
-add_subdirectory(opencv)
+add_project(opencv)
 
 # OpenMesh Library - library for representing and manipulating polygonal meshes
 # https://www.graphics.rwth-aachen.de/software/openmesh/
-add_subdirectory(openmesh)
+add_project(openmesh)
 
 # openNURBS - Non-Uniform Rational BSpline library
 # https://github.com/mcneel/opennurbs
-add_subdirectory(opennurbs)
+add_project(opennurbs)
 
 # OSMesa - Off Screen Mesa Rendering Library
-add_subdirectory(osmesa)
+add_project(osmesa)
 
 # Poly2Tri - constrained Delaunay triangulation
-add_subdirectory(poly2tri)
+add_project(poly2tri)
 
 # UtahRLE - Raster Image library
-add_subdirectory(utahrle)
+add_project(utahrle)
 
 # TCL - scripting language.  For Tcl/Tk builds we want
 # static lib building on so we get the stub libraries.
 # https://www.tcl.tk
 set(TCL_ENABLE_TK ON CACHE BOOL "enable tk")
-add_subdirectory(tcl)
-add_subdirectory(tk)
-add_subdirectory(itcl3)
-add_subdirectory(itk3)
-add_subdirectory(iwidgets)
-add_subdirectory(tkhtml)
-add_subdirectory(tktable)
+add_project(tcl GROUPS "TCL")
+add_project(tk GROUPS "TCL")
+add_project(itcl3 GROUPS "TCL")
+add_project(itk3 GROUPS "TCL")
+add_project(iwidgets GROUPS "TCL")
+add_project(tkhtml GROUPS "TCL")
+add_project(tktable GROUPS "TCL")
 
 # Qt - cross-platform user interface/application development toolkit
 # https://download.qt.io/archive/qt
-add_subdirectory(qt6)
+add_project(qt6 GROUPS "QT")
 
 # Local Variables:
 # tab-width: 8
