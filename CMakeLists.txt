@@ -247,6 +247,12 @@ if (USE_OSPRAY)
   # For the moment, we can't bootstrap these two readily, and ISPC needs
   # both of them.
   find_program(M4_EXECUTABLE m4 REQUIRED)
+  # TODO - I think Python is just a build-time dependency for ISPC - the
+  # executable does not seem to be linking to it.  If that's true, what we
+  # might be able to do for this is try building Python3 IFF we don't find a
+  # system Python3, since https://github.com/python/cpython/issues/90737 sounds
+  # like the problem may be when we try to build this with an already-in-place
+  # system python3?
   find_package(Python3 REQUIRED)
 endif (USE_OSPRAY)
 
