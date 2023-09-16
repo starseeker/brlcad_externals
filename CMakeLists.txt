@@ -490,9 +490,7 @@ add_project(ospray GROUPS "OSPRAY")
 
 # Appleseed - global illumination rendering engine
 # https://github.com/appleseedhq/appleseed
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/appleseed)
-  add_project(appleseed GROUPS "APPLESEED")
-endif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/appleseed)
+add_project(appleseed GROUPS "APPLESEED")
 
 # Local Variables:
 # tab-width: 8
