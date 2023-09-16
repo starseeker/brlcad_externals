@@ -1,7 +1,8 @@
 if (WIN32)
   execute_process(COMMAND "@VCVARS_BAT@" && b2 WORKING_DIRECTORY @BOOST_SOURCE_DIR@)
 else (WIN32)
-  execute_process(COMMAND ./b2 WORKING_DIRECTORY @BOOST_SOURCE_DIR@)
+  # https://stackoverflow.com/a/70682496/2037687
+  execute_process(COMMAND ./b2 cxxflags=-fPIC cflags=-fPIC WORKING_DIRECTORY @BOOST_SOURCE_DIR@)
 endif (WIN32)
 
 # Local Variables:
